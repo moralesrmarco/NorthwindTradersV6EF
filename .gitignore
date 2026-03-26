@@ -1,0 +1,60 @@
+# Archivos de configuración de Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.cache
+*.log
+*.sln.docstates
+
+# Compilados y temporales
+bin/
+obj/
+Debug/
+Release/
+[Bb]uild/
+[Ll]ogs/
+
+# Archivos de configuración locales
+*.dbmdl
+*.bak
+*.mdf
+*.ldf
+
+# Archivos de paquetes NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# Archivos de Entity Framework
+*.edmx.diagram
+*.edmx.sql
+Migrations/   # quítalo si quieres versionar migraciones
+
+# Archivos de configuración de usuario
+*.userosscache
+*.userprefs
+
+# Archivos de test y cobertura
+TestResults/
+*.coverage
+*.coveragexml
+
+# Archivos de publicación
+publish/
+*.pubxml
+*.publishproj
+
+# Archivos de sistema
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Archivos de IDE adicionales
+*.swp
+*.tmp
+*.temp
+
+# Configuración sensible
+appsettings.json
+appsettings.*.json
