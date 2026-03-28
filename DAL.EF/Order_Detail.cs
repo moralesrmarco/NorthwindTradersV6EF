@@ -12,18 +12,17 @@ namespace DAL.EF
     using System;
     using System.Collections.Generic;
     
-    public partial class Region
+    public partial class Order_Detail
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Region()
-        {
-            this.Territories = new HashSet<Territory>();
-        }
+        public int OrderID { get; set; }
+        public int ProductID { get; set; }
+        public decimal UnitPrice { get; set; }
+        public short Quantity { get; set; }
+        public float Discount { get; set; }
+        public byte[] RowVersion { get; set; }
+        public float TasaIVA { get; set; }
     
-        public int RegionID { get; set; }
-        public string RegionDescription { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Territory> Territories { get; set; }
+        public virtual Order Order { get; set; }
+        public virtual Product Product { get; set; }
     }
 }

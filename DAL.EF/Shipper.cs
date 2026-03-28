@@ -12,18 +12,19 @@ namespace DAL.EF
     using System;
     using System.Collections.Generic;
     
-    public partial class Region
+    public partial class Shipper
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Region()
+        public Shipper()
         {
-            this.Territories = new HashSet<Territory>();
+            this.Orders = new HashSet<Order>();
         }
     
-        public int RegionID { get; set; }
-        public string RegionDescription { get; set; }
+        public int ShipperID { get; set; }
+        public string CompanyName { get; set; }
+        public string Phone { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Territory> Territories { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
     }
 }

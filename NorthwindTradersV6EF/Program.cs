@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DAL.EF;
+using System;
 using System.Windows.Forms;
 
 namespace NorthwindTradersV6EF
@@ -14,11 +15,7 @@ namespace NorthwindTradersV6EF
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            int numPantalla = 0; // Cambia este número para seleccionar la pantalla deseada (1, 2, 3, 4, etc.)
-
-            string usuarioAutenticado = null;
-            int idUsuarioAutenticado = 0;
-            string nombreUsuarioAutenticado = null;
+            int numPantalla = 1; // Cambia este número para seleccionar la pantalla deseada (1, 2, 3, 4, etc.)
 
             // Obtener pantallas
             Screen[] pantallas = Screen.AllScreens;
@@ -32,7 +29,7 @@ namespace NorthwindTradersV6EF
                 pantallaDestino = Screen.PrimaryScreen;
                 //MessageBox.Show("No hay 4 pantallas conectadas. Se usará la pantalla principal.");
             }
-
+            Usuario usuario = null;
             // Mostrar el formulario de login en la pantalla seleccionada
             using (FrmLogin loginForm = new FrmLogin())
             {
@@ -44,21 +41,19 @@ namespace NorthwindTradersV6EF
                     area.Top + (area.Height - loginForm.Height) / 2
                 );
                 loginForm.ShowDialog();
-                if (!loginForm.IsAuthenticated)
+                usuario = loginForm.usuario;
+                if (usuario.Id == 0)
+                {
                     return;
-                usuarioAutenticado = loginForm.UsuarioAutenticado;
-                idUsuarioAutenticado = loginForm.IdUsuarioAutenticado;
-                nombreUsuarioAutenticado = loginForm.NombreUsuarioAutenticado;
+                }
             }
 
             // Instanciar el MDIPrincipal en la misma pantalla
             MDIPrincipal mdiPrincipal = new MDIPrincipal
             {
-                UsuarioAutenticado = usuarioAutenticado,
-                IdUsuarioAutenticado = idUsuarioAutenticado,
-                NombreUsuarioAutenticado = nombreUsuarioAutenticado,
+                usuario = usuario,
                 StartPosition = FormStartPosition.Manual,
-                Location = pantallaDestino.WorkingArea.Location,
+                Bounds = pantallaDestino.WorkingArea
             };
             Application.Run(mdiPrincipal);
 

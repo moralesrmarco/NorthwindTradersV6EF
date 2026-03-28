@@ -1,6 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
+using DAL.EF;
 using System;
-using System.Configuration;
 using System.Windows.Forms;
 using Utilities;
 
@@ -8,12 +8,7 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmLogin : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly UsuarioBLL _usuarioBLL;
-        public bool IsAuthenticated { get; private set; } = false;
-        public string UsuarioAutenticado;
-        public int IdUsuarioAutenticado;
-        public string NombreUsuarioAutenticado;
+        public Usuario usuario { get; private set; }
         bool _imagenMostrada = true;
         byte numeroIntentos = 0;
 
@@ -21,21 +16,23 @@ namespace NorthwindTradersV6EF
         {
             InitializeComponent();
             this.Text = Utils.nwtr;
-            _usuarioBLL = new UsuarioBLL(_connectionString);
         }
 
         private void btnEntrar_Click(object sender, EventArgs e)
         {
-            var usuario = txtUsuario.Text.Trim();
-            var pass = txtPwd.Text.Trim();
-            if (ValidarUsuario(usuario, pass))
+            try
             {
-                IsAuthenticated = true;
-                UsuarioAutenticado = usuario;
-                this.Close();
-            }
-            else
-            {
+                usuario = new Usuario
+                {
+                    Usuario1 = txtUsuario.Text.Trim(),
+                    Password = Utils.ComputeSha256Hash(txtPwd.Text.Trim())
+                };
+                usuario = UsuarioBLL.ValidarUsuario(usuario);
+                if (usuario.Id > 0)
+                {
+                    this.Close();
+                    return;
+                }
                 numeroIntentos++;
                 if (numeroIntentos >= 3)
                 {
@@ -47,22 +44,9 @@ namespace NorthwindTradersV6EF
                 txtPwd.Clear();
                 txtPwd.Focus();
             }
-        }
-
-        private bool ValidarUsuario(string usuario, string pass)
-        {
-            try
-            {
-                string hashed = Utils.ComputeSha256Hash(pass);
-                string nombreUsuarioAutenticado;
-                IdUsuarioAutenticado = _usuarioBLL.ValidarUsuario(usuario, hashed, out nombreUsuarioAutenticado);
-                NombreUsuarioAutenticado = nombreUsuarioAutenticado;
-                return IdUsuarioAutenticado > 0;
-            }
             catch (Exception ex)
             {
                 U.MsgCatchOue(ex);
-                return false;
             }
         }
 

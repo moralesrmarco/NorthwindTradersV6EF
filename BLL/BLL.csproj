@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -81,6 +84,10 @@
     <Compile Include="VentaDetalleBLL.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DAL.EF\DAL.EF.csproj">
+      <Project>{6ea35351-2a27-492c-9eb6-8bcbba32668c}</Project>
+      <Name>DAL.EF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DAL\DAL.csproj">
       <Project>{96f4ec1d-4652-4989-870d-b2f494dbc7b6}</Project>
       <Name>DAL</Name>
@@ -89,6 +96,9 @@
       <Project>{8CDA8642-11BF-47CF-A88B-71626B5000BF}</Project>
       <Name>Entities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,18 +12,13 @@ namespace DAL.EF
     using System;
     using System.Collections.Generic;
     
-    public partial class Region
+    public partial class Permiso
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Region()
-        {
-            this.Territories = new HashSet<Territory>();
-        }
+        public int UsuarioId { get; set; }
+        public int PermisoId { get; set; }
+        public Nullable<System.DateTime> FechaDeCreacion { get; set; }
     
-        public int RegionID { get; set; }
-        public string RegionDescription { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Territory> Territories { get; set; }
+        public virtual CatalogoPermiso CatalogoPermiso { get; set; }
+        public virtual Usuario Usuario { get; set; }
     }
 }

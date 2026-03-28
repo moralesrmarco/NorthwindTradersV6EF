@@ -1,4 +1,5 @@
-﻿using BLL.Services;
+﻿using BLL.EF;
+using DAL.EF;
 using Entities.Config;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,8 @@ namespace NorthwindTradersV6EF
     {
         private int childFormNumber = 0;
         public static MDIPrincipal Instance { get; private set; }
-
-        public string UsuarioAutenticado { get; set; }
-        public string NombreUsuarioAutenticado { get; set; }
-        public int IdUsuarioAutenticado { get; set; }
+        public Usuario usuario = null;
         private HashSet<int> permisosUsuarioAutenticado = new HashSet<int>();
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly PermisoService _permisoService;
 
         public ToolStripStatusLabel ToolStripEstado
         {
@@ -39,15 +35,13 @@ namespace NorthwindTradersV6EF
             {
                 ActualizarBarraDeEstado();
             };
-            _permisoService = new PermisoService(cnStr);
         }
 
         private void TabControlPrincipal_SelectedIndexChanged(object sender, EventArgs e) => MDIPrincipal.ActualizarBarraDeEstado();
 
         private void MDIPrincipal_Load(object sender, EventArgs e)
         {
-            toolStripStatusLabel2.Text = UsuarioAutenticado;
-            ActualizarBarraDeEstado("Sesión iniciada correctamente.     |     Bienvenido " + NombreUsuarioAutenticado + " al sistema " + Utils.nwtr.Substring(2, (Utils.nwtr.Length - 4)) + ". Para comenzar, seleccione una opción del menú correspondiente a sus permisos de usuario.");
+            toolStripStatusLabel2.Text = usuario.Usuario1;
             ConfiguracionFiscal.TasaIVA = Convert.ToDecimal(ConfigurationManager.AppSettings["TasaIVA"]);
             IniciarSesion();
             if (permisosUsuarioAutenticado.Contains(10))
@@ -60,12 +54,13 @@ namespace NorthwindTradersV6EF
                 FrmTableroControlVendedores frm = new FrmTableroControlVendedores();
                 Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Tablero de control para los vendedores «");
             }
+            ActualizarBarraDeEstado("Sesión iniciada correctamente.     |     Bienvenido " + usuario.NombreCompleto + " al sistema " + Utils.nwtr.Substring(2, (Utils.nwtr.Length - 4)) + ". Para comenzar, seleccione una opción del menú correspondiente a sus permisos de usuario.");
         }
 
         private void IniciarSesion()
         {
             // Obtener los permisos del usuario logueado
-            permisosUsuarioAutenticado = _permisoService.ObtenerPermisosPorUsuarioId(IdUsuarioAutenticado);
+            permisosUsuarioAutenticado = UsuarioBLL.ObtenerPermisosPorUsuarioId(usuario.Id);
             // Ajustar el menú por permisos
             AjustarMenuPorPermisos(permisosUsuarioAutenticado);
             if (permisosUsuarioAutenticado.Count == 0)
