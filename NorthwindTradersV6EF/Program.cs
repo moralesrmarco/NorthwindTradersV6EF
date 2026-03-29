@@ -41,7 +41,7 @@ namespace NorthwindTradersV6EF
                     area.Top + (area.Height - loginForm.Height) / 2
                 );
                 loginForm.ShowDialog();
-                usuario = loginForm.usuario;
+                usuario = loginForm.Usuario;
                 if (usuario.Id == 0)
                 {
                     return;
@@ -51,7 +51,7 @@ namespace NorthwindTradersV6EF
             // Instanciar el MDIPrincipal en la misma pantalla
             MDIPrincipal mdiPrincipal = new MDIPrincipal
             {
-                usuario = usuario,
+                Usuario = usuario,
                 StartPosition = FormStartPosition.Manual,
                 Bounds = pantallaDestino.WorkingArea
             };

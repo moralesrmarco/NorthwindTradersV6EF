@@ -15,7 +15,7 @@ namespace NorthwindTradersV6EF
     {
         private int childFormNumber = 0;
         public static MDIPrincipal Instance { get; private set; }
-        public Usuario usuario = null;
+        public Usuario Usuario = null;
         private HashSet<int> permisosUsuarioAutenticado = new HashSet<int>();
 
         public ToolStripStatusLabel ToolStripEstado
@@ -41,7 +41,7 @@ namespace NorthwindTradersV6EF
 
         private void MDIPrincipal_Load(object sender, EventArgs e)
         {
-            toolStripStatusLabel2.Text = usuario.Usuario1;
+            toolStripStatusLabel2.Text = Usuario.Usuario1;
             ConfiguracionFiscal.TasaIVA = Convert.ToDecimal(ConfigurationManager.AppSettings["TasaIVA"]);
             IniciarSesion();
             if (permisosUsuarioAutenticado.Contains(10))
@@ -54,13 +54,13 @@ namespace NorthwindTradersV6EF
                 FrmTableroControlVendedores frm = new FrmTableroControlVendedores();
                 Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Tablero de control para los vendedores «");
             }
-            ActualizarBarraDeEstado("Sesión iniciada correctamente.     |     Bienvenido " + usuario.NombreCompleto + " al sistema " + Utils.nwtr.Substring(2, (Utils.nwtr.Length - 4)) + ". Para comenzar, seleccione una opción del menú correspondiente a sus permisos de usuario.");
+            ActualizarBarraDeEstado("Sesión iniciada correctamente.     |     Bienvenido " + Usuario.NombreCompleto + " al sistema " + Utils.nwtr.Substring(2, (Utils.nwtr.Length - 4)) + ". Para comenzar, seleccione una opción del menú correspondiente a sus permisos de usuario.");
         }
 
         private void IniciarSesion()
         {
             // Obtener los permisos del usuario logueado
-            permisosUsuarioAutenticado = UsuarioBLL.ObtenerPermisosPorUsuarioId(usuario.Id);
+            permisosUsuarioAutenticado = UsuarioBLL.ObtenerPermisosPorUsuarioId(Usuario.Id);
             // Ajustar el menú por permisos
             AjustarMenuPorPermisos(permisosUsuarioAutenticado);
             if (permisosUsuarioAutenticado.Count == 0)

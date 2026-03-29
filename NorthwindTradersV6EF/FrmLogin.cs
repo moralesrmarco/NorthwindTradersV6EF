@@ -8,7 +8,7 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmLogin : Form
     {
-        public Usuario usuario { get; private set; }
+        public Usuario Usuario { get; private set; }
         bool _imagenMostrada = true;
         byte numeroIntentos = 0;
 
@@ -22,13 +22,13 @@ namespace NorthwindTradersV6EF
         {
             try
             {
-                usuario = new Usuario
+                Usuario = new Usuario
                 {
                     Usuario1 = txtUsuario.Text.Trim(),
                     Password = Utils.ComputeSha256Hash(txtPwd.Text.Trim())
                 };
-                usuario = UsuarioBLL.ValidarUsuario(usuario);
-                if (usuario.Id > 0)
+                Usuario = UsuarioBLL.ValidarUsuario(Usuario);
+                if (Usuario.Id > 0)
                 {
                     this.Close();
                     return;
