@@ -1,4 +1,5 @@
 ﻿using DAL.EF;
+using DTOs.EF;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;

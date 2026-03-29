@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmpleadoBLL.cs" />
+    <Compile Include="EmployeeBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UsuarioBLL.cs" />
   </ItemGroup>
@@ -63,6 +63,10 @@
     <ProjectReference Include="..\DAL.EF\DAL.EF.csproj">
       <Project>{6ea35351-2a27-492c-9eb6-8bcbba32668c}</Project>
       <Name>DAL.EF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DTOs.EF\DTOs.EF.csproj">
+      <Project>{00219BFB-8D7C-447A-A3C4-1487EB201B1A}</Project>
+      <Name>DTOs.EF</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

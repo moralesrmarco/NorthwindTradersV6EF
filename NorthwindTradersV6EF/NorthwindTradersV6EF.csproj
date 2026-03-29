@@ -865,6 +865,10 @@
       <Project>{6EA35351-2A27-492C-9EB6-8BCBBA32668C}</Project>
       <Name>DAL.EF</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DTOs.EF\DTOs.EF.csproj">
+      <Project>{00219bfb-8d7c-447a-a3c4-1487eb201b1a}</Project>
+      <Name>DTOs.EF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{8cda8642-11bf-47cf-a88b-71626b5000bf}</Project>
       <Name>Entities</Name>
