@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="NorthwindModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="NorthwindModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="CatalogoPermisos">
           <Key>
             <PropertyRef Name="PermisoId" />
@@ -22,21 +22,6 @@
           <Property Name="Description" Type="ntext" />
           <Property Name="Picture" Type="image" />
           <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" />
-        </EntityType>
-        <EntityType Name="CustomerCustomerDemo">
-          <Key>
-            <PropertyRef Name="CustomerID" />
-            <PropertyRef Name="CustomerTypeID" />
-          </Key>
-          <Property Name="CustomerID" Type="nchar" MaxLength="5" Nullable="false" />
-          <Property Name="CustomerTypeID" Type="nchar" MaxLength="10" Nullable="false" />
-        </EntityType>
-        <EntityType Name="CustomerDemographics">
-          <Key>
-            <PropertyRef Name="CustomerTypeID" />
-          </Key>
-          <Property Name="CustomerTypeID" Type="nchar" MaxLength="10" Nullable="false" />
-          <Property Name="CustomerDesc" Type="ntext" />
         </EntityType>
         <EntityType Name="Customers">
           <Key>
@@ -77,15 +62,7 @@
           <Property Name="Notes" Type="ntext" />
           <Property Name="ReportsTo" Type="int" />
           <Property Name="PhotoPath" Type="nvarchar" MaxLength="255" />
-          <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" />
-        </EntityType>
-        <EntityType Name="EmployeeTerritories">
-          <Key>
-            <PropertyRef Name="EmployeeID" />
-            <PropertyRef Name="TerritoryID" />
-          </Key>
-          <Property Name="EmployeeID" Type="int" Nullable="false" />
-          <Property Name="TerritoryID" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
         </EntityType>
         <EntityType Name="Order Details">
           <Key>
@@ -145,13 +122,6 @@
           <Property Name="Discontinued" Type="bit" Nullable="false" />
           <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" />
         </EntityType>
-        <EntityType Name="Region">
-          <Key>
-            <PropertyRef Name="RegionID" />
-          </Key>
-          <Property Name="RegionID" Type="int" Nullable="false" />
-          <Property Name="RegionDescription" Type="nchar" MaxLength="50" Nullable="false" />
-        </EntityType>
         <EntityType Name="Shippers">
           <Key>
             <PropertyRef Name="ShipperID" />
@@ -178,24 +148,6 @@
           <Property Name="HomePage" Type="ntext" />
           <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="principal_id" Type="int" Nullable="false" />
-          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="version" Type="int" />
-          <Property Name="definition" Type="varbinary(max)" />
-        </EntityType>
-        <EntityType Name="Territories">
-          <Key>
-            <PropertyRef Name="TerritoryID" />
-          </Key>
-          <Property Name="TerritoryID" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="TerritoryDescription" Type="nchar" MaxLength="50" Nullable="false" />
-          <Property Name="RegionID" Type="int" Nullable="false" />
-        </EntityType>
         <EntityType Name="Usuarios">
           <Key>
             <PropertyRef Name="Id" />
@@ -211,99 +163,6 @@
           <Property Name="Estatus" Type="bit" Nullable="false" />
           <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
         </EntityType>
-        <!--Errores durante la generación:
-advertencia 6002: La tabla o vista 'Northwind2.dbo.VwCategoriasConProductos' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
-        <EntityType Name="VwCategoriasConProductos">
-          <Key>
-            <PropertyRef Name="CategoryName" />
-          </Key>
-          <Property Name="CategoryName" Type="nvarchar" MaxLength="15" Nullable="false" />
-          <Property Name="ProductName" Type="nvarchar" MaxLength="40" />
-          <Property Name="ProductID" Type="int" />
-          <Property Name="QuantityPerUnit" Type="nvarchar" MaxLength="20" />
-          <Property Name="UnitPrice" Type="money" />
-          <Property Name="UnitsInStock" Type="smallint" />
-          <Property Name="UnitsOnOrder" Type="smallint" />
-          <Property Name="ReorderLevel" Type="smallint" />
-          <Property Name="Discontinued" Type="bit" />
-          <Property Name="CompanyName" Type="nvarchar" MaxLength="40" />
-        </EntityType>
-        <!--Errores durante la generación:
-advertencia 6002: La tabla o vista 'Northwind2.dbo.VwClientesProveedores' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
-        <EntityType Name="VwClientesProveedores">
-          <Key>
-            <PropertyRef Name="CompanyName" />
-            <PropertyRef Name="Relation" />
-          </Key>
-          <Property Name="CompanyName" Type="nvarchar" MaxLength="40" Nullable="false" />
-          <Property Name="Contact" Type="nvarchar" MaxLength="62" />
-          <Property Name="Relation" Type="varchar" MaxLength="9" Nullable="false" />
-          <Property Name="Address" Type="nvarchar" MaxLength="60" />
-          <Property Name="City" Type="nvarchar" MaxLength="15" />
-          <Property Name="Region" Type="nvarchar" MaxLength="15" />
-          <Property Name="PostalCode" Type="nvarchar" MaxLength="10" />
-          <Property Name="Country" Type="nvarchar" MaxLength="15" />
-          <Property Name="Phone" Type="nvarchar" MaxLength="24" />
-          <Property Name="Fax" Type="nvarchar" MaxLength="24" />
-        </EntityType>
-        <!--Errores durante la generación:
-advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorCategoriaListado' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
-        <EntityType Name="VwProductosPorCategoriaListado">
-          <Key>
-            <PropertyRef Name="CategoryName" />
-          </Key>
-          <Property Name="CategoryName" Type="nvarchar" MaxLength="15" Nullable="false" />
-          <Property Name="ProductName" Type="nvarchar" MaxLength="40" />
-          <Property Name="ProductID" Type="int" />
-          <Property Name="QuantityPerUnit" Type="nvarchar" MaxLength="20" />
-          <Property Name="UnitPrice" Type="money" />
-          <Property Name="UnitsInStock" Type="smallint" />
-          <Property Name="UnitsOnOrder" Type="smallint" />
-          <Property Name="ReorderLevel" Type="smallint" />
-          <Property Name="Discontinued" Type="bit" />
-          <Property Name="CompanyName" Type="nvarchar" MaxLength="40" />
-        </EntityType>
-        <!--Errores durante la generación:
-advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecioPromedio' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
-        <EntityType Name="VwProductosPorEncimaDelPrecioPromedio">
-          <Key>
-            <PropertyRef Name="Producto" />
-            <PropertyRef Name="Categoria" />
-            <PropertyRef Name="Proveedor" />
-          </Key>
-          <Property Name="Fila" Type="bigint" />
-          <Property Name="Producto" Type="nvarchar" MaxLength="40" Nullable="false" />
-          <Property Name="Precio" Type="decimal" Precision="18" Scale="10" />
-          <Property Name="PrecioPromedio" Type="decimal" Precision="18" Scale="10" />
-          <Property Name="Diferencia" Type="decimal" Precision="18" Scale="10" />
-          <Property Name="PorcentajeSobrePromedio" Type="decimal" Precision="18" Scale="10" />
-          <Property Name="Categoria" Type="nvarchar" MaxLength="15" Nullable="false" />
-          <Property Name="Proveedor" Type="nvarchar" MaxLength="40" Nullable="false" />
-        </EntityType>
-        <Association Name="FK_CustomerCustomerDemo">
-          <End Role="CustomerDemographics" Type="Self.CustomerDemographics" Multiplicity="1" />
-          <End Role="CustomerCustomerDemo" Type="Self.CustomerCustomerDemo" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CustomerDemographics">
-              <PropertyRef Name="CustomerTypeID" />
-            </Principal>
-            <Dependent Role="CustomerCustomerDemo">
-              <PropertyRef Name="CustomerTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_CustomerCustomerDemo_Customers">
-          <End Role="Customers" Type="Self.Customers" Multiplicity="1" />
-          <End Role="CustomerCustomerDemo" Type="Self.CustomerCustomerDemo" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Customers">
-              <PropertyRef Name="CustomerID" />
-            </Principal>
-            <Dependent Role="CustomerCustomerDemo">
-              <PropertyRef Name="CustomerID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Employees_Employees">
           <End Role="Employees" Type="Self.Employees" Multiplicity="0..1" />
           <End Role="Employees1" Type="Self.Employees" Multiplicity="*" />
@@ -313,30 +172,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             </Principal>
             <Dependent Role="Employees1">
               <PropertyRef Name="ReportsTo" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_EmployeeTerritories_Employees">
-          <End Role="Employees" Type="Self.Employees" Multiplicity="1" />
-          <End Role="EmployeeTerritories" Type="Self.EmployeeTerritories" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Employees">
-              <PropertyRef Name="EmployeeID" />
-            </Principal>
-            <Dependent Role="EmployeeTerritories">
-              <PropertyRef Name="EmployeeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_EmployeeTerritories_Territories">
-          <End Role="Territories" Type="Self.Territories" Multiplicity="1" />
-          <End Role="EmployeeTerritories" Type="Self.EmployeeTerritories" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Territories">
-              <PropertyRef Name="TerritoryID" />
-            </Principal>
-            <Dependent Role="EmployeeTerritories">
-              <PropertyRef Name="TerritoryID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -448,109 +283,21 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Territories_Region">
-          <End Role="Region" Type="Self.Region" Multiplicity="1" />
-          <End Role="Territories" Type="Self.Territories" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Region">
-              <PropertyRef Name="RegionID" />
-            </Principal>
-            <Dependent Role="Territories">
-              <PropertyRef Name="RegionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="NorthwindModelStoreContainer">
           <EntitySet Name="CatalogoPermisos" EntityType="Self.CatalogoPermisos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CustomerCustomerDemo" EntityType="Self.CustomerCustomerDemo" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="CustomerDemographics" EntityType="Self.CustomerDemographics" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Customers" EntityType="Self.Customers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employees" EntityType="Self.Employees" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="EmployeeTerritories" EntityType="Self.EmployeeTerritories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Order Details" EntityType="Self.Order Details" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Permisos" EntityType="Self.Permisos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Region" EntityType="Self.Region" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Shippers" EntityType="Self.Shippers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Suppliers" EntityType="Self.Suppliers" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Territories" EntityType="Self.Territories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuarios" EntityType="Self.Usuarios" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="VwCategoriasConProductos" EntityType="Self.VwCategoriasConProductos" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [VwCategoriasConProductos].[CategoryName] AS [CategoryName], 
-    [VwCategoriasConProductos].[ProductName] AS [ProductName], 
-    [VwCategoriasConProductos].[ProductID] AS [ProductID], 
-    [VwCategoriasConProductos].[QuantityPerUnit] AS [QuantityPerUnit], 
-    [VwCategoriasConProductos].[UnitPrice] AS [UnitPrice], 
-    [VwCategoriasConProductos].[UnitsInStock] AS [UnitsInStock], 
-    [VwCategoriasConProductos].[UnitsOnOrder] AS [UnitsOnOrder], 
-    [VwCategoriasConProductos].[ReorderLevel] AS [ReorderLevel], 
-    [VwCategoriasConProductos].[Discontinued] AS [Discontinued], 
-    [VwCategoriasConProductos].[CompanyName] AS [CompanyName]
-    FROM [dbo].[VwCategoriasConProductos] AS [VwCategoriasConProductos]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="VwClientesProveedores" EntityType="Self.VwClientesProveedores" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [VwClientesProveedores].[CompanyName] AS [CompanyName], 
-    [VwClientesProveedores].[Contact] AS [Contact], 
-    [VwClientesProveedores].[Relation] AS [Relation], 
-    [VwClientesProveedores].[Address] AS [Address], 
-    [VwClientesProveedores].[City] AS [City], 
-    [VwClientesProveedores].[Region] AS [Region], 
-    [VwClientesProveedores].[PostalCode] AS [PostalCode], 
-    [VwClientesProveedores].[Country] AS [Country], 
-    [VwClientesProveedores].[Phone] AS [Phone], 
-    [VwClientesProveedores].[Fax] AS [Fax]
-    FROM [dbo].[VwClientesProveedores] AS [VwClientesProveedores]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="VwProductosPorCategoriaListado" EntityType="Self.VwProductosPorCategoriaListado" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [VwProductosPorCategoriaListado].[CategoryName] AS [CategoryName], 
-    [VwProductosPorCategoriaListado].[ProductName] AS [ProductName], 
-    [VwProductosPorCategoriaListado].[ProductID] AS [ProductID], 
-    [VwProductosPorCategoriaListado].[QuantityPerUnit] AS [QuantityPerUnit], 
-    [VwProductosPorCategoriaListado].[UnitPrice] AS [UnitPrice], 
-    [VwProductosPorCategoriaListado].[UnitsInStock] AS [UnitsInStock], 
-    [VwProductosPorCategoriaListado].[UnitsOnOrder] AS [UnitsOnOrder], 
-    [VwProductosPorCategoriaListado].[ReorderLevel] AS [ReorderLevel], 
-    [VwProductosPorCategoriaListado].[Discontinued] AS [Discontinued], 
-    [VwProductosPorCategoriaListado].[CompanyName] AS [CompanyName]
-    FROM [dbo].[VwProductosPorCategoriaListado] AS [VwProductosPorCategoriaListado]</DefiningQuery>
-          </EntitySet>
-          <EntitySet Name="VwProductosPorEncimaDelPrecioPromedio" EntityType="Self.VwProductosPorEncimaDelPrecioPromedio" store:Type="Views" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [VwProductosPorEncimaDelPrecioPromedio].[Fila] AS [Fila], 
-    [VwProductosPorEncimaDelPrecioPromedio].[Producto] AS [Producto], 
-    [VwProductosPorEncimaDelPrecioPromedio].[Precio] AS [Precio], 
-    [VwProductosPorEncimaDelPrecioPromedio].[PrecioPromedio] AS [PrecioPromedio], 
-    [VwProductosPorEncimaDelPrecioPromedio].[Diferencia] AS [Diferencia], 
-    [VwProductosPorEncimaDelPrecioPromedio].[PorcentajeSobrePromedio] AS [PorcentajeSobrePromedio], 
-    [VwProductosPorEncimaDelPrecioPromedio].[Categoria] AS [Categoria], 
-    [VwProductosPorEncimaDelPrecioPromedio].[Proveedor] AS [Proveedor]
-    FROM [dbo].[VwProductosPorEncimaDelPrecioPromedio] AS [VwProductosPorEncimaDelPrecioPromedio]</DefiningQuery>
-          </EntitySet>
-          <AssociationSet Name="FK_CustomerCustomerDemo" Association="Self.FK_CustomerCustomerDemo">
-            <End Role="CustomerDemographics" EntitySet="CustomerDemographics" />
-            <End Role="CustomerCustomerDemo" EntitySet="CustomerCustomerDemo" />
-          </AssociationSet>
-          <AssociationSet Name="FK_CustomerCustomerDemo_Customers" Association="Self.FK_CustomerCustomerDemo_Customers">
-            <End Role="Customers" EntitySet="Customers" />
-            <End Role="CustomerCustomerDemo" EntitySet="CustomerCustomerDemo" />
-          </AssociationSet>
           <AssociationSet Name="FK_Employees_Employees" Association="Self.FK_Employees_Employees">
             <End Role="Employees" EntitySet="Employees" />
             <End Role="Employees1" EntitySet="Employees" />
-          </AssociationSet>
-          <AssociationSet Name="FK_EmployeeTerritories_Employees" Association="Self.FK_EmployeeTerritories_Employees">
-            <End Role="Employees" EntitySet="Employees" />
-            <End Role="EmployeeTerritories" EntitySet="EmployeeTerritories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_EmployeeTerritories_Territories" Association="Self.FK_EmployeeTerritories_Territories">
-            <End Role="Territories" EntitySet="Territories" />
-            <End Role="EmployeeTerritories" EntitySet="EmployeeTerritories" />
           </AssociationSet>
           <AssociationSet Name="FK_Order_Details_Orders" Association="Self.FK_Order_Details_Orders">
             <End Role="Orders" EntitySet="Orders" />
@@ -588,12 +335,9 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             <End Role="Suppliers" EntitySet="Suppliers" />
             <End Role="Products" EntitySet="Products" />
           </AssociationSet>
-          <AssociationSet Name="FK_Territories_Region" Association="Self.FK_Territories_Region">
-            <End Role="Region" EntitySet="Region" />
-            <End Role="Territories" EntitySet="Territories" />
-          </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="NorthwindModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -604,7 +348,7 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="PermisoId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Descripción" Type="String" MaxLength="80" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Estatus" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Permisos" Relationship="NorthwindModel.FK_Permisos_CatalogoPermisos" FromRole="CatalogoPermiso" ToRole="Permiso" />
+          <NavigationProperty Name="Permisos" Relationship="Self.FK_Permisos_CatalogoPermisos" FromRole="CatalogoPermisos" ToRole="Permisos" />
         </EntityType>
         <EntityType Name="Category">
           <Key>
@@ -616,14 +360,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="Picture" Type="Binary" MaxLength="Max" FixedLength="false" />
           <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <NavigationProperty Name="Products" Relationship="Self.FK_Products_Categories" FromRole="Categories" ToRole="Products" />
-        </EntityType>
-        <EntityType Name="CustomerDemographic">
-          <Key>
-            <PropertyRef Name="CustomerTypeID" />
-          </Key>
-          <Property Name="CustomerTypeID" Type="String" MaxLength="10" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="CustomerDesc" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Customers" Relationship="Self.CustomerCustomerDemo" FromRole="CustomerDemographics" ToRole="Customers" />
         </EntityType>
         <EntityType Name="Customer">
           <Key>
@@ -642,7 +378,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="Fax" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
           <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Customers" FromRole="Customers" ToRole="Orders" />
-          <NavigationProperty Name="CustomerDemographics" Relationship="Self.CustomerCustomerDemo" FromRole="Customers" ToRole="CustomerDemographics" />
         </EntityType>
         <EntityType Name="Employee">
           <Key>
@@ -666,11 +401,10 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="Notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ReportsTo" Type="Int32" />
           <Property Name="PhotoPath" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" ConcurrencyMode="Fixed" />
           <NavigationProperty Name="Employees1" Relationship="Self.FK_Employees_Employees" FromRole="Employees" ToRole="Employees1" />
           <NavigationProperty Name="Employee1" Relationship="Self.FK_Employees_Employees" FromRole="Employees1" ToRole="Employees" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Employees" FromRole="Employees" ToRole="Orders" />
-          <NavigationProperty Name="Territories" Relationship="Self.EmployeeTerritories" FromRole="Employees" ToRole="Territories" />
         </EntityType>
         <EntityType Name="Order_Detail">
           <Key>
@@ -711,6 +445,17 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <NavigationProperty Name="Order_Details" Relationship="Self.FK_Order_Details_Orders" FromRole="Orders" ToRole="Order_Details" />
           <NavigationProperty Name="Shipper" Relationship="Self.FK_Orders_Shippers" FromRole="Orders" ToRole="Shippers" />
         </EntityType>
+        <EntityType Name="Permiso">
+          <Key>
+            <PropertyRef Name="UsuarioId" />
+            <PropertyRef Name="PermisoId" />
+          </Key>
+          <Property Name="UsuarioId" Type="Int32" Nullable="false" />
+          <Property Name="PermisoId" Type="Int32" Nullable="false" />
+          <Property Name="FechaDeCreacion" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="CatalogoPermiso" Relationship="Self.FK_Permisos_CatalogoPermisos" FromRole="Permisos" ToRole="CatalogoPermisos" />
+          <NavigationProperty Name="Usuario" Relationship="Self.FK_Permisos_Usuarios" FromRole="Permisos" ToRole="Usuarios" />
+        </EntityType>
         <EntityType Name="Product">
           <Key>
             <PropertyRef Name="ProductID" />
@@ -729,14 +474,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <NavigationProperty Name="Category" Relationship="Self.FK_Products_Categories" FromRole="Products" ToRole="Categories" />
           <NavigationProperty Name="Order_Details" Relationship="Self.FK_Order_Details_Products" FromRole="Products" ToRole="Order_Details" />
           <NavigationProperty Name="Supplier" Relationship="Self.FK_Products_Suppliers" FromRole="Products" ToRole="Suppliers" />
-        </EntityType>
-        <EntityType Name="Region">
-          <Key>
-            <PropertyRef Name="RegionID" />
-          </Key>
-          <Property Name="RegionID" Type="Int32" Nullable="false" />
-          <Property Name="RegionDescription" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Territories" Relationship="Self.FK_Territories_Region" FromRole="Region" ToRole="Territories" />
         </EntityType>
         <EntityType Name="Shipper">
           <Key>
@@ -766,26 +503,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
           <NavigationProperty Name="Products" Relationship="Self.FK_Products_Suppliers" FromRole="Suppliers" ToRole="Products" />
         </EntityType>
-        <EntityType Name="sysdiagram">
-          <Key>
-            <PropertyRef Name="diagram_id" />
-          </Key>
-          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
-        </EntityType>
-        <EntityType Name="Territory">
-          <Key>
-            <PropertyRef Name="TerritoryID" />
-          </Key>
-          <Property Name="TerritoryID" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="TerritoryDescription" Type="String" MaxLength="50" FixedLength="true" Unicode="true" Nullable="false" />
-          <Property Name="RegionID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Region" Relationship="Self.FK_Territories_Region" FromRole="Territories" ToRole="Region" />
-          <NavigationProperty Name="Employees" Relationship="Self.EmployeeTerritories" FromRole="Territories" ToRole="Employees" />
-        </EntityType>
         <EntityType Name="Usuario">
           <Key>
             <PropertyRef Name="Id" />
@@ -800,69 +517,20 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="FechaModificacion" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="Estatus" Type="Boolean" Nullable="false" />
           <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" Nullable="false" annotation:StoreGeneratedPattern="Computed" />
-          <NavigationProperty Name="Permisos" Relationship="NorthwindModel.FK_Permisos_Usuarios" FromRole="Usuario" ToRole="Permiso" />
+          <NavigationProperty Name="Permisos" Relationship="Self.FK_Permisos_Usuarios" FromRole="Usuarios" ToRole="Permisos" />
         </EntityType>
-        <EntityType Name="VwCategoriasConProducto">
-          <Key>
-            <PropertyRef Name="CategoryName" />
-          </Key>
-          <Property Name="CategoryName" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ProductName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
-          <Property Name="ProductID" Type="Int32" />
-          <Property Name="QuantityPerUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="UnitsInStock" Type="Int16" />
-          <Property Name="UnitsOnOrder" Type="Int16" />
-          <Property Name="ReorderLevel" Type="Int16" />
-          <Property Name="Discontinued" Type="Boolean" />
-          <Property Name="CompanyName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="VwClientesProveedore">
-          <Key>
-            <PropertyRef Name="CompanyName" />
-            <PropertyRef Name="Relation" />
-          </Key>
-          <Property Name="CompanyName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Contact" Type="String" MaxLength="62" FixedLength="false" Unicode="true" />
-          <Property Name="Relation" Type="String" MaxLength="9" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Address" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
-          <Property Name="City" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
-          <Property Name="Region" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
-          <Property Name="PostalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
-          <Property Name="Country" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
-          <Property Name="Phone" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
-          <Property Name="Fax" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="VwProductosPorCategoriaListado">
-          <Key>
-            <PropertyRef Name="CategoryName" />
-          </Key>
-          <Property Name="CategoryName" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ProductName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
-          <Property Name="ProductID" Type="Int32" />
-          <Property Name="QuantityPerUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="UnitsInStock" Type="Int16" />
-          <Property Name="UnitsOnOrder" Type="Int16" />
-          <Property Name="ReorderLevel" Type="Int16" />
-          <Property Name="Discontinued" Type="Boolean" />
-          <Property Name="CompanyName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityType Name="VwProductosPorEncimaDelPrecioPromedio">
-          <Key>
-            <PropertyRef Name="Producto" />
-            <PropertyRef Name="Categoria" />
-            <PropertyRef Name="Proveedor" />
-          </Key>
-          <Property Name="Fila" Type="Int64" />
-          <Property Name="Producto" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Precio" Type="Decimal" Precision="18" Scale="10" />
-          <Property Name="PrecioPromedio" Type="Decimal" Precision="18" Scale="10" />
-          <Property Name="Diferencia" Type="Decimal" Precision="18" Scale="10" />
-          <Property Name="PorcentajeSobrePromedio" Type="Decimal" Precision="18" Scale="10" />
-          <Property Name="Categoria" Type="String" MaxLength="15" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Proveedor" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
-        </EntityType>
+        <Association Name="FK_Permisos_CatalogoPermisos">
+          <End Role="CatalogoPermisos" Type="Self.CatalogoPermiso" Multiplicity="1" />
+          <End Role="Permisos" Type="Self.Permiso" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CatalogoPermisos">
+              <PropertyRef Name="PermisoId" />
+            </Principal>
+            <Dependent Role="Permisos">
+              <PropertyRef Name="PermisoId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Products_Categories">
           <End Role="Categories" Type="Self.Category" Multiplicity="0..1" />
           <End Role="Products" Type="Self.Product" Multiplicity="*" />
@@ -947,6 +615,18 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Permisos_Usuarios">
+          <End Role="Usuarios" Type="Self.Usuario" Multiplicity="1" />
+          <End Role="Permisos" Type="Self.Permiso" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuarios">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Permisos">
+              <PropertyRef Name="UsuarioId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Products_Suppliers">
           <End Role="Suppliers" Type="Self.Supplier" Multiplicity="0..1" />
           <End Role="Products" Type="Self.Product" Multiplicity="*" />
@@ -959,45 +639,22 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Territories_Region">
-          <End Role="Region" Type="Self.Region" Multiplicity="1" />
-          <End Role="Territories" Type="Self.Territory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Region">
-              <PropertyRef Name="RegionID" />
-            </Principal>
-            <Dependent Role="Territories">
-              <PropertyRef Name="RegionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="CustomerCustomerDemo">
-          <End Role="CustomerDemographics" Type="Self.CustomerDemographic" Multiplicity="*" />
-          <End Role="Customers" Type="Self.Customer" Multiplicity="*" />
-        </Association>
-        <Association Name="EmployeeTerritories">
-          <End Role="Employees" Type="Self.Employee" Multiplicity="*" />
-          <End Role="Territories" Type="Self.Territory" Multiplicity="*" />
-        </Association>
-        <EntityContainer Name="NorthwindEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="NorthwindContext" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="CatalogoPermisos" EntityType="Self.CatalogoPermiso" />
           <EntitySet Name="Categories" EntityType="Self.Category" />
-          <EntitySet Name="CustomerDemographics" EntityType="Self.CustomerDemographic" />
           <EntitySet Name="Customers" EntityType="Self.Customer" />
           <EntitySet Name="Employees" EntityType="Self.Employee" />
           <EntitySet Name="Order_Details" EntityType="Self.Order_Detail" />
           <EntitySet Name="Orders" EntityType="Self.Order" />
+          <EntitySet Name="Permisos" EntityType="Self.Permiso" />
           <EntitySet Name="Products" EntityType="Self.Product" />
-          <EntitySet Name="Regions" EntityType="Self.Region" />
           <EntitySet Name="Shippers" EntityType="Self.Shipper" />
           <EntitySet Name="Suppliers" EntityType="Self.Supplier" />
-          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagram" />
-          <EntitySet Name="Territories" EntityType="Self.Territory" />
           <EntitySet Name="Usuarios" EntityType="Self.Usuario" />
-          <EntitySet Name="VwCategoriasConProductos" EntityType="Self.VwCategoriasConProducto" />
-          <EntitySet Name="VwClientesProveedores" EntityType="Self.VwClientesProveedore" />
-          <EntitySet Name="VwProductosPorCategoriaListadoes" EntityType="Self.VwProductosPorCategoriaListado" />
-          <EntitySet Name="VwProductosPorEncimaDelPrecioPromedios" EntityType="Self.VwProductosPorEncimaDelPrecioPromedio" />
+          <AssociationSet Name="FK_Permisos_CatalogoPermisos" Association="Self.FK_Permisos_CatalogoPermisos">
+            <End Role="CatalogoPermisos" EntitySet="CatalogoPermisos" />
+            <End Role="Permisos" EntitySet="Permisos" />
+          </AssociationSet>
           <AssociationSet Name="FK_Products_Categories" Association="Self.FK_Products_Categories">
             <End Role="Categories" EntitySet="Categories" />
             <End Role="Products" EntitySet="Products" />
@@ -1026,73 +683,21 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             <End Role="Shippers" EntitySet="Shippers" />
             <End Role="Orders" EntitySet="Orders" />
           </AssociationSet>
+          <AssociationSet Name="FK_Permisos_Usuarios" Association="Self.FK_Permisos_Usuarios">
+            <End Role="Usuarios" EntitySet="Usuarios" />
+            <End Role="Permisos" EntitySet="Permisos" />
+          </AssociationSet>
           <AssociationSet Name="FK_Products_Suppliers" Association="Self.FK_Products_Suppliers">
             <End Role="Suppliers" EntitySet="Suppliers" />
             <End Role="Products" EntitySet="Products" />
           </AssociationSet>
-          <AssociationSet Name="FK_Territories_Region" Association="Self.FK_Territories_Region">
-            <End Role="Region" EntitySet="Regions" />
-            <End Role="Territories" EntitySet="Territories" />
-          </AssociationSet>
-          <AssociationSet Name="CustomerCustomerDemo" Association="Self.CustomerCustomerDemo">
-            <End Role="CustomerDemographics" EntitySet="CustomerDemographics" />
-            <End Role="Customers" EntitySet="Customers" />
-          </AssociationSet>
-          <AssociationSet Name="EmployeeTerritories" Association="Self.EmployeeTerritories">
-            <End Role="Employees" EntitySet="Employees" />
-            <End Role="Territories" EntitySet="Territories" />
-          </AssociationSet>
-          <EntitySet Name="Permisos" EntityType="NorthwindModel.Permiso" />
-          <AssociationSet Name="FK_Permisos_CatalogoPermisos" Association="NorthwindModel.FK_Permisos_CatalogoPermisos">
-            <End Role="CatalogoPermiso" EntitySet="CatalogoPermisos" />
-            <End Role="Permiso" EntitySet="Permisos" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Permisos_Usuarios" Association="NorthwindModel.FK_Permisos_Usuarios">
-            <End Role="Usuario" EntitySet="Usuarios" />
-            <End Role="Permiso" EntitySet="Permisos" />
-          </AssociationSet>
         </EntityContainer>
-        <EntityType Name="Permiso">
-          <Key>
-            <PropertyRef Name="UsuarioId" />
-            <PropertyRef Name="PermisoId" />
-          </Key>
-          <Property Name="UsuarioId" Type="Int32" Nullable="false" />
-          <Property Name="PermisoId" Type="Int32" Nullable="false" />
-          <Property Name="FechaDeCreacion" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="CatalogoPermiso" Relationship="NorthwindModel.FK_Permisos_CatalogoPermisos" FromRole="Permiso" ToRole="CatalogoPermiso" />
-          <NavigationProperty Name="Usuario" Relationship="NorthwindModel.FK_Permisos_Usuarios" FromRole="Permiso" ToRole="Usuario" />
-        </EntityType>
-        <Association Name="FK_Permisos_CatalogoPermisos">
-          <End Type="NorthwindModel.CatalogoPermiso" Role="CatalogoPermiso" Multiplicity="1" />
-          <End Type="NorthwindModel.Permiso" Role="Permiso" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CatalogoPermiso">
-              <PropertyRef Name="PermisoId" />
-            </Principal>
-            <Dependent Role="Permiso">
-              <PropertyRef Name="PermisoId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Permisos_Usuarios">
-          <End Type="NorthwindModel.Usuario" Role="Usuario" Multiplicity="1" />
-          <End Type="NorthwindModel.Permiso" Role="Permiso" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Usuario">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Permiso">
-              <PropertyRef Name="UsuarioId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="NorthwindModelStoreContainer" CdmEntityContainer="NorthwindEntities">
+        <EntityContainerMapping StorageEntityContainer="NorthwindModelStoreContainer" CdmEntityContainer="NorthwindContext">
           <EntitySetMapping Name="CatalogoPermisos">
             <EntityTypeMapping TypeName="NorthwindModel.CatalogoPermiso">
               <MappingFragment StoreEntitySet="CatalogoPermisos">
@@ -1110,14 +715,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Picture" ColumnName="Picture" />
                 <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CustomerDemographics">
-            <EntityTypeMapping TypeName="NorthwindModel.CustomerDemographic">
-              <MappingFragment StoreEntitySet="CustomerDemographics">
-                <ScalarProperty Name="CustomerTypeID" ColumnName="CustomerTypeID" />
-                <ScalarProperty Name="CustomerDesc" ColumnName="CustomerDesc" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1198,6 +795,15 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Permisos">
+            <EntityTypeMapping TypeName="NorthwindModel.Permiso">
+              <MappingFragment StoreEntitySet="Permisos">
+                <ScalarProperty Name="UsuarioId" ColumnName="UsuarioId" />
+                <ScalarProperty Name="PermisoId" ColumnName="PermisoId" />
+                <ScalarProperty Name="FechaDeCreacion" ColumnName="FechaDeCreacion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Products">
             <EntityTypeMapping TypeName="NorthwindModel.Product">
               <MappingFragment StoreEntitySet="Products">
@@ -1212,14 +818,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
                 <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
                 <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
                 <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Regions">
-            <EntityTypeMapping TypeName="NorthwindModel.Region">
-              <MappingFragment StoreEntitySet="Region">
-                <ScalarProperty Name="RegionID" ColumnName="RegionID" />
-                <ScalarProperty Name="RegionDescription" ColumnName="RegionDescription" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1251,26 +849,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="NorthwindModel.sysdiagram">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="definition" ColumnName="definition" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Territories">
-            <EntityTypeMapping TypeName="NorthwindModel.Territory">
-              <MappingFragment StoreEntitySet="Territories">
-                <ScalarProperty Name="TerritoryID" ColumnName="TerritoryID" />
-                <ScalarProperty Name="TerritoryDescription" ColumnName="TerritoryDescription" />
-                <ScalarProperty Name="RegionID" ColumnName="RegionID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Usuarios">
             <EntityTypeMapping TypeName="NorthwindModel.Usuario">
               <MappingFragment StoreEntitySet="Usuarios">
@@ -1284,93 +862,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
                 <ScalarProperty Name="FechaModificacion" ColumnName="FechaModificacion" />
                 <ScalarProperty Name="Estatus" ColumnName="Estatus" />
                 <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="VwCategoriasConProductos">
-            <EntityTypeMapping TypeName="NorthwindModel.VwCategoriasConProducto">
-              <MappingFragment StoreEntitySet="VwCategoriasConProductos">
-                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
-                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
-                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
-                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
-                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
-                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
-                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
-                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
-                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="VwClientesProveedores">
-            <EntityTypeMapping TypeName="NorthwindModel.VwClientesProveedore">
-              <MappingFragment StoreEntitySet="VwClientesProveedores">
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-                <ScalarProperty Name="Contact" ColumnName="Contact" />
-                <ScalarProperty Name="Relation" ColumnName="Relation" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="City" ColumnName="City" />
-                <ScalarProperty Name="Region" ColumnName="Region" />
-                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
-                <ScalarProperty Name="Country" ColumnName="Country" />
-                <ScalarProperty Name="Phone" ColumnName="Phone" />
-                <ScalarProperty Name="Fax" ColumnName="Fax" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="VwProductosPorCategoriaListadoes">
-            <EntityTypeMapping TypeName="NorthwindModel.VwProductosPorCategoriaListado">
-              <MappingFragment StoreEntitySet="VwProductosPorCategoriaListado">
-                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
-                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
-                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
-                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
-                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
-                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
-                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
-                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
-                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="VwProductosPorEncimaDelPrecioPromedios">
-            <EntityTypeMapping TypeName="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio">
-              <MappingFragment StoreEntitySet="VwProductosPorEncimaDelPrecioPromedio">
-                <ScalarProperty Name="Fila" ColumnName="Fila" />
-                <ScalarProperty Name="Producto" ColumnName="Producto" />
-                <ScalarProperty Name="Precio" ColumnName="Precio" />
-                <ScalarProperty Name="PrecioPromedio" ColumnName="PrecioPromedio" />
-                <ScalarProperty Name="Diferencia" ColumnName="Diferencia" />
-                <ScalarProperty Name="PorcentajeSobrePromedio" ColumnName="PorcentajeSobrePromedio" />
-                <ScalarProperty Name="Categoria" ColumnName="Categoria" />
-                <ScalarProperty Name="Proveedor" ColumnName="Proveedor" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <AssociationSetMapping Name="CustomerCustomerDemo" TypeName="NorthwindModel.CustomerCustomerDemo" StoreEntitySet="CustomerCustomerDemo">
-            <EndProperty Name="CustomerDemographics">
-              <ScalarProperty Name="CustomerTypeID" ColumnName="CustomerTypeID" />
-            </EndProperty>
-            <EndProperty Name="Customers">
-              <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
-            </EndProperty>
-          </AssociationSetMapping>
-          <AssociationSetMapping Name="EmployeeTerritories" TypeName="NorthwindModel.EmployeeTerritories" StoreEntitySet="EmployeeTerritories">
-            <EndProperty Name="Employees">
-              <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
-            </EndProperty>
-            <EndProperty Name="Territories">
-              <ScalarProperty Name="TerritoryID" ColumnName="TerritoryID" />
-            </EndProperty>
-          </AssociationSetMapping>
-          <EntitySetMapping Name="Permisos">
-            <EntityTypeMapping TypeName="NorthwindModel.Permiso">
-              <MappingFragment StoreEntitySet="Permisos">
-                <ScalarProperty Name="FechaDeCreacion" ColumnName="FechaDeCreacion" />
-                <ScalarProperty Name="PermisoId" ColumnName="PermisoId" />
-                <ScalarProperty Name="UsuarioId" ColumnName="UsuarioId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

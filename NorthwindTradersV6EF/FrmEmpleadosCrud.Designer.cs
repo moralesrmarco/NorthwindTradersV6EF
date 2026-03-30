@@ -81,7 +81,6 @@
             this.txtId = new System.Windows.Forms.TextBox();
             this.label27 = new System.Windows.Forms.Label();
             this.txtTitCortesia = new System.Windows.Forms.TextBox();
-            this.txtPais = new System.Windows.Forms.TextBox();
             this.txtExtension = new System.Windows.Forms.TextBox();
             this.txtTelefono = new System.Windows.Forms.TextBox();
             this.txtCodigoP = new System.Windows.Forms.TextBox();
@@ -104,6 +103,7 @@
             this.tbpEliminar = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.cboPais = new System.Windows.Forms.ComboBox();
             this.grbBuscar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picFoto)).BeginInit();
             this.grbEmpleado.SuspendLayout();
@@ -507,6 +507,7 @@
             this.grbEmpleado.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grbEmpleado.Controls.Add(this.cboPais);
             this.grbEmpleado.Controls.Add(this.btnCargar);
             this.grbEmpleado.Controls.Add(this.picFoto);
             this.grbEmpleado.Controls.Add(this.label31);
@@ -533,7 +534,6 @@
             this.grbEmpleado.Controls.Add(this.txtId);
             this.grbEmpleado.Controls.Add(this.label27);
             this.grbEmpleado.Controls.Add(this.txtTitCortesia);
-            this.grbEmpleado.Controls.Add(this.txtPais);
             this.grbEmpleado.Controls.Add(this.txtExtension);
             this.grbEmpleado.Controls.Add(this.txtTelefono);
             this.grbEmpleado.Controls.Add(this.txtCodigoP);
@@ -739,16 +739,6 @@
             this.txtTitCortesia.Name = "txtTitCortesia";
             this.txtTitCortesia.Size = new System.Drawing.Size(169, 23);
             this.txtTitCortesia.TabIndex = 30;
-            // 
-            // txtPais
-            // 
-            this.txtPais.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPais.Location = new System.Drawing.Point(146, 348);
-            this.txtPais.Margin = new System.Windows.Forms.Padding(5);
-            this.txtPais.MaxLength = 15;
-            this.txtPais.Name = "txtPais";
-            this.txtPais.Size = new System.Drawing.Size(127, 23);
-            this.txtPais.TabIndex = 35;
             // 
             // txtExtension
             // 
@@ -996,6 +986,15 @@
             // 
             this.errorProvider1.ContainerControl = this;
             // 
+            // cboPais
+            // 
+            this.cboPais.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboPais.FormattingEnabled = true;
+            this.cboPais.Location = new System.Drawing.Point(146, 350);
+            this.cboPais.Name = "cboPais";
+            this.cboPais.Size = new System.Drawing.Size(184, 25);
+            this.cboPais.TabIndex = 35;
+            // 
             // FrmEmpleadosCrud
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1087,7 +1086,6 @@
         private System.Windows.Forms.TextBox txtId;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.TextBox txtTitCortesia;
-        private System.Windows.Forms.TextBox txtPais;
         private System.Windows.Forms.TextBox txtExtension;
         private System.Windows.Forms.TextBox txtTelefono;
         private System.Windows.Forms.TextBox txtCodigoP;
@@ -1110,5 +1108,6 @@
         private System.Windows.Forms.TabPage tbpEliminar;
         private System.Windows.Forms.Label label4;
         internal System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.ComboBox cboPais;
     }
 }

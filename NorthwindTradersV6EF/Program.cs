@@ -1,5 +1,6 @@
 ﻿using DAL.EF;
 using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace NorthwindTradersV6EF
@@ -15,20 +16,10 @@ namespace NorthwindTradersV6EF
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            int numPantalla = 1; // Cambia este número para seleccionar la pantalla deseada (1, 2, 3, 4, etc.)
+            // Detectar la pantalla en la que está el cursor
+            Point posicionCursor = Cursor.Position;
+            Screen pantallaDestino = Screen.FromPoint(posicionCursor);
 
-            // Obtener pantallas
-            Screen[] pantallas = Screen.AllScreens;
-            Screen pantallaDestino;
-            if (pantallas.Length >= 4)
-                // Usar la pantalla 2 (índice 1)
-                pantallaDestino = pantallas[numPantalla];
-            else
-            {
-                // Usar la pantalla principal
-                pantallaDestino = Screen.PrimaryScreen;
-                //MessageBox.Show("No hay 4 pantallas conectadas. Se usará la pantalla principal.");
-            }
             Usuario usuario = null;
             // Mostrar el formulario de login en la pantalla seleccionada
             using (FrmLogin loginForm = new FrmLogin())

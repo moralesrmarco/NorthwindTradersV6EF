@@ -20,6 +20,7 @@ namespace Utilities
     {
         #region VariablesGlobales
         public static string nwtr => ConfigurationManager.AppSettings["nwtr"];
+        public static string ndc = "[orange]No se detectaron cambios\n[green]No se realizó la actualización";
         public const string clbdd = "Consultando la base de datos... ";
         public const string oueclbdd = "Ocurrio un error con la base de datos:\n";
         public const string oue = "Ocurrio un error:\n";
@@ -243,6 +244,14 @@ namespace Utilities
                     if (!name.StartsWith("nudB", StringComparison.OrdinalIgnoreCase))
                         valores[name] = nud.Value;
                 }
+                else if (ctrl is PictureBox pic)
+                {
+                    if (!string.IsNullOrEmpty(pic.Name))
+                    {
+                        // Guardar la imagen como arreglo de bytes
+                        valores[pic.Name] = Utils.ImageToByteArray(pic.Image);
+                    }
+                }
             }
             return valores;
         }
@@ -334,6 +343,21 @@ namespace Utilities
                         }
                     }
                 }
+                else if (ctrl is PictureBox pic)
+                {
+                    if (valoresOriginales.TryGetValue(name, out var original))
+                    {
+                        var actual = Utils.ImageToByteArray(pic.Image);
+
+                        // Compara primero longitud y luego contenido
+                        var originalBytes = (byte[])original;
+                        if (originalBytes.Length != actual.Length || !originalBytes.SequenceEqual(actual))
+                        {
+                            hayCambios = true;
+                            errorProvider.SetError(pic, ecfm);
+                        }
+                    }
+                }
             }
             return hayCambios;
         }
@@ -402,6 +426,17 @@ namespace Utilities
                     {
                         var actual = nud.Value;
                         if (!Equals(original, actual))
+                            hayCambios = true;
+                    }
+                }
+                else if (ctrl is PictureBox pic)
+                {
+                    if (valoresOriginales.TryGetValue(name, out var original))
+                    {
+                        var actual = Utils.ImageToByteArray(pic.Image);
+                        // Compara primero longitud y luego contenido
+                        var originalBytes = (byte[])original;
+                        if (originalBytes.Length != actual.Length || !originalBytes.SequenceEqual(actual))
                             hayCambios = true;
                     }
                 }

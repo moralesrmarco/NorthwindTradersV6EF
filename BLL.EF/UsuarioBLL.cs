@@ -9,14 +9,9 @@ namespace BLL.EF
 {
     public class UsuarioBLL
     {
-            public UsuarioBLL()
-            {
-                // No se necesita conexión en esta clase, ya que se utiliza el contexto de Entity Framework
-            }
-
         //public byte Insertar(Usuario usuario)
         //{
-        //    using (var context = new NorthwindEntities())
+        //    using (var context = new NorthwindContext())
         //    {
         //        context.Usuarios.Add(usuario);
         //        return (byte)context.SaveChanges();
@@ -25,7 +20,7 @@ namespace BLL.EF
 
         //public sbyte Actualizar(Usuario usuario)
         //{
-        //    using (var context = new NorthwindEntities())
+        //    using (var context = new NorthwindContext())
         //    {
         //        context.Usuarios.Update(usuario);
         //        return (sbyte)context.SaveChanges();
@@ -34,7 +29,7 @@ namespace BLL.EF
 
         //public sbyte Eliminar(Usuario usuario)
         //{
-        //    using (var context = new NorthwindEntities())
+        //    using (var context = new NorthwindContext())
         //    {
         //        context.Usuarios.Remove(usuario);
         //        return (sbyte)context.SaveChanges();
@@ -45,7 +40,7 @@ namespace BLL.EF
         {
             try
             {
-                using (var context = new NorthwindEntities())
+                using (var context = new NorthwindContext())
                 {
                     var usuarioEncontrado = context.Usuarios.FirstOrDefault(u => u.Usuario1 == usuario.Usuario1 && u.Password == usuario.Password && u.Estatus);
                     return usuarioEncontrado ?? new Usuario { Id = 0 };
@@ -61,7 +56,7 @@ namespace BLL.EF
         {
             try
             {
-                using (var context = new NorthwindEntities())
+                using (var context = new NorthwindContext())
                 {
                     // Selecciona todos los PermisoId de la tabla Permisos para el UsuarioId dado
                     var permisosIds = context.Permisos

@@ -13,10 +13,10 @@ namespace DAL.EF
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class NorthwindEntities : DbContext
+    public partial class NorthwindContext : DbContext
     {
-        public NorthwindEntities()
-            : base("name=NorthwindEntities")
+        public NorthwindContext()
+            : base("name=NorthwindContext")
         {
         }
     
@@ -27,22 +27,14 @@ namespace DAL.EF
     
         public virtual DbSet<CatalogoPermiso> CatalogoPermisos { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<CustomerDemographic> CustomerDemographics { get; set; }
         public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Order_Detail> Order_Details { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
+        public virtual DbSet<Permiso> Permisos { get; set; }
         public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<Region> Regions { get; set; }
         public virtual DbSet<Shipper> Shippers { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
-        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
-        public virtual DbSet<Territory> Territories { get; set; }
         public virtual DbSet<Usuario> Usuarios { get; set; }
-        public virtual DbSet<VwCategoriasConProducto> VwCategoriasConProductos { get; set; }
-        public virtual DbSet<VwClientesProveedore> VwClientesProveedores { get; set; }
-        public virtual DbSet<VwProductosPorCategoriaListado> VwProductosPorCategoriaListadoes { get; set; }
-        public virtual DbSet<VwProductosPorEncimaDelPrecioPromedio> VwProductosPorEncimaDelPrecioPromedios { get; set; }
-        public virtual DbSet<Permiso> Permisos { get; set; }
     }
 }

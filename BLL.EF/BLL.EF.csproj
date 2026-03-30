@@ -68,6 +68,10 @@
       <Project>{00219BFB-8D7C-447A-A3C4-1487EB201B1A}</Project>
       <Name>DTOs.EF</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{FA850F4F-0723-4E47-9A32-936437CF3BC9}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DtoEmpleadosBuscar.cs" />
+    <Compile Include="DtoEmpleadosDgv.cs" />
     <Compile Include="DtoEmpleadosPaisesCbo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
