@@ -62,7 +62,6 @@
             this.label12 = new System.Windows.Forms.Label();
             this.txtId = new System.Windows.Forms.TextBox();
             this.txtFax = new System.Windows.Forms.TextBox();
-            this.txtPais = new System.Windows.Forms.TextBox();
             this.txtTelefono = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
@@ -85,6 +84,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.txtCompañia = new System.Windows.Forms.TextBox();
             this.grbCliente = new System.Windows.Forms.GroupBox();
+            this.cboPais = new System.Windows.Forms.ComboBox();
             this.btnOperacion = new System.Windows.Forms.Button();
             this.label16 = new System.Windows.Forms.Label();
             this.grbClientes = new System.Windows.Forms.GroupBox();
@@ -438,16 +438,6 @@
             this.txtFax.Size = new System.Drawing.Size(267, 23);
             this.txtFax.TabIndex = 36;
             // 
-            // txtPais
-            // 
-            this.txtPais.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPais.Location = new System.Drawing.Point(233, 261);
-            this.txtPais.Margin = new System.Windows.Forms.Padding(4);
-            this.txtPais.MaxLength = 15;
-            this.txtPais.Name = "txtPais";
-            this.txtPais.Size = new System.Drawing.Size(267, 23);
-            this.txtPais.TabIndex = 34;
-            // 
             // txtTelefono
             // 
             this.txtTelefono.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -708,6 +698,7 @@
             this.grbCliente.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grbCliente.Controls.Add(this.cboPais);
             this.grbCliente.Controls.Add(this.btnOperacion);
             this.grbCliente.Controls.Add(this.label16);
             this.grbCliente.Controls.Add(this.label17);
@@ -722,7 +713,6 @@
             this.grbCliente.Controls.Add(this.txtId);
             this.grbCliente.Controls.Add(this.label26);
             this.grbCliente.Controls.Add(this.txtFax);
-            this.grbCliente.Controls.Add(this.txtPais);
             this.grbCliente.Controls.Add(this.txtTelefono);
             this.grbCliente.Controls.Add(this.txtCodigoP);
             this.grbCliente.Controls.Add(this.txtRegion);
@@ -741,6 +731,15 @@
             this.grbCliente.TabStop = false;
             this.grbCliente.Text = "»   Cliente:   «";
             this.grbCliente.Paint += new System.Windows.Forms.PaintEventHandler(this.GrbPaint);
+            // 
+            // cboPais
+            // 
+            this.cboPais.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboPais.FormattingEnabled = true;
+            this.cboPais.Location = new System.Drawing.Point(231, 260);
+            this.cboPais.Name = "cboPais";
+            this.cboPais.Size = new System.Drawing.Size(242, 25);
+            this.cboPais.TabIndex = 34;
             // 
             // btnOperacion
             // 
@@ -866,7 +865,6 @@
         private System.Windows.Forms.TextBox txtId;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.TextBox txtFax;
-        private System.Windows.Forms.TextBox txtPais;
         private System.Windows.Forms.TextBox txtTelefono;
         private System.Windows.Forms.TextBox txtCodigoP;
         private System.Windows.Forms.TextBox txtRegion;
@@ -878,5 +876,6 @@
         private System.Windows.Forms.GroupBox grbClientes;
         private System.Windows.Forms.DataGridView dgv;
         internal System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.ComboBox cboPais;
     }
 }

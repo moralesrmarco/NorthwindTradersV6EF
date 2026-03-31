@@ -9,33 +9,6 @@ namespace BLL.EF
 {
     public class UsuarioBLL
     {
-        //public byte Insertar(Usuario usuario)
-        //{
-        //    using (var context = new NorthwindContext())
-        //    {
-        //        context.Usuarios.Add(usuario);
-        //        return (byte)context.SaveChanges();
-        //    }
-        //}
-
-        //public sbyte Actualizar(Usuario usuario)
-        //{
-        //    using (var context = new NorthwindContext())
-        //    {
-        //        context.Usuarios.Update(usuario);
-        //        return (sbyte)context.SaveChanges();
-        //    }
-        //}
-
-        //public sbyte Eliminar(Usuario usuario)
-        //{
-        //    using (var context = new NorthwindContext())
-        //    {
-        //        context.Usuarios.Remove(usuario);
-        //        return (sbyte)context.SaveChanges();
-        //    }
-        //}
-
         public static Usuario ValidarUsuario(Usuario usuario)
         {
             try

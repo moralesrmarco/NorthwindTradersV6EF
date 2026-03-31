@@ -13,7 +13,6 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmEmpleadosCrud : Form
     {
-        //private readonly EmployeeBLL _empleadoBLL = new EmployeeBLL();
         private bool EjecutarConfDgv = true;
         OpenFileDialog openFileDialog;
         internal Dictionary<string, object> valoresOriginales;
@@ -282,7 +281,7 @@ namespace NorthwindTradersV6EF
             if (cboPais.Text.Trim() == "" || cboPais.SelectedIndex == 0)
             {
                 valida = false;
-                errorProvider1.SetError(cboPais, "Ingrese el país");
+                errorProvider1.SetError(cboPais, "Ingrese o seleccione el país");
             }
             if (txtTelefono.Text.Trim() == "")
             {
@@ -578,7 +577,6 @@ namespace NorthwindTradersV6EF
                     U.NotificacionWarning(Utils.ndc);
                     return; // Salir sin hacer UPDATE
                 }
-
                 if (ValidarControles())
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);

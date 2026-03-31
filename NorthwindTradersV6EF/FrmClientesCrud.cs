@@ -1,8 +1,10 @@
 ﻿using BLL;
+using BLL.EF;
 using Entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Utilities;
@@ -14,13 +16,11 @@ namespace NorthwindTradersV6EF
         string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
         private ClienteBLL _clienteBLL;
         private bool EjecutarConfDgv = true;
-        bool EventoCargado = true;
         internal Dictionary<string, object> valoresOriginales;
 
         public FrmClientesCrud()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
             _clienteBLL = new ClienteBLL(_connectionString);
         }
 
@@ -52,7 +52,8 @@ namespace NorthwindTradersV6EF
         {
             txtId.ReadOnly = txtCompañia.ReadOnly = txtContacto.ReadOnly = txtTitulo.ReadOnly = true;
             txtDomicilio.ReadOnly = txtCiudad.ReadOnly = txtRegion.ReadOnly = txtCodigoP.ReadOnly = true;
-            txtPais.ReadOnly = txtTelefono.ReadOnly = txtFax.ReadOnly = true;
+            txtTelefono.ReadOnly = txtFax.ReadOnly = true;
+            cboPais.Enabled = false;
             btnOperacion.Visible = false;
         }
 
@@ -60,7 +61,8 @@ namespace NorthwindTradersV6EF
         {
             txtId.ReadOnly = txtCompañia.ReadOnly = txtContacto.ReadOnly = txtTitulo.ReadOnly = false;
             txtDomicilio.ReadOnly = txtCiudad.ReadOnly = txtRegion.ReadOnly = txtCodigoP.ReadOnly = false;
-            txtPais.ReadOnly = txtTelefono.ReadOnly = txtFax.ReadOnly = false;
+            txtTelefono.ReadOnly = txtFax.ReadOnly = false;
+            cboPais.Enabled = true;
             btnOperacion.Visible = true;
         }
 
@@ -70,12 +72,17 @@ namespace NorthwindTradersV6EF
             {
                 
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var paises = _clienteBLL.ObtenerClientesPaisesCbo();
+                DataTable paises = CustomerBLL.ObtenerClientesPaisesCbo();
                 MDIPrincipal.ActualizarBarraDeEstado();
                 cboBPais.DataSource = paises;
                 cboBPais.ValueMember = "Id";
                 cboBPais.DisplayMember = "Pais";
                 cboBPais.SelectedIndex = 0;
+
+                cboPais.DataSource = paises.Copy();
+                cboPais.ValueMember = "Id";
+                cboPais.DisplayMember = "Pais";
+                cboPais.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -171,7 +178,8 @@ namespace NorthwindTradersV6EF
         void BorrarDatosCliente()
         {
             txtId.Text = txtCompañia.Text = txtContacto.Text = txtDomicilio.Text = txtCiudad.Text = "";
-            txtRegion.Text = txtCodigoP.Text = txtTelefono.Text = txtFax.Text = txtPais.Text = txtTitulo.Text = "";
+            txtRegion.Text = txtCodigoP.Text = txtTelefono.Text = txtFax.Text = txtTitulo.Text = "";
+            cboPais.SelectedIndex = 0;
         }
 
         void BorrarDatosBusqueda()
@@ -253,10 +261,10 @@ namespace NorthwindTradersV6EF
                 valida = false;
                 errorProvider1.SetError(txtCiudad, "Ingrese la ciudad");
             }
-            if (txtPais.Text.Trim() == "")
+            if (cboPais.Text.Trim() == "" || cboPais.SelectedIndex == 0)
             {
                 valida = false;
-                errorProvider1.SetError(txtPais, "Ingrese el país");
+                errorProvider1.SetError(cboPais, "Ingrese o seleccione el país");
             }
             if (txtTelefono.Text.Trim() == "")
             {
@@ -272,11 +280,8 @@ namespace NorthwindTradersV6EF
             BorrarMensajesError();
             if (tabcOperacion.SelectedTab == tbpRegistrar)
             {
-                if (EventoCargado)
-                {
-                    dgv.CellClick -= new DataGridViewCellEventHandler(dgv_CellClick);
-                    EventoCargado = false;
-                }
+                dgv.CellClick -= new DataGridViewCellEventHandler(dgv_CellClick);
+                dgv.CellClick -= new DataGridViewCellEventHandler(dgv_CellClick);
                 BorrarDatosBusqueda();
                 HabilitarControles();
                 txtId.Enabled = true;
@@ -286,11 +291,8 @@ namespace NorthwindTradersV6EF
             }
             else
             {
-                if (!EventoCargado)
-                {
-                    dgv.CellClick += new DataGridViewCellEventHandler(dgv_CellClick);
-                    EventoCargado = true;
-                }
+                dgv.CellClick -= new DataGridViewCellEventHandler(dgv_CellClick);
+                dgv.CellClick += new DataGridViewCellEventHandler(dgv_CellClick);
                 DeshabilitarControles();
                 btnOperacion.Enabled = false;
                 if (tabcOperacion.SelectedTab == tbpListar)
@@ -333,7 +335,7 @@ namespace NorthwindTradersV6EF
                         txtCiudad.Text = cliente.City;
                         txtRegion.Text = cliente.Region;
                         txtCodigoP.Text = cliente.PostalCode;
-                        txtPais.Text = cliente.Country;
+                        cboPais.Text = cliente.Country;
                         txtTelefono.Text = cliente.Phone;
                         txtFax.Text = cliente.Fax;
                     }
@@ -391,7 +393,7 @@ namespace NorthwindTradersV6EF
                             City = txtCiudad.Text.Trim(),
                             Region = string.IsNullOrWhiteSpace(txtRegion.Text.Trim()) ? null : txtRegion.Text.Trim(),
                             PostalCode = string.IsNullOrWhiteSpace(txtCodigoP.Text.Trim()) ? null : txtCodigoP.Text.Trim(),
-                            Country = txtPais.Text.Trim(),
+                            Country = cboPais.Text.Trim(),
                             Phone = txtTelefono.Text.Trim(),
                             Fax = string.IsNullOrWhiteSpace(txtFax.Text.Trim()) ? null : txtFax.Text.Trim()
                         };
@@ -432,7 +434,7 @@ namespace NorthwindTradersV6EF
                             City = txtCiudad.Text,
                             Region = txtRegion.Text,
                             PostalCode = txtCodigoP.Text,
-                            Country = txtPais.Text,
+                            Country = cboPais.Text,
                             Phone = txtTelefono.Text,
                             Fax = txtFax.Text,
                             RowVersion = txtId.Tag as byte[]
