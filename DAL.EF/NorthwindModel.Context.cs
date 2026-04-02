@@ -36,5 +36,9 @@ namespace DAL.EF
         public virtual DbSet<Shipper> Shippers { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
         public virtual DbSet<Usuario> Usuarios { get; set; }
+        public virtual DbSet<VwCategoriasConProducto> VwCategoriasConProductos { get; set; }
+        public virtual DbSet<VwClientesProveedore> VwClientesProveedores { get; set; }
+        public virtual DbSet<VwProductosPorCategoriaListado> VwProductosPorCategoriaListadoes { get; set; }
+        public virtual DbSet<VwProductosPorEncimaDelPrecioPromedio> VwProductosPorEncimaDelPrecioPromedios { get; set; }
     }
 }

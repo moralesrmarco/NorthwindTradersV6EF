@@ -1,25 +1,18 @@
-﻿using BLL;
-using Entities.DTOs;
-using System;
-using System.Configuration;
+﻿using System;
 using System.Linq;
 using System.Windows.Forms;
 using Utilities;
-
+using DTOs.EF;
+using BLL.EF;
 namespace NorthwindTradersV6EF
 {
     public partial class FrmClientesyProveedoresDirectorio : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ClienteBLL _clienteBLL;
         private bool EjecutarConfDgv = true;
 
         public FrmClientesyProveedoresDirectorio()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _clienteBLL = new ClienteBLL(_connectionString);
             Dgv.ColumnHeaderMouseClick += Dgv_ColumnHeaderMouseClick;
         }
 
@@ -53,7 +46,7 @@ namespace NorthwindTradersV6EF
                 else if (!checkBoxClientes.Checked & checkBoxProveedores.Checked)
                     groupBox1.Text = "» Directorio de proveedores «";
                 string nombreDeFormulario = "FrmClientesyProveedoresDirectorio";
-                var clientesProveedores = _clienteBLL.ObtenerClientesProveedores(nombreDeFormulario, string.Empty, checkBoxClientes.Checked, checkBoxProveedores.Checked);
+                var clientesProveedores = CustomerBLL.ObtenerClientesProveedores(nombreDeFormulario, string.Empty, checkBoxClientes.Checked, checkBoxProveedores.Checked);
                 Dgv.DataSource = clientesProveedores;
                 if (EjecutarConfDgv)
                 {

@@ -1,10 +1,7 @@
-﻿using BLL;
-using BLL.EF;
+﻿using BLL.EF;
 using DAL.EF;
-using Entities;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -370,7 +367,7 @@ namespace NorthwindTradersV6EF
         private void dgv_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // debe estar vinculado a la clase List<> a la cual esta vinculado el DataGridView.DataSource
-            Utils.OrdenarPorColumna<Cliente>(dgv, e);
+            Utils.OrdenarPorColumna<Customer>(dgv, e);
         }
 
         private void btnOperacion_Click(object sender, EventArgs e)

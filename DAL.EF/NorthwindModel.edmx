@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="NorthwindModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="NorthwindModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="CatalogoPermisos">
           <Key>
             <PropertyRef Name="PermisoId" />
@@ -163,6 +163,75 @@
           <Property Name="Estatus" Type="bit" Nullable="false" />
           <Property Name="RowVersion" Type="timestamp" StoreGeneratedPattern="Computed" Nullable="false" />
         </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'Northwind2.dbo.VwCategoriasConProductos' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="VwCategoriasConProductos">
+          <Key>
+            <PropertyRef Name="CategoryName" />
+          </Key>
+          <Property Name="CategoryName" Type="nvarchar" MaxLength="15" Nullable="false" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="40" />
+          <Property Name="ProductID" Type="int" />
+          <Property Name="QuantityPerUnit" Type="nvarchar" MaxLength="20" />
+          <Property Name="UnitPrice" Type="money" />
+          <Property Name="UnitsInStock" Type="smallint" />
+          <Property Name="UnitsOnOrder" Type="smallint" />
+          <Property Name="ReorderLevel" Type="smallint" />
+          <Property Name="Discontinued" Type="bit" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="40" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'Northwind2.dbo.VwClientesProveedores' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="VwClientesProveedores">
+          <Key>
+            <PropertyRef Name="CompanyName" />
+            <PropertyRef Name="Relation" />
+          </Key>
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="40" Nullable="false" />
+          <Property Name="Contact" Type="nvarchar" MaxLength="62" />
+          <Property Name="Relation" Type="varchar" MaxLength="9" Nullable="false" />
+          <Property Name="Address" Type="nvarchar" MaxLength="60" />
+          <Property Name="City" Type="nvarchar" MaxLength="15" />
+          <Property Name="Region" Type="nvarchar" MaxLength="15" />
+          <Property Name="PostalCode" Type="nvarchar" MaxLength="10" />
+          <Property Name="Country" Type="nvarchar" MaxLength="15" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="24" />
+          <Property Name="Fax" Type="nvarchar" MaxLength="24" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorCategoriaListado' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="VwProductosPorCategoriaListado">
+          <Key>
+            <PropertyRef Name="CategoryName" />
+          </Key>
+          <Property Name="CategoryName" Type="nvarchar" MaxLength="15" Nullable="false" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="40" />
+          <Property Name="ProductID" Type="int" />
+          <Property Name="QuantityPerUnit" Type="nvarchar" MaxLength="20" />
+          <Property Name="UnitPrice" Type="money" />
+          <Property Name="UnitsInStock" Type="smallint" />
+          <Property Name="UnitsOnOrder" Type="smallint" />
+          <Property Name="ReorderLevel" Type="smallint" />
+          <Property Name="Discontinued" Type="bit" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="40" />
+        </EntityType>
+        <!--Errores durante la generación:
+advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecioPromedio' no tiene definida ninguna clave principal. Se ha inferido la clave y la definición se creado como una vista o tabla de solo lectura.-->
+        <EntityType Name="VwProductosPorEncimaDelPrecioPromedio">
+          <Key>
+            <PropertyRef Name="Producto" />
+            <PropertyRef Name="Categoria" />
+            <PropertyRef Name="Proveedor" />
+          </Key>
+          <Property Name="Fila" Type="bigint" />
+          <Property Name="Producto" Type="nvarchar" MaxLength="40" Nullable="false" />
+          <Property Name="Precio" Type="decimal" Precision="18" Scale="10" />
+          <Property Name="PrecioPromedio" Type="decimal" Precision="18" Scale="10" />
+          <Property Name="Diferencia" Type="decimal" Precision="18" Scale="10" />
+          <Property Name="PorcentajeSobrePromedio" Type="decimal" Precision="18" Scale="10" />
+          <Property Name="Categoria" Type="nvarchar" MaxLength="15" Nullable="false" />
+          <Property Name="Proveedor" Type="nvarchar" MaxLength="40" Nullable="false" />
+        </EntityType>
         <Association Name="FK_Employees_Employees">
           <End Role="Employees" Type="Self.Employees" Multiplicity="0..1" />
           <End Role="Employees1" Type="Self.Employees" Multiplicity="*" />
@@ -295,6 +364,60 @@
           <EntitySet Name="Shippers" EntityType="Self.Shippers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Suppliers" EntityType="Self.Suppliers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuarios" EntityType="Self.Usuarios" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="VwCategoriasConProductos" EntityType="Self.VwCategoriasConProductos" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VwCategoriasConProductos].[CategoryName] AS [CategoryName], 
+    [VwCategoriasConProductos].[ProductName] AS [ProductName], 
+    [VwCategoriasConProductos].[ProductID] AS [ProductID], 
+    [VwCategoriasConProductos].[QuantityPerUnit] AS [QuantityPerUnit], 
+    [VwCategoriasConProductos].[UnitPrice] AS [UnitPrice], 
+    [VwCategoriasConProductos].[UnitsInStock] AS [UnitsInStock], 
+    [VwCategoriasConProductos].[UnitsOnOrder] AS [UnitsOnOrder], 
+    [VwCategoriasConProductos].[ReorderLevel] AS [ReorderLevel], 
+    [VwCategoriasConProductos].[Discontinued] AS [Discontinued], 
+    [VwCategoriasConProductos].[CompanyName] AS [CompanyName]
+    FROM [dbo].[VwCategoriasConProductos] AS [VwCategoriasConProductos]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="VwClientesProveedores" EntityType="Self.VwClientesProveedores" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VwClientesProveedores].[CompanyName] AS [CompanyName], 
+    [VwClientesProveedores].[Contact] AS [Contact], 
+    [VwClientesProveedores].[Relation] AS [Relation], 
+    [VwClientesProveedores].[Address] AS [Address], 
+    [VwClientesProveedores].[City] AS [City], 
+    [VwClientesProveedores].[Region] AS [Region], 
+    [VwClientesProveedores].[PostalCode] AS [PostalCode], 
+    [VwClientesProveedores].[Country] AS [Country], 
+    [VwClientesProveedores].[Phone] AS [Phone], 
+    [VwClientesProveedores].[Fax] AS [Fax]
+    FROM [dbo].[VwClientesProveedores] AS [VwClientesProveedores]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="VwProductosPorCategoriaListado" EntityType="Self.VwProductosPorCategoriaListado" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VwProductosPorCategoriaListado].[CategoryName] AS [CategoryName], 
+    [VwProductosPorCategoriaListado].[ProductName] AS [ProductName], 
+    [VwProductosPorCategoriaListado].[ProductID] AS [ProductID], 
+    [VwProductosPorCategoriaListado].[QuantityPerUnit] AS [QuantityPerUnit], 
+    [VwProductosPorCategoriaListado].[UnitPrice] AS [UnitPrice], 
+    [VwProductosPorCategoriaListado].[UnitsInStock] AS [UnitsInStock], 
+    [VwProductosPorCategoriaListado].[UnitsOnOrder] AS [UnitsOnOrder], 
+    [VwProductosPorCategoriaListado].[ReorderLevel] AS [ReorderLevel], 
+    [VwProductosPorCategoriaListado].[Discontinued] AS [Discontinued], 
+    [VwProductosPorCategoriaListado].[CompanyName] AS [CompanyName]
+    FROM [dbo].[VwProductosPorCategoriaListado] AS [VwProductosPorCategoriaListado]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="VwProductosPorEncimaDelPrecioPromedio" EntityType="Self.VwProductosPorEncimaDelPrecioPromedio" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [VwProductosPorEncimaDelPrecioPromedio].[Fila] AS [Fila], 
+    [VwProductosPorEncimaDelPrecioPromedio].[Producto] AS [Producto], 
+    [VwProductosPorEncimaDelPrecioPromedio].[Precio] AS [Precio], 
+    [VwProductosPorEncimaDelPrecioPromedio].[PrecioPromedio] AS [PrecioPromedio], 
+    [VwProductosPorEncimaDelPrecioPromedio].[Diferencia] AS [Diferencia], 
+    [VwProductosPorEncimaDelPrecioPromedio].[PorcentajeSobrePromedio] AS [PorcentajeSobrePromedio], 
+    [VwProductosPorEncimaDelPrecioPromedio].[Categoria] AS [Categoria], 
+    [VwProductosPorEncimaDelPrecioPromedio].[Proveedor] AS [Proveedor]
+    FROM [dbo].[VwProductosPorEncimaDelPrecioPromedio] AS [VwProductosPorEncimaDelPrecioPromedio]</DefiningQuery>
+          </EntitySet>
           <AssociationSet Name="FK_Employees_Employees" Association="Self.FK_Employees_Employees">
             <End Role="Employees" EntitySet="Employees" />
             <End Role="Employees1" EntitySet="Employees" />
@@ -336,8 +459,7 @@
             <End Role="Products" EntitySet="Products" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="NorthwindModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -691,7 +813,72 @@
             <End Role="Suppliers" EntitySet="Suppliers" />
             <End Role="Products" EntitySet="Products" />
           </AssociationSet>
+          <EntitySet Name="VwCategoriasConProductos" EntityType="NorthwindModel.VwCategoriasConProducto" />
+          <EntitySet Name="VwClientesProveedores" EntityType="NorthwindModel.VwClientesProveedore" />
+          <EntitySet Name="VwProductosPorCategoriaListadoes" EntityType="NorthwindModel.VwProductosPorCategoriaListado" />
+          <EntitySet Name="VwProductosPorEncimaDelPrecioPromedios" EntityType="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio" />
         </EntityContainer>
+        <EntityType Name="VwCategoriasConProducto">
+          <Key>
+            <PropertyRef Name="CategoryName" />
+          </Key>
+          <Property Name="CategoryName" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="ProductName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="ProductID" Type="Int32" />
+          <Property Name="QuantityPerUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="UnitsInStock" Type="Int16" />
+          <Property Name="UnitsOnOrder" Type="Int16" />
+          <Property Name="ReorderLevel" Type="Int16" />
+          <Property Name="Discontinued" Type="Boolean" />
+          <Property Name="CompanyName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="VwClientesProveedore">
+          <Key>
+            <PropertyRef Name="CompanyName" />
+            <PropertyRef Name="Relation" />
+          </Key>
+          <Property Name="CompanyName" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="Contact" Type="String" MaxLength="62" FixedLength="false" Unicode="true" />
+          <Property Name="Relation" Type="String" Nullable="false" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="Address" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="City" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Region" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="PostalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Country" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
+          <Property Name="Fax" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="VwProductosPorCategoriaListado">
+          <Key>
+            <PropertyRef Name="CategoryName" />
+          </Key>
+          <Property Name="CategoryName" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="ProductName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="ProductID" Type="Int32" />
+          <Property Name="QuantityPerUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="UnitsInStock" Type="Int16" />
+          <Property Name="UnitsOnOrder" Type="Int16" />
+          <Property Name="ReorderLevel" Type="Int16" />
+          <Property Name="Discontinued" Type="Boolean" />
+          <Property Name="CompanyName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="VwProductosPorEncimaDelPrecioPromedio">
+          <Key>
+            <PropertyRef Name="Producto" />
+            <PropertyRef Name="Categoria" />
+            <PropertyRef Name="Proveedor" />
+          </Key>
+          <Property Name="Fila" Type="Int64" />
+          <Property Name="Producto" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="Precio" Type="Decimal" Precision="18" Scale="10" />
+          <Property Name="PrecioPromedio" Type="Decimal" Precision="18" Scale="10" />
+          <Property Name="Diferencia" Type="Decimal" Precision="18" Scale="10" />
+          <Property Name="PorcentajeSobrePromedio" Type="Decimal" Precision="18" Scale="10" />
+          <Property Name="Categoria" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Proveedor" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -865,6 +1052,68 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="VwCategoriasConProductos">
+            <EntityTypeMapping TypeName="NorthwindModel.VwCategoriasConProducto">
+              <MappingFragment StoreEntitySet="VwCategoriasConProductos">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
+                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
+                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
+                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VwClientesProveedores">
+            <EntityTypeMapping TypeName="NorthwindModel.VwClientesProveedore">
+              <MappingFragment StoreEntitySet="VwClientesProveedores">
+                <ScalarProperty Name="Fax" ColumnName="Fax" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Region" ColumnName="Region" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Relation" ColumnName="Relation" />
+                <ScalarProperty Name="Contact" ColumnName="Contact" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VwProductosPorCategoriaListadoes">
+            <EntityTypeMapping TypeName="NorthwindModel.VwProductosPorCategoriaListado">
+              <MappingFragment StoreEntitySet="VwProductosPorCategoriaListado">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
+                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
+                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
+                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="VwProductosPorEncimaDelPrecioPromedios">
+            <EntityTypeMapping TypeName="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio">
+              <MappingFragment StoreEntitySet="VwProductosPorEncimaDelPrecioPromedio">
+                <ScalarProperty Name="Proveedor" ColumnName="Proveedor" />
+                <ScalarProperty Name="Categoria" ColumnName="Categoria" />
+                <ScalarProperty Name="PorcentajeSobrePromedio" ColumnName="PorcentajeSobrePromedio" />
+                <ScalarProperty Name="Diferencia" ColumnName="Diferencia" />
+                <ScalarProperty Name="PrecioPromedio" ColumnName="PrecioPromedio" />
+                <ScalarProperty Name="Precio" ColumnName="Precio" />
+                <ScalarProperty Name="Producto" ColumnName="Producto" />
+                <ScalarProperty Name="Fila" ColumnName="Fila" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -890,10 +1139,10 @@
       <Diagram DiagramId="25faa0ba7a9f483594159ed7d4d421b4" Name="Diagram1">
         <EntityTypeShape EntityType="NorthwindModel.CatalogoPermiso" Width="1.5" PointX="5.75" PointY="6" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Category" Width="1.5" PointX="0.75" PointY="18.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Customer" Width="1.5" PointX="0.75" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Customer" Width="1.5" PointX="0.5" PointY="1.625" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Employee" Width="1.5" PointX="0.75" PointY="9.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Order_Detail" Width="1.5" PointX="5.25" PointY="2" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Order" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Order_Detail" Width="1.5" PointX="5" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Order" Width="1.5" PointX="2.75" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Permiso" Width="1.5" PointX="8" PointY="5.875" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Product" Width="1.5" PointX="3" PointY="20.375" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Shipper" Width="1.5" PointX="0.75" PointY="15.375" IsExpanded="true" />
@@ -909,6 +1158,10 @@
         <AssociationConnector Association="NorthwindModel.FK_Orders_Shippers" ManuallyRouted="false" />
         <AssociationConnector Association="NorthwindModel.FK_Permisos_Usuarios" ManuallyRouted="false" />
         <AssociationConnector Association="NorthwindModel.FK_Products_Suppliers" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="NorthwindModel.VwCategoriasConProducto" Width="1.5" PointX="6.75" PointY="0.75" />
+        <EntityTypeShape EntityType="NorthwindModel.VwClientesProveedore" Width="1.5" PointX="11.625" PointY="0.75" />
+        <EntityTypeShape EntityType="NorthwindModel.VwProductosPorCategoriaListado" Width="1.5" PointX="8.375" PointY="0.75" />
+        <EntityTypeShape EntityType="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio" Width="1.5" PointX="10" PointY="0.75" />
       </Diagram>
     </Diagrams>
   </Designer>

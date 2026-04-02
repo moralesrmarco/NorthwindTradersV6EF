@@ -127,7 +127,7 @@ namespace NorthwindTradersV6EF
         private void Dgv_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // debe estar vinculado a la clase List<> a la cual esta vinculado el DataGridView.DataSource
-            Utils.OrdenarPorColumna<DtoClienteProveedor>(Dgv, e);
+            //Utils.OrdenarPorColumna<DtoClienteProveedor>(Dgv, e);
         }
 
         private void btnBuscar_Click(object sender, EventArgs e)

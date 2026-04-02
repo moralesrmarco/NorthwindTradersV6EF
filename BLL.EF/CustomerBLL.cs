@@ -1,4 +1,5 @@
 ﻿using DAL.EF;
+using DTOs.EF;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -196,6 +197,68 @@ namespace BLL.EF
             catch (Exception ex)
             {
                 throw new Exception("Error al obtener el cliente por ID. " + ex.Message);
+            }
+        }
+
+        public static List<DtoClienteProveedor> ObtenerClientesProveedores(
+            string nombreDeFormulario,
+            string comboBoxSelectedValue,
+            bool checkBoxClientes,
+            bool checkBoxProveedores)
+        {
+            using (var context = new NorthwindContext())
+            {
+                IQueryable<VwClientesProveedore> query = context.VwClientesProveedores;
+
+                // Filtro por relación
+                if (checkBoxClientes && !checkBoxProveedores)
+                    query = query.Where(x => x.Relation == "Cliente");
+                else if (!checkBoxClientes && checkBoxProveedores)
+                    query = query.Where(x => x.Relation == "Proveedor");
+
+                // Filtro por ciudad
+                if (nombreDeFormulario.Contains("DirectorioxCiudad"))
+                {
+                    if (comboBoxSelectedValue != "aaaaa")
+                    {
+                        var partes = comboBoxSelectedValue.Split(',');
+                        var ciudad = partes[0].Trim();
+                        var pais = partes.Length > 1 ? partes[1].Trim() : string.Empty;
+
+                        query = query.Where(x => x.City == ciudad && x.Country == pais);
+                    }
+                    query = query.OrderBy(x => x.City).ThenBy(x => x.Country).ThenBy(x => x.CompanyName);
+                }
+                // Filtro por país
+                else if (nombreDeFormulario.Contains("DirectorioxPais"))
+                {
+                    if (comboBoxSelectedValue != "aaaaa")
+                        query = query.Where(x => x.Country == comboBoxSelectedValue);
+
+                    query = query.OrderBy(x => x.Country).ThenBy(x => x.City).ThenBy(x => x.CompanyName);
+                }
+                // Directorio general
+                else
+                {
+                    query = checkBoxClientes && checkBoxProveedores
+                        ? query.OrderBy(x => x.Relation).ThenBy(x => x.CompanyName)
+                        : query.OrderBy(x => x.CompanyName);
+                }
+
+                // Proyección al DTO
+                return query.Select(x => new DtoClienteProveedor
+                {
+                    CompanyName = x.CompanyName,
+                    Contact = x.Contact,
+                    Relation = x.Relation,
+                    Address = x.Address,
+                    City = x.City,
+                    Region = x.Region,
+                    PostalCode = x.PostalCode,
+                    Country = x.Country,
+                    Phone = x.Phone,
+                    Fax = x.Fax
+                }).ToList();
             }
         }
     }
