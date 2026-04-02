@@ -1,7 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,14 +10,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptClientesyProveedoresDirectorio : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ClienteBLL _clienteBLL;
-
         public FrmRptClientesyProveedoresDirectorio()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _clienteBLL = new ClienteBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -52,7 +46,13 @@ namespace NorthwindTradersV6EF
                 }
                 groupBox1.Text = titulo;
                 string nombreDeFormulario = "FrmRptClientesyProveedoresDirectorio";
-                var clientesProveedores = _clienteBLL.ObtenerClientesProveedores(nombreDeFormulario, string.Empty, checkBoxClientes.Checked, checkBoxProveedores.Checked);
+                var clientesProveedores = CustomerBLL.ObtenerClientesProveedores(nombreDeFormulario, string.Empty, checkBoxClientes.Checked, checkBoxProveedores.Checked);
+                if (clientesProveedores.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
+                    U.NotificacionWarning(Utils.noDatos);
+                    return;
+                }
                 // Conteos
                 int totalClientes = clientesProveedores.Count(cp => cp.Relation == "Cliente");
                 int totalProveedores = clientesProveedores.Count(cp => cp.Relation == "Proveedor");
@@ -91,8 +91,6 @@ namespace NorthwindTradersV6EF
                     if (!string.IsNullOrEmpty(leyenda))
                         leyenda += $", en {totalPaises} país(es)";
                 }
-                if (string.IsNullOrEmpty(leyenda))
-                    leyenda = "No se encontraron registros";
                 MDIPrincipal.ActualizarBarraDeEstado(leyenda);
                 reportViewer1.LocalReport.DataSources.Clear();
                 reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", clientesProveedores));
@@ -100,8 +98,6 @@ namespace NorthwindTradersV6EF
                 reportViewer1.LocalReport.SetParameters(new ReportParameter[] { rp });
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
-                if (clientesProveedores.Count == 0)
-                    U.NotificacionWarning(Utils.noDatos);
             }
             catch (Exception ex)
             {
