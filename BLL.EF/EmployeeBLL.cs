@@ -160,73 +160,80 @@ namespace BLL.EF
             bool selectorRealizaBusqueda,
             DtoEmpleadosBuscar criterios)
         {
-            using (var context = new NorthwindContext()) // tu DbContext
+            try
             {
-                IQueryable<Employee> query = context.Employees.Include(e => e.Employee1);
-
-                if (selectorRealizaBusqueda)
+                using (var context = new NorthwindContext()) // tu DbContext
                 {
-                    // Filtros dinámicos
-                    if (criterios.IdIni > 0)
-                        query = query.Where(e => e.EmployeeID >= criterios.IdIni && e.EmployeeID <= criterios.IdFin);
+                    IQueryable<Employee> query = context.Employees.Include(e => e.Employee1);
 
-                    if (!string.IsNullOrEmpty(criterios.Nombres))
-                        query = query.Where(e => e.FirstName.Contains(criterios.Nombres));
-
-                    if (!string.IsNullOrEmpty(criterios.Apellidos))
-                        query = query.Where(e => e.LastName.Contains(criterios.Apellidos));
-
-                    if (!string.IsNullOrEmpty(criterios.Titulo))
-                        query = query.Where(e => e.Title.Contains(criterios.Titulo));
-
-                    if (!string.IsNullOrEmpty(criterios.Domicilio))
-                        query = query.Where(e => e.Address.Contains(criterios.Domicilio));
-
-                    if (!string.IsNullOrEmpty(criterios.Ciudad))
-                        query = query.Where(e => e.City.Contains(criterios.Ciudad));
-
-                    if (!string.IsNullOrEmpty(criterios.Region))
-                        query = query.Where(e => e.Region.Contains(criterios.Region));
-
-                    if (!string.IsNullOrEmpty(criterios.CodigoP))
-                        query = query.Where(e => e.PostalCode.Contains(criterios.CodigoP));
-
-                    if (!string.IsNullOrEmpty(criterios.Pais))
-                        query = query.Where(e => e.Country.Contains(criterios.Pais));
-
-                    if (!string.IsNullOrEmpty(criterios.Telefono))
-                        query = query.Where(e => e.HomePhone.Contains(criterios.Telefono));
-                }
-                else
-                {
-                    // Últimos 20 registros
-                    query = query.OrderByDescending(e => e.EmployeeID).Take(20);
-                }
-
-                var empleados = query
-                    .AsNoTracking() // Mejora el rendimiento al no rastrear las entidades
-                    .OrderByDescending(e => e.EmployeeID)
-                    .Select(e => new DtoEmpleadosDgv
+                    if (selectorRealizaBusqueda)
                     {
-                        EmployeeID = e.EmployeeID,
-                        FirstName = e.FirstName,
-                        LastName = e.LastName,
-                        Title = e.Title,
-                        BirthDate = e.BirthDate,
-                        City = e.City,
-                        Country = e.Country,
-                        Photo = e.Photo,
-                        ReportsToName = e.Employee1 != null
-                                        ? e.Employee1.LastName + ", " + e.Employee1.FirstName
-                                        : "N/A"
-                    })
-                    .ToList();
+                        // Filtros dinámicos
+                        if (criterios.IdIni > 0)
+                            query = query.Where(e => e.EmployeeID >= criterios.IdIni && e.EmployeeID <= criterios.IdFin);
 
-                string mensaje = selectorRealizaBusqueda
-                    ? $"Se encontraron {empleados.Count} empleado(s)."
-                    : $"Se muestran los últimos {empleados.Count} empleado(s) registrados.";
+                        if (!string.IsNullOrEmpty(criterios.Nombres))
+                            query = query.Where(e => e.FirstName.Contains(criterios.Nombres));
 
-                return (empleados, mensaje);
+                        if (!string.IsNullOrEmpty(criterios.Apellidos))
+                            query = query.Where(e => e.LastName.Contains(criterios.Apellidos));
+
+                        if (!string.IsNullOrEmpty(criterios.Titulo))
+                            query = query.Where(e => e.Title.Contains(criterios.Titulo));
+
+                        if (!string.IsNullOrEmpty(criterios.Domicilio))
+                            query = query.Where(e => e.Address.Contains(criterios.Domicilio));
+
+                        if (!string.IsNullOrEmpty(criterios.Ciudad))
+                            query = query.Where(e => e.City.Contains(criterios.Ciudad));
+
+                        if (!string.IsNullOrEmpty(criterios.Region))
+                            query = query.Where(e => e.Region.Contains(criterios.Region));
+
+                        if (!string.IsNullOrEmpty(criterios.CodigoP))
+                            query = query.Where(e => e.PostalCode.Contains(criterios.CodigoP));
+
+                        if (!string.IsNullOrEmpty(criterios.Pais))
+                            query = query.Where(e => e.Country.Contains(criterios.Pais));
+
+                        if (!string.IsNullOrEmpty(criterios.Telefono))
+                            query = query.Where(e => e.HomePhone.Contains(criterios.Telefono));
+                    }
+                    else
+                    {
+                        // Últimos 20 registros
+                        query = query.OrderByDescending(e => e.EmployeeID).Take(20);
+                    }
+
+                    var empleados = query
+                        .AsNoTracking() // Mejora el rendimiento al no rastrear las entidades
+                                        //.OrderByDescending(e => e.EmployeeID)
+                        .Select(e => new DtoEmpleadosDgv
+                        {
+                            EmployeeID = e.EmployeeID,
+                            FirstName = e.FirstName,
+                            LastName = e.LastName,
+                            Title = e.Title,
+                            BirthDate = e.BirthDate,
+                            City = e.City,
+                            Country = e.Country,
+                            Photo = e.Photo,
+                            ReportsToName = e.Employee1 != null
+                                            ? e.Employee1.LastName + ", " + e.Employee1.FirstName
+                                            : "N/A"
+                        })
+                        .ToList();
+
+                    string mensaje = selectorRealizaBusqueda
+                        ? $"Se encontraron {empleados.Count} empleado(s) con los criterios proporcionados."
+                        : $"Se muestran los últimos {empleados.Count} empleado(s) registrados.";
+
+                    return (empleados, mensaje);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener empleados. " + ex.Message);
             }
         }
 

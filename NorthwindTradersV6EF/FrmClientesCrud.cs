@@ -1,5 +1,6 @@
 ﻿using BLL;
 using BLL.EF;
+using DAL.EF;
 using Entities;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,12 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmClientesCrud : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private ClienteBLL _clienteBLL;
         private bool EjecutarConfDgv = true;
         internal Dictionary<string, object> valoresOriginales;
 
         public FrmClientesCrud()
         {
             InitializeComponent();
-            _clienteBLL = new ClienteBLL(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -95,7 +93,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                Cliente criterios = new Cliente()
+                Customer criterios = new Customer()
                 {
                     CustomerID = txtBId.Text,
                     CompanyName = txtBCompañia.Text,
@@ -108,7 +106,7 @@ namespace NorthwindTradersV6EF
                     Phone = txtBTelefono.Text,
                     Fax = txtBFax.Text
                 };
-                var resultado = _clienteBLL.ObtenerClientes(selectorRealizaBusqueda, criterios);
+                var resultado = CustomerBLL.ObtenerClientes(selectorRealizaBusqueda, criterios);
                 dgv.DataSource = resultado.clientes;
                 if (EjecutarConfDgv)
                 {
@@ -126,6 +124,7 @@ namespace NorthwindTradersV6EF
         private void ConfDgv()
         {
             dgv.Columns["RowVersion"].Visible = false;
+            dgv.Columns["Orders"].Visible = false; // propiedad de navegación, no se muestra, el ef la genera automáticamente
 
             dgv.Columns["CustomerID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dgv.Columns["ContactTitle"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -161,6 +160,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(true);
+            CargarValoresOriginales();
         }
 
         private void btnLimpiar_Click(object sender, EventArgs e)
@@ -171,6 +171,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(false);
+            CargarValoresOriginales();
         }
 
         void BorrarMensajesError() => errorProvider1.Clear();
@@ -321,10 +322,10 @@ namespace NorthwindTradersV6EF
                 DeshabilitarControles();
                 DataGridViewRow dgvr = dgv.CurrentRow;
                 txtId.Text = dgvr.Cells["CustomerID"].Value.ToString();
-                Cliente cliente = new Cliente();
+                Customer cliente = new Customer();
                 try
                 {
-                    cliente = _clienteBLL.ObtenerClientePorId(txtId.Text);
+                    cliente = CustomerBLL.ObtenerClientePorId(txtId.Text);
                     if (cliente != null)
                     {
                         txtId.Tag = cliente.RowVersion;
@@ -371,6 +372,7 @@ namespace NorthwindTradersV6EF
             // debe estar vinculado a la clase List<> a la cual esta vinculado el DataGridView.DataSource
             Utils.OrdenarPorColumna<Cliente>(dgv, e);
         }
+
         private void btnOperacion_Click(object sender, EventArgs e)
         {
             BorrarMensajesError();
@@ -383,7 +385,7 @@ namespace NorthwindTradersV6EF
                     btnOperacion.Enabled = false;
                     try
                     {
-                        var cliente = new Cliente
+                        var cliente = new Customer
                         {
                             CustomerID = txtId.Text.Trim(),
                             CompanyName = txtCompañia.Text.Trim(),
@@ -397,7 +399,7 @@ namespace NorthwindTradersV6EF
                             Phone = txtTelefono.Text.Trim(),
                             Fax = string.IsNullOrWhiteSpace(txtFax.Text.Trim()) ? null : txtFax.Text.Trim()
                         };
-                        int numRegs = _clienteBLL.Insertar(cliente);
+                        int numRegs = CustomerBLL.Insertar(cliente);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se insertaron {numRegs} registros");
                         string idyNombreCompania = $"El cliente con Id: {txtId.Text} - Nombre de compañía: {txtCompañia.Text}:";
                         if (numRegs > 0)
@@ -417,6 +419,12 @@ namespace NorthwindTradersV6EF
             }
             else if (tabcOperacion.SelectedTab == tbpModificar)
             {
+                // Verificar si hubo cambios en el formulario
+                if (!Utils.HayCambios(this, valoresOriginales))
+                {
+                    U.NotificacionWarning(Utils.ndc);
+                    return; // Salir sin hacer UPDATE
+                }
                 if (ValidarControles())
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
@@ -424,7 +432,7 @@ namespace NorthwindTradersV6EF
                     btnOperacion.Enabled = false;
                     try
                     {
-                        var cliente = new Cliente()
+                        var cliente = new Customer()
                         {
                             CustomerID = txtId.Text,
                             CompanyName = txtCompañia.Text,
@@ -439,7 +447,7 @@ namespace NorthwindTradersV6EF
                             Fax = txtFax.Text,
                             RowVersion = txtId.Tag as byte[]
                         };
-                        int numRegs = _clienteBLL.Actualizar(cliente);
+                        int numRegs = CustomerBLL.Actualizar(cliente);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registros");
                         string idyNombreCompania = $"El cliente con Id: {txtId.Text} - Nombre de compañía: {txtCompañia.Text}:";
                         if (numRegs > 0)
@@ -467,7 +475,12 @@ namespace NorthwindTradersV6EF
                     btnOperacion.Enabled = false;
                     try
                     {
-                        int numRegs = _clienteBLL.Eliminar(txtId.Text, txtId.Tag as byte[]);
+                        Customer cliente = new Customer()
+                        {
+                            CustomerID = txtId.Text,
+                            RowVersion = txtId.Tag as byte[]
+                        };
+                        int numRegs = CustomerBLL.Eliminar(cliente);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se eliminaron {(numRegs < 0 ? 0 : numRegs)} registros");
                         string idyNombreCompania = $"El cliente con Id: {txtId.Text} - Nombre de compañía: {txtCompañia.Text}:";
                         if (numRegs > 0)
