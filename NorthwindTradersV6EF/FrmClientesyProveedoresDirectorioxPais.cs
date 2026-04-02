@@ -1,7 +1,6 @@
-﻿using BLL;
-using Entities.DTOs;
+﻿using BLL.EF;
+using DTOs.EF;
 using System;
-using System.Configuration;
 using System.Linq;
 using System.Windows.Forms;
 using Utilities;
@@ -10,14 +9,11 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmClientesyProveedoresDirectorioxPais : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ClienteBLL _clienteBLL;
+        private bool EjecutarConfDgv = true;
 
         public FrmClientesyProveedoresDirectorioxPais()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _clienteBLL = new ClienteBLL(_connectionString);
             Dgv.ColumnHeaderMouseClick += Dgv_ColumnHeaderMouseClick;
         }
 
@@ -36,7 +32,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var datos = _clienteBLL.ObtenerPaisVwCliProvCbo();
+                var datos = CustomerBLL.ObtenerPaisVwCliProvCbo();
                 comboBox.DataSource = datos;
                 comboBox.DisplayMember = "Key";
                 comboBox.ValueMember = "Value";
@@ -68,14 +64,25 @@ namespace NorthwindTradersV6EF
                 else if (comboBox.SelectedValue.ToString() != "aaaaa" & !checkBoxClientes.Checked & checkBoxProveedores.Checked)
                     titulo = $"» Directorio de proveedores por país [ País: {comboBox.SelectedValue.ToString()} ] «";
                 Grb.Text = titulo;
-                var clientesProveedores = _clienteBLL.ObtenerClientesProveedores(
+                var clientesProveedores = CustomerBLL.ObtenerClientesProveedores(
                                                 nombreDeFormulario,
                                                 comboBox.SelectedValue.ToString(),
                                                 checkBoxClientes.Checked,
                                                 checkBoxProveedores.Checked
                                             );
                 Dgv.DataSource = clientesProveedores;
-                ConfDgv();
+                if (EjecutarConfDgv)
+                {
+                    ConfDgv();
+                    EjecutarConfDgv = false;
+                }
+                if (clientesProveedores.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.nser, true);
+                    U.NotificacionWarning(Utils.nser);
+                    return;
+                }
+
                 // Conteos
                 int totalClientes = clientesProveedores.Count(cp => cp.Relation == "Cliente");
                 int totalProveedores = clientesProveedores.Count(cp => cp.Relation == "Proveedor");
@@ -127,7 +134,7 @@ namespace NorthwindTradersV6EF
         private void Dgv_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // debe estar vinculado a la clase List<> a la cual esta vinculado el DataGridView.DataSource
-            //Utils.OrdenarPorColumna<DtoClienteProveedor>(Dgv, e);
+            Utils.OrdenarPorColumna<DtoClienteProveedor>(Dgv, e);
         }
 
         private void btnBuscar_Click(object sender, EventArgs e)

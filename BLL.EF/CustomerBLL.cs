@@ -285,5 +285,26 @@ namespace BLL.EF
                 return resultado;
             }
         }
+
+        public static List<KeyValuePair<string, string>> ObtenerPaisVwCliProvCbo()
+        {
+            using (var context = new NorthwindContext())
+            {
+                var paises = context.VwClientesProveedores
+                    .Select(x => x.Country)
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+                // Construir la lista final con las opciones especiales
+                var resultado = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string,string>("»--- Seleccione ---«", " "),
+                    new KeyValuePair<string,string>("»--- Todos los países ---«", "aaaaa")
+                };
+                // Agregar los países reales
+                resultado.AddRange(paises.Select(p => new KeyValuePair<string, string>(p, p)));
+                return resultado;
+            }
+        }
     }
 }
