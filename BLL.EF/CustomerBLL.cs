@@ -155,7 +155,8 @@ namespace BLL.EF
                     }
                     else
                     {
-                        query = query.Take(20);
+                        if (!top100)
+                            query = query.Take(20);
                     }
                     clientes = query.ToList().Select(c => new Customer // doble tolist es para Proyección para evitar problemas
                     {

@@ -1,7 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,14 +10,10 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptClientes : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ClienteBLL _clienteBLL;
 
         public FrmRptClientes()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _clienteBLL = new ClienteBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -31,7 +26,13 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var resultado = _clienteBLL.ObtenerClientes(false, null, true);
+                var resultado = CustomerBLL.ObtenerClientes(false, null, true);
+                if (resultado.clientes.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
+                    U.NotificacionWarning(Utils.noDatos);
+                    return;
+                }
                 // Conteos
                 int totalClientes = resultado.clientes.Count();
                 // Conteo de ciudades distintas
@@ -59,15 +60,11 @@ namespace NorthwindTradersV6EF
                     if (!string.IsNullOrEmpty(leyenda))
                         leyenda += $", en {totalPaises} país(es)";
                 }
-                if (string.IsNullOrEmpty(leyenda))
-                    leyenda = "No se encontraron registros";
                 MDIPrincipal.ActualizarBarraDeEstado(leyenda);
                 reportViewer1.LocalReport.DataSources.Clear();
                 reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", resultado.clientes));
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
-                if (resultado.clientes.Count == 0)
-                    U.NotificacionWarning(Utils.noDatos);
             }
             catch (Exception ex)
             {
