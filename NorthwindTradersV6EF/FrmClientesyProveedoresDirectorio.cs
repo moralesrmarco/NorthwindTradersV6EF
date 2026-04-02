@@ -53,6 +53,12 @@ namespace NorthwindTradersV6EF
                     ConfDgv();
                     EjecutarConfDgv = false;
                 }
+                if (clientesProveedores.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.nser, true);
+                    U.NotificacionWarning(Utils.nser);
+                    return;
+                }
                 // Conteos
                 int totalClientes = clientesProveedores.Count(cp => cp.Relation == "Cliente");
                 int totalProveedores = clientesProveedores.Count(cp => cp.Relation == "Proveedor");

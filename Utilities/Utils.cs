@@ -20,6 +20,7 @@ namespace Utilities
     {
         #region VariablesGlobales
         public static string nwtr => ConfigurationManager.AppSettings["nwtr"];
+        public static string nser = "No se encontraron registro(s) con los criterios proporcionados.";
         public static string ndc = "[orange]No se detectaron cambios\n[green]No se realizó la actualización";
         public const string clbdd = "Consultando la base de datos... ";
         public const string oueclbdd = "Ocurrio un error con la base de datos:\n";

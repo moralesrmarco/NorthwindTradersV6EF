@@ -261,5 +261,29 @@ namespace BLL.EF
                 }).ToList();
             }
         }
+
+        public static List<KeyValuePair<string, string>> ObtenerCiudadPaisVwCliProvCbo()
+        {
+            using (var context = new NorthwindContext())
+            {
+                var ciudadesPaises = context.VwClientesProveedores
+                    .Select(x => x.City + ", " + x.Country)
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+
+                // Construir la lista final con las opciones especiales
+                var resultado = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string,string>("»--- Seleccione ---«", " "),
+                    new KeyValuePair<string,string>("»--- Todas las ciudades ---«", "aaaaa")
+                };
+
+                // Agregar las ciudades reales
+                resultado.AddRange(ciudadesPaises.Select(c => new KeyValuePair<string, string>(c, c)));
+
+                return resultado;
+            }
+        }
     }
 }
