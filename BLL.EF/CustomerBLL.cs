@@ -158,7 +158,7 @@ namespace BLL.EF
                         if (!top100)
                             query = query.Take(20);
                     }
-                    clientes = query.ToList().Select(c => new Customer // doble tolist es para Proyección para evitar problemas
+                    clientes = query.ToList().Select(c => new Customer // doble tolist es para Proyección para evitar problemas con el rowversion
                     {
                         CustomerID = c.CustomerID,
                         CompanyName = c.CompanyName,
@@ -170,7 +170,7 @@ namespace BLL.EF
                         Country = c.Country,
                         Phone = c.Phone,
                         Fax = c.Fax
-                    }).ToList(); // doble tolist es para Proyección para evitar problemas
+                    }).ToList(); // doble tolist es para Proyección para evitar problemas con el rowversion al desplegarse en el datagridview, en la segunda proyección se omite el rowversion 
                 }
                 string mensajeEstado = selectorRealizaBusqueda
                     ? $"Se encontraron {clientes.Count} cliente(s) con los criterios proporcionados."
@@ -268,6 +268,7 @@ namespace BLL.EF
             using (var context = new NorthwindContext())
             {
                 var ciudadesPaises = context.VwClientesProveedores
+                    .AsNoTracking()
                     .Select(x => x.City + ", " + x.Country)
                     .Distinct()
                     .OrderBy(x => x)
@@ -292,6 +293,7 @@ namespace BLL.EF
             using (var context = new NorthwindContext())
             {
                 var paises = context.VwClientesProveedores
+                    .AsNoTracking()
                     .Select(x => x.Country)
                     .Distinct()
                     .OrderBy(x => x)

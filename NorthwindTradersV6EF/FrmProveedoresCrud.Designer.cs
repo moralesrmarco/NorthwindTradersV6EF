@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.txtTelefono = new System.Windows.Forms.TextBox();
-            this.txtPais = new System.Windows.Forms.TextBox();
             this.txtCodigoP = new System.Windows.Forms.TextBox();
             this.txtRegion = new System.Windows.Forms.TextBox();
             this.txtCiudad = new System.Windows.Forms.TextBox();
@@ -90,6 +89,7 @@
             this.tbpEliminar = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.tabcOperacion = new System.Windows.Forms.TabControl();
+            this.cboPais = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.grbProveedor.SuspendLayout();
             this.GrbProveedores.SuspendLayout();
@@ -111,16 +111,6 @@
             this.txtTelefono.Name = "txtTelefono";
             this.txtTelefono.Size = new System.Drawing.Size(265, 23);
             this.txtTelefono.TabIndex = 9;
-            // 
-            // txtPais
-            // 
-            this.txtPais.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPais.Location = new System.Drawing.Point(235, 266);
-            this.txtPais.Margin = new System.Windows.Forms.Padding(4);
-            this.txtPais.MaxLength = 15;
-            this.txtPais.Name = "txtPais";
-            this.txtPais.Size = new System.Drawing.Size(265, 23);
-            this.txtPais.TabIndex = 8;
             // 
             // txtCodigoP
             // 
@@ -517,10 +507,10 @@
             this.grbProveedor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grbProveedor.Controls.Add(this.cboPais);
             this.grbProveedor.Controls.Add(this.btnOperacion);
             this.grbProveedor.Controls.Add(this.txtFax);
             this.grbProveedor.Controls.Add(this.txtTelefono);
-            this.grbProveedor.Controls.Add(this.txtPais);
             this.grbProveedor.Controls.Add(this.txtCodigoP);
             this.grbProveedor.Controls.Add(this.txtRegion);
             this.grbProveedor.Controls.Add(this.txtCiudad);
@@ -809,6 +799,15 @@
             this.tabcOperacion.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabcOperacion_Selecting);
             this.tabcOperacion.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabcOperacion_Selected);
             // 
+            // cboPais
+            // 
+            this.cboPais.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cboPais.FormattingEnabled = true;
+            this.cboPais.Location = new System.Drawing.Point(235, 265);
+            this.cboPais.Name = "cboPais";
+            this.cboPais.Size = new System.Drawing.Size(201, 25);
+            this.cboPais.TabIndex = 12;
+            // 
             // FrmProveedoresCrud
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -848,7 +847,6 @@
         #endregion
 
         private System.Windows.Forms.TextBox txtTelefono;
-        private System.Windows.Forms.TextBox txtPais;
         private System.Windows.Forms.TextBox txtCodigoP;
         private System.Windows.Forms.TextBox txtRegion;
         private System.Windows.Forms.TextBox txtCiudad;
@@ -908,5 +906,6 @@
         private System.Windows.Forms.TabPage tbpEliminar;
         private System.Windows.Forms.Label label4;
         internal System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.ComboBox cboPais;
     }
 }

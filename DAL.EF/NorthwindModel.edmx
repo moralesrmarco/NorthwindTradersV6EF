@@ -622,7 +622,7 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="Phone" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
           <Property Name="Fax" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
           <Property Name="HomePage" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="RowVersion" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" ConcurrencyMode="Fixed" />
           <NavigationProperty Name="Products" Relationship="Self.FK_Products_Suppliers" FromRole="Suppliers" ToRole="Products" />
         </EntityType>
         <EntityType Name="Usuario">
