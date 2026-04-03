@@ -27,12 +27,6 @@ namespace NorthwindTradersV6EF
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
                 var resultado = CustomerBLL.ObtenerClientes(false, null, true);
-                if (resultado.clientes.Count == 0)
-                {
-                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
-                    U.NotificacionWarning(Utils.noDatos);
-                    return;
-                }
                 // Conteos
                 int totalClientes = resultado.clientes.Count();
                 // Conteo de ciudades distintas
@@ -65,6 +59,11 @@ namespace NorthwindTradersV6EF
                 reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", resultado.clientes));
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
+                if (resultado.clientes.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
+                    U.NotificacionWarning(Utils.noDatos);
+                }
             }
             catch (Exception ex)
             {

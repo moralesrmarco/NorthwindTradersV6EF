@@ -1,7 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -12,14 +11,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptClientesyProveedoresDirectorioxPais : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ClienteBLL _clienteBLL;
-
         public FrmRptClientesyProveedoresDirectorioxPais()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _clienteBLL = new ClienteBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -36,7 +30,7 @@ namespace NorthwindTradersV6EF
         {
             try
             {
-                var datos = _clienteBLL.ObtenerPaisVwCliProvCbo();
+                var datos = CustomerBLL.ObtenerPaisVwCliProvCbo();
                 comboBox.DataSource = datos;
                 comboBox.DisplayMember = "Key";
                 comboBox.ValueMember = "Value";
@@ -73,7 +67,7 @@ namespace NorthwindTradersV6EF
                     titulo = $"» Reporte directorio de proveedores por país [ País: {comboBox.SelectedValue.ToString()} ] «";
                 groupBox1.Text = titulo;
                 string nombreDeFormulario = "FrmRptClientesyProveedoresDirectorioxPais";
-                var clientesProveedores = _clienteBLL.ObtenerClientesProveedores(nombreDeFormulario, comboBox.SelectedValue.ToString(), checkBoxClientes.Checked, checkBoxProveedores.Checked);
+                var clientesProveedores = CustomerBLL.ObtenerClientesProveedores(nombreDeFormulario, comboBox.SelectedValue.ToString(), checkBoxClientes.Checked, checkBoxProveedores.Checked);
                 // Conteos
                 int totalClientes = clientesProveedores.Count(cp => cp.Relation == "Cliente");
                 int totalProveedores = clientesProveedores.Count(cp => cp.Relation == "Proveedor");
@@ -112,8 +106,6 @@ namespace NorthwindTradersV6EF
                     if (!string.IsNullOrEmpty(leyenda))
                         leyenda += $", en {totalPaises} país(es)";
                 }
-                if (string.IsNullOrEmpty(leyenda))
-                    leyenda = "No se encontraron registros";
                 MDIPrincipal.ActualizarBarraDeEstado(leyenda);
                 reportViewer1.LocalReport.DataSources.Clear();
                 reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", clientesProveedores));
@@ -122,7 +114,10 @@ namespace NorthwindTradersV6EF
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
                 if (clientesProveedores.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
                     U.NotificacionWarning(Utils.noDatos);
+                }
             }
             catch (Exception ex)
             {

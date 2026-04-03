@@ -47,12 +47,6 @@ namespace NorthwindTradersV6EF
                 groupBox1.Text = titulo;
                 string nombreDeFormulario = "FrmRptClientesyProveedoresDirectorio";
                 var clientesProveedores = CustomerBLL.ObtenerClientesProveedores(nombreDeFormulario, string.Empty, checkBoxClientes.Checked, checkBoxProveedores.Checked);
-                if (clientesProveedores.Count == 0)
-                {
-                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
-                    U.NotificacionWarning(Utils.noDatos);
-                    return;
-                }
                 // Conteos
                 int totalClientes = clientesProveedores.Count(cp => cp.Relation == "Cliente");
                 int totalProveedores = clientesProveedores.Count(cp => cp.Relation == "Proveedor");
@@ -98,6 +92,11 @@ namespace NorthwindTradersV6EF
                 reportViewer1.LocalReport.SetParameters(new ReportParameter[] { rp });
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
+                if (clientesProveedores.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
+                    U.NotificacionWarning(Utils.noDatos);
+                }
             }
             catch (Exception ex)
             {
