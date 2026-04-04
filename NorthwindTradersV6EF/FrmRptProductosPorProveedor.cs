@@ -41,8 +41,6 @@ namespace NorthwindTradersV6EF
                 string leyenda = string.Empty;
                 if (productosPorProveedor.Count > 0)
                     leyenda = $"Se encontraron {totalProveedores} proveedor(es) y {totalProductos} producto(s)";
-                else
-                    leyenda = Utils.noDatos;
                 MDIPrincipal.ActualizarBarraDeEstado(leyenda);
                 reportViewer1.LocalReport.DataSources.Clear();
                 reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", productosPorProveedor));

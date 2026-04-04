@@ -35,5 +35,47 @@ namespace BLL.EF
                 return query.ToList();
             }
         }
+
+        public static List<DtoProductosPorProveedorConDetProv> ObtenerProductosPorProveedorConDetProv()
+        {
+            using (var context = new NorthwindContext())
+            {
+                var query = from s in context.Suppliers
+                            join p in context.Products
+                                on s.SupplierID equals p.SupplierID into prodGroup
+                            from p in prodGroup.DefaultIfEmpty()
+                            join c in context.Categories
+                                on p.CategoryID equals c.CategoryID into catGroup
+                            from c in catGroup.DefaultIfEmpty()
+                            orderby s.CompanyName, p.ProductName
+                            select new DtoProductosPorProveedorConDetProv
+                            {
+                                SupplierID = s.SupplierID,
+                                CompanyName = s.CompanyName ?? string.Empty,
+                                ContactName = s.ContactName ?? string.Empty,
+                                ContactTitle = s.ContactTitle ?? string.Empty,
+                                Address = s.Address ?? string.Empty,
+                                City = s.City ?? string.Empty,
+                                Region = s.Region ?? string.Empty,
+                                PostalCode = s.PostalCode ?? string.Empty,
+                                Country = s.Country ?? string.Empty,
+                                Phone = s.Phone ?? string.Empty,
+                                Fax = s.Fax ?? string.Empty,
+
+                                ProductID = p != null ? p.ProductID : (int?)null,
+                                ProductName = p != null ? p.ProductName : "Sin producto",
+                                QuantityPerUnit = p != null ? p.QuantityPerUnit : string.Empty,
+                                UnitPrice = p != null ? (decimal?)p.UnitPrice : null,
+                                UnitsInStock = p != null ? (short?)p.UnitsInStock : null,
+                                UnitsOnOrder = p != null ? (short?)p.UnitsOnOrder : null,
+                                ReorderLevel = p != null ? (short?)p.ReorderLevel : null,
+                                Discontinued = p != null && p.Discontinued,
+
+                                CategoryName = c != null ? c.CategoryName : "Sin categoría"
+                            };
+
+                return query.ToList();
+            }
+        }
     }
 }

@@ -46,6 +46,7 @@
     <Compile Include="DtoEmpleadosDgv.cs" />
     <Compile Include="DtoEmpleadosPaisesCbo.cs" />
     <Compile Include="DtoProductosPorProveedor.cs" />
+    <Compile Include="DtoProductosPorProveedorConDetProv.cs" />
     <Compile Include="DtoProveedoresBuscar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

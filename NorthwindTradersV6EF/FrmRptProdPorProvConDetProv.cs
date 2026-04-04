@@ -1,7 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -12,14 +11,9 @@ namespace NorthwindTradersV6EF
     public partial class FrmRptProdPorProvConDetProv : Form
     {
 
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ProductoBLL _productoBLL;
-
         public FrmRptProdPorProvConDetProv()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _productoBLL = new ProductoBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -32,7 +26,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var productosPorProveedorConDetProv = _productoBLL.ObtenerProductosPorProveedorConDetProv();
+                var productosPorProveedorConDetProv = ProductBLL.ObtenerProductosPorProveedorConDetProv();
                 // Conteos
                 int totalProveedores = productosPorProveedorConDetProv
                             .Select(p => p.CompanyName) // ajusta al nombre real de la propiedad
@@ -58,15 +52,16 @@ namespace NorthwindTradersV6EF
                 string leyenda = string.Empty;
                 if (totalProveedores > 0)
                     leyenda = $"Se encontraron {totalProveedores} proveedor(es), en {totalCiudades} ciudad(es), en {totalPaises} país(es) y {totalProductos} producto(s)";
-                else
-                    leyenda = "No se encontraron registros";
                 MDIPrincipal.ActualizarBarraDeEstado(leyenda);
                 reportViewer1.LocalReport.DataSources.Clear();
                 reportViewer1.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", productosPorProveedorConDetProv));
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
                 if (productosPorProveedorConDetProv.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
                     U.NotificacionWarning(Utils.noDatos);
+                }
             }
             catch (Exception ex)
             {
