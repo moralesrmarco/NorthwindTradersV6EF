@@ -1,7 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -12,14 +11,10 @@ namespace NorthwindTradersV6EF
     public partial class FrmRptProductosPorProveedor : Form
     {
 
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ProductoBLL _productoBLL;
 
         public FrmRptProductosPorProveedor()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _productoBLL = new ProductoBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -32,7 +27,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var productosPorProveedor = _productoBLL.ObtenerProductosPorProveedor();
+                var productosPorProveedor = ProductBLL.ObtenerProductosPorProveedor();
                 // Conteos
                 int totalProveedores = productosPorProveedor
                             .Select(p => p.CompanyName) // ajusta al nombre real de la propiedad
@@ -54,7 +49,10 @@ namespace NorthwindTradersV6EF
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
                 if (productosPorProveedor.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
                     U.NotificacionWarning(Utils.noDatos);
+                }
             }
             catch (Exception ex)
             {
