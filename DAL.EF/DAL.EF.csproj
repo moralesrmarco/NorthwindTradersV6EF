@@ -66,6 +66,7 @@
       <DependentUpon>NorthwindModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Extensions\EmployeeExtension.cs" />
+    <Compile Include="Extensions\ProductExtension.cs" />
     <Compile Include="Extensions\UsuarioExtension.cs" />
     <Compile Include="NorthwindModel.Context.cs">
       <AutoGen>True</AutoGen>

@@ -137,10 +137,12 @@
             this.ventasMensualesPorVendedorPorAñoToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ventasMensualesPorVendedorPorAñobarrasToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.ventasMensualesPorVendedorPorAñobarras2ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.tablerosControlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tableroDeControlParaLosVendedoresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.administraciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mantenimientoDeUsuariosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mantenimientoDePermisosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tablerosControlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.cambiarContraseñaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cambiarDeUsuarioLogueadoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -178,8 +180,6 @@
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tableroDeControlParaLosVendedoresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.TabControlPrincipal = new NorthwindTradersV6EF.ControlCustomTab();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -1070,6 +1070,29 @@
             this.ventasMensualesPorVendedorPorAñobarras2ToolStripMenuItem1.Text = "Ventas mensuales por vendedor por año (barras 2)";
             this.ventasMensualesPorVendedorPorAñobarras2ToolStripMenuItem1.Click += new System.EventHandler(this.ventasMensualesPorVendedorPorAñobarras2ToolStripMenuItem1_Click);
             // 
+            // tablerosControlToolStripMenuItem
+            // 
+            this.tablerosControlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem,
+            this.tableroDeControlParaLosVendedoresToolStripMenuItem});
+            this.tablerosControlToolStripMenuItem.Name = "tablerosControlToolStripMenuItem";
+            this.tablerosControlToolStripMenuItem.Size = new System.Drawing.Size(150, 24);
+            this.tablerosControlToolStripMenuItem.Text = "Tableros de control";
+            // 
+            // tableroDeControlParaLaAltaDirecciónToolStripMenuItem
+            // 
+            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Name = "tableroDeControlParaLaAltaDirecciónToolStripMenuItem";
+            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Size = new System.Drawing.Size(357, 26);
+            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Text = "Tablero de control para la alta dirección";
+            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Click += new System.EventHandler(this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem_Click);
+            // 
+            // tableroDeControlParaLosVendedoresToolStripMenuItem
+            // 
+            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Name = "tableroDeControlParaLosVendedoresToolStripMenuItem";
+            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Size = new System.Drawing.Size(357, 26);
+            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Text = "Tablero de control para los vendedores";
+            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Click += new System.EventHandler(this.tableroDeControlParaLosVendedoresToolStripMenuItem_Click);
+            // 
             // administraciónToolStripMenuItem
             // 
             this.administraciónToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1092,15 +1115,6 @@
             this.mantenimientoDePermisosToolStripMenuItem.Size = new System.Drawing.Size(278, 26);
             this.mantenimientoDePermisosToolStripMenuItem.Text = "Mantenimiento de permisos";
             this.mantenimientoDePermisosToolStripMenuItem.Click += new System.EventHandler(this.mantenimientoDePermisosToolStripMenuItem_Click);
-            // 
-            // tablerosControlToolStripMenuItem
-            // 
-            this.tablerosControlToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem,
-            this.tableroDeControlParaLosVendedoresToolStripMenuItem});
-            this.tablerosControlToolStripMenuItem.Name = "tablerosControlToolStripMenuItem";
-            this.tablerosControlToolStripMenuItem.Size = new System.Drawing.Size(150, 24);
-            this.tablerosControlToolStripMenuItem.Text = "Tableros de control";
             // 
             // toolsMenu
             // 
@@ -1399,20 +1413,6 @@
             this.toolStripStatus.Name = "toolStripStatus";
             this.toolStripStatus.Size = new System.Drawing.Size(91, 20);
             this.toolStripStatus.Text = "Bienvenid@.";
-            // 
-            // tableroDeControlParaLaAltaDirecciónToolStripMenuItem
-            // 
-            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Name = "tableroDeControlParaLaAltaDirecciónToolStripMenuItem";
-            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Size = new System.Drawing.Size(357, 26);
-            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Text = "Tablero de control para la alta dirección";
-            this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem.Click += new System.EventHandler(this.tableroDeControlParaLaAltaDirecciónToolStripMenuItem_Click);
-            // 
-            // tableroDeControlParaLosVendedoresToolStripMenuItem
-            // 
-            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Name = "tableroDeControlParaLosVendedoresToolStripMenuItem";
-            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Size = new System.Drawing.Size(357, 26);
-            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Text = "Tablero de control para los vendedores";
-            this.tableroDeControlParaLosVendedoresToolStripMenuItem.Click += new System.EventHandler(this.tableroDeControlParaLosVendedoresToolStripMenuItem_Click);
             // 
             // TabControlPrincipal
             // 

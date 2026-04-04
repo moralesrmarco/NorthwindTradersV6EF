@@ -196,5 +196,64 @@ namespace BLL.EF
                 throw new Exception("Error al obtener los paises. " + ex.Message);
             }
         }
+
+        public static List<Supplier> ObtenerProveedoresProductos()
+        {
+            using (var context = new NorthwindContext())
+            {
+                // Incluimos productos y sus categorías
+                var proveedores = context.Suppliers
+                    .Include("Products.Category") // EF6: cadena de navegación
+                    .AsNoTracking()
+                    .OrderByDescending(s => s.SupplierID)
+                    .ToList();
+
+                // Proyección en memoria para omitir RowVersion/HomePage y traer CategoryName/Description + CompanyName
+                var result = proveedores.Select(s => new Supplier
+                {
+                    SupplierID = s.SupplierID,
+                    CompanyName = s.CompanyName,
+                    ContactName = s.ContactName,
+                    ContactTitle = s.ContactTitle,
+                    Address = s.Address,
+                    City = s.City,
+                    Region = s.Region,
+                    PostalCode = s.PostalCode,
+                    Country = s.Country,
+                    Phone = s.Phone,
+                    Fax = s.Fax,
+
+                    Products = s.Products
+                        .OrderByDescending(p => p.ProductID)
+                        .Select(p => new Product
+                    {
+                        ProductID = p.ProductID,
+                        ProductName = p.ProductName,
+                        QuantityPerUnit = p.QuantityPerUnit,
+                        UnitPrice = p.UnitPrice,
+                        UnitsInStock = p.UnitsInStock,
+                        CategoryID = p.CategoryID,
+                        SupplierID = p.SupplierID,
+
+                        // Campos de Category
+                        Category = new Category
+                        {
+                            CategoryID = p.Category.CategoryID,
+                            CategoryName = p.Category.CategoryName,
+                            Description = p.Category.Description
+                        },
+
+                        // Campo de Supplier (CompanyName)
+                        Supplier = new Supplier
+                        {
+                            SupplierID = s.SupplierID,
+                            CompanyName = s.CompanyName
+                        }
+                    }).ToList()
+                }).ToList();
+
+                return result;
+            }
+        }
     }
 }

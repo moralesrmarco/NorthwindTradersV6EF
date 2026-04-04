@@ -1,6 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
+using DAL.EF;
 using System;
-using System.Configuration;
 using System.Windows.Forms;
 using Utilities;
 
@@ -8,8 +8,6 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmProveedoresProductos : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ProveedorBLL _proveedorBLL;
         BindingSource bsProveedores = new BindingSource();
         BindingSource bsProductos = new BindingSource();
         bool ejecutarAlCargar = true;
@@ -17,10 +15,8 @@ namespace NorthwindTradersV6EF
         public FrmProveedoresProductos()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
             // Suscripción al evento
             bsProveedores.ListChanged += bsProveedores_ListChanged;
-            _proveedorBLL = new ProveedorBLL(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint2(this, sender, e);
@@ -50,18 +46,15 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var ds = _proveedorBLL.ObtenerProveedoresProductosDgv();
+                var proveedores = SupplierBLL.ObtenerProveedoresProductos();
 
-                bsProveedores.DataSource = ds;
-                bsProveedores.DataMember = "Proveedores";
-
-                bsProductos.DataSource = bsProveedores;
-                bsProductos.DataMember = "ProveedoresProductos";
-
+                bsProveedores.DataSource = proveedores;
                 // necesario para que funcione el ordenamiento al hacer clic en el encabezado de columna del dataGridView maestro
                 DgvProveedores.AutoGenerateColumns = true;   // 🔑
                 DgvProveedores.DataSource = bsProveedores;
 
+                bsProductos.DataSource = bsProveedores;
+                bsProductos.DataMember = nameof(Supplier.Products);
                 DgvProductos.AutoGenerateColumns = true;
                 DgvProductos.DataSource = bsProductos;
 
@@ -81,6 +74,10 @@ namespace NorthwindTradersV6EF
 
         private void ConfDgvProveedores()
         {
+            DgvProveedores.Columns["HomePage"].Visible = false;
+            DgvProveedores.Columns["RowVersion"].Visible = false;
+            DgvProveedores.Columns["Products"].Visible = false;
+
             DgvProveedores.Columns["SupplierID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             DgvProveedores.Columns["ContactTitle"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             DgvProveedores.Columns["City"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -111,6 +108,10 @@ namespace NorthwindTradersV6EF
         {
             DgvProductos.Columns["CategoryID"].Visible = false;
             DgvProductos.Columns["SupplierID"].Visible = false;
+            DgvProductos.Columns["RowVersion"].Visible = false;
+            DgvProductos.Columns["Category"].Visible = false;
+            DgvProductos.Columns["Order_Details"].Visible = false;
+            DgvProductos.Columns["Supplier"].Visible = false;
 
             DgvProductos.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             DgvProductos.Columns["UnitsInStock"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -125,7 +126,7 @@ namespace NorthwindTradersV6EF
 
             DgvProductos.Columns["Discontinued"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             DgvProductos.Columns["CategoryName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
-            DgvProductos.Columns["CompanyName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
+            DgvProductos.Columns["SupplierCompanyName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
 
             DgvProductos.Columns["UnitPrice"].DefaultCellStyle.Format = "c";
             DgvProductos.Columns["UnitsInStock"].DefaultCellStyle.Format = "n0";
@@ -141,8 +142,8 @@ namespace NorthwindTradersV6EF
             DgvProductos.Columns["ReorderLevel"].HeaderText = "Nivel de reorden";
             DgvProductos.Columns["Discontinued"].HeaderText = "Descontinuado";
             DgvProductos.Columns["CategoryName"].HeaderText = "Categoría";
-            DgvProductos.Columns["Description"].HeaderText = "Descripción de categoría";
-            DgvProductos.Columns["CompanyName"].HeaderText = "Proveedor";
+            DgvProductos.Columns["CategoryDescription"].HeaderText = "Descripción de categoría";
+            DgvProductos.Columns["SupplierCompanyName"].HeaderText = "Proveedor";
 
             DgvProductos.Columns["ProductID"].DisplayIndex = 0;
             DgvProductos.Columns["ProductName"].DisplayIndex = 1;
@@ -153,8 +154,8 @@ namespace NorthwindTradersV6EF
             DgvProductos.Columns["ReorderLevel"].DisplayIndex = 6;
             DgvProductos.Columns["Discontinued"].DisplayIndex = 7;
             DgvProductos.Columns["CategoryName"].DisplayIndex = 8;
-            DgvProductos.Columns["Description"].DisplayIndex = 9;
-            DgvProductos.Columns["CompanyName"].DisplayIndex = 10;
+            DgvProductos.Columns["CategoryDescription"].DisplayIndex = 9;
+            DgvProductos.Columns["SupplierCompanyName"].DisplayIndex = 10;
         }
 
         private void DgvProveedores_SelectionChanged(object sender, EventArgs e) => ActualizarEstadoProveedores();
