@@ -1,9 +1,8 @@
-﻿using BLL;
-using Entities;
-using Entities.DTOs;
+﻿using BLL.EF;
+using DAL.EF;
+using DTOs.EF;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -15,18 +14,13 @@ namespace NorthwindTradersV6EF
     public partial class FrmCategoriasCrud : Form
     {
 
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private CategoriaBLL _categoriaBLL;
         private bool EjecutarConfDgv = true;
         internal Dictionary<string, object> valoresOriginales;
-        bool EventoCargado = true; // esta variable es necesaria para controlar el manejador de eventos de la celda del dgv, ojo no quitar
         OpenFileDialog openFileDialog;
 
         public FrmCategoriasCrud()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _categoriaBLL = new CategoriaBLL(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -87,9 +81,9 @@ namespace NorthwindTradersV6EF
                 };
                 // La siguientes 2 instrucciones son necesarias para poder manejar el LlenarDgv sin realizar una recarga del registro de la categoria, como en los otros metodos de los demas FrmCrud...
                 // cambia mucho la estructuración, ojo no modificar.
-                var categorias = _categoriaBLL.ObtenerCategorias(selectorRealizaBusqueda, criterios, false);
+                var categorias = CategoryBLL.ObtenerCategorias(selectorRealizaBusqueda, criterios, false);
                 var categoriasSinRowVersionTimeStamp = categorias
-                                                        .Select(c => new Categoria
+                                                        .Select(c => new Category
                                                         {
                                                             CategoryID = c.CategoryID,
                                                             CategoryName = c.CategoryName,
@@ -122,6 +116,7 @@ namespace NorthwindTradersV6EF
             Dgv.Columns["RowVersion"].Visible = false;
             Dgv.Columns["RowVersionString"].Visible = false;
             Dgv.Columns["RowVersionStr"].Visible = false;
+            Dgv.Columns["Products"].Visible = false;
 
             Dgv.Columns["CategoryID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["CategoryName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -145,6 +140,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(true);
+            CargarValoresOriginales();
         }
 
         private void btnLimpiar_Click(object sender, EventArgs e)
@@ -155,6 +151,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(false);
+            CargarValoresOriginales();
         }
 
         private void BorrarMensajesError() => errorProvider1.Clear();
@@ -267,7 +264,7 @@ namespace NorthwindTradersV6EF
         private void Dgv_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // debe estar vinculado a la clase List<> a la cual esta vinculado el DataGridView.DataSource
-            Utils.OrdenarPorColumna<Categoria>(Dgv, e);
+            Utils.OrdenarPorColumna<Category>(Dgv, e);
         }
 
         void ActualizaDgv() => btnLimpiar.PerformClick();
@@ -279,11 +276,8 @@ namespace NorthwindTradersV6EF
             picFoto.BackgroundImage = Properties.Resources.Categorias;
             if (tabcOperacion.SelectedTab == tbpRegistrar)
             {
-                if (EventoCargado)
-                {
-                    Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
-                    EventoCargado = false;
-                }
+                Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
+                Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
                 HabilitarControles();
                 BorrarDatosBusqueda();
                 btnOperacion.Text = "Registrar categoría";
@@ -294,11 +288,8 @@ namespace NorthwindTradersV6EF
             }
             else
             {
-                if (!EventoCargado)
-                {
-                    Dgv.CellClick += new DataGridViewCellEventHandler(Dgv_CellClick);
-                    EventoCargado = true;
-                }
+                Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
+                Dgv.CellClick += new DataGridViewCellEventHandler(Dgv_CellClick);
                 DeshabilitarControles();
                 btnOperacion.Enabled = false;
                 btnCargar.Enabled = false;
@@ -342,13 +333,13 @@ namespace NorthwindTradersV6EF
                     fileFoto = (byte[])converter.ConvertTo(image, typeof(byte[]));
                     try
                     {
-                        var categoria = new Categoria
+                        var categoria = new Category
                         {
                             CategoryName = txtCategoria.Text.Trim(),
                             Description = txtDescripcion.Text.Trim(),
                             Picture = fileFoto
                         };
-                        int numRegs = _categoriaBLL.Insertar(categoria);
+                        int numRegs = CategoryBLL.Insertar(categoria);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se insertaron {numRegs} registro(s)");
                         string idyNombreCategoria = $"La categoría con Id: {txtId.Text} - Nombre de categoria: {txtCategoria.Text}:";
                         if (numRegs > 0)
@@ -385,7 +376,7 @@ namespace NorthwindTradersV6EF
                     fileFoto = (byte[])converter.ConvertTo(image, typeof(byte[]));
                     try
                     {
-                        var categoria = new Categoria
+                        var categoria = new Category
                         {
                             CategoryID = int.Parse(txtId.Text),
                             CategoryName = txtCategoria.Text.Trim(),
@@ -395,7 +386,7 @@ namespace NorthwindTradersV6EF
                         // las siguientes dos lineas son necesarias ojo no eliminar
                         long valor = long.Parse(txtId.Tag.ToString());
                         categoria.RowVersion = BitConverter.GetBytes(valor);
-                        int numRegs = _categoriaBLL.Actualizar(categoria);
+                        int numRegs = CategoryBLL.Actualizar(categoria);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string idyNombreCategoria = $"La categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}:";
                         if (numRegs > 0)
@@ -415,37 +406,37 @@ namespace NorthwindTradersV6EF
                     ActualizaDgv();
                 }
             }
-            else if (tabcOperacion.SelectedTab == tbpEliminar)
-            {
-                if (U.NotificacionQuestion($"[orange]¿Esta seguro de eliminar la categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}?") == DialogResult.Yes)
-                {
-                    btnOperacion.Enabled = false;
-                    MDIPrincipal.ActualizarBarraDeEstado(Utils.eliminandoRegistro);
-                    try
-                    {
-                        // las siguientes dos lineas son necesarias ojo no eliminar
-                        long valor = long.Parse(txtId.Tag.ToString());
-                        byte[] rowVersion = BitConverter.GetBytes(valor);
-                        int numRegs = _categoriaBLL.Eliminar(Convert.ToInt32(txtId.Text), rowVersion);
-                        MDIPrincipal.ActualizarBarraDeEstado($"Se eliminaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
-                        string idyNombreCategoria = $"La categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}:";
-                        if (numRegs > 0)
-                            U.NotificacionInformation(idyNombreCategoria + Utils.ses);
-                        else if (numRegs == -1)
-                            U.NotificacionError(idyNombreCategoria + Utils.nfefe);
-                        else if (numRegs == -2)
-                            U.NotificacionError(idyNombreCategoria + Utils.nfefm);
-                        else
-                            U.NotificacionError(idyNombreCategoria + Utils.nfemd);
-                    }
-                    catch (Exception ex)
-                    {
-                        U.MsgCatchOue(ex);
-                    }
-                    picFoto.BackgroundImage = Properties.Resources.Categorias;
-                    ActualizaDgv();
-                }
-            }
+            //else if (tabcOperacion.SelectedTab == tbpEliminar)
+            //{
+            //    if (U.NotificacionQuestion($"[orange]¿Esta seguro de eliminar la categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}?") == DialogResult.Yes)
+            //    {
+            //        btnOperacion.Enabled = false;
+            //        MDIPrincipal.ActualizarBarraDeEstado(Utils.eliminandoRegistro);
+            //        try
+            //        {
+            //            // las siguientes dos lineas son necesarias ojo no eliminar
+            //            long valor = long.Parse(txtId.Tag.ToString());
+            //            byte[] rowVersion = BitConverter.GetBytes(valor);
+            //            int numRegs = _categoriaBLL.Eliminar(Convert.ToInt32(txtId.Text), rowVersion);
+            //            MDIPrincipal.ActualizarBarraDeEstado($"Se eliminaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
+            //            string idyNombreCategoria = $"La categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}:";
+            //            if (numRegs > 0)
+            //                U.NotificacionInformation(idyNombreCategoria + Utils.ses);
+            //            else if (numRegs == -1)
+            //                U.NotificacionError(idyNombreCategoria + Utils.nfefe);
+            //            else if (numRegs == -2)
+            //                U.NotificacionError(idyNombreCategoria + Utils.nfefm);
+            //            else
+            //                U.NotificacionError(idyNombreCategoria + Utils.nfemd);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            U.MsgCatchOue(ex);
+            //        }
+            //        picFoto.BackgroundImage = Properties.Resources.Categorias;
+            //        ActualizaDgv();
+            //    }
+            //}
             CargarValoresOriginales();
         }
 

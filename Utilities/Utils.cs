@@ -278,7 +278,7 @@ namespace Utilities
 
                     if (valoresOriginales.TryGetValue(name, out var original))
                     {
-                        string actual = txt.Text.Trim();
+                        string actual = txt.Text?.Trim() ?? string.Empty;
 
                         if (!Equals(original, actual))
                         {
@@ -350,12 +350,23 @@ namespace Utilities
                     {
                         var actual = Utils.ImageToByteArray(pic.Image);
 
-                        // Compara primero longitud y luego contenido
-                        var originalBytes = (byte[])original;
-                        if (originalBytes.Length != actual.Length || !originalBytes.SequenceEqual(actual))
+                        // Validar que original no sea null
+                        if (original is byte[] originalBytes && actual != null)
                         {
-                            hayCambios = true;
-                            errorProvider.SetError(pic, ecfm);
+                            if (originalBytes.Length != actual.Length || !originalBytes.SequenceEqual(actual))
+                            {
+                                hayCambios = true;
+                                errorProvider.SetError(pic, ecfm);
+                            }
+                        }
+                        else
+                        {
+                            // Si uno es null y el otro no, también hay cambios
+                            if (!(original == null && actual == null))
+                            {
+                                hayCambios = true;
+                                errorProvider.SetError(pic, ecfm);
+                            }
                         }
                     }
                 }
@@ -380,7 +391,7 @@ namespace Utilities
 
                     if (valoresOriginales.TryGetValue(name, out var original))
                     {
-                        var actual = txt.Text.Trim() ?? string.Empty;
+                        var actual = txt.Text?.Trim() ?? string.Empty;
                         if (!Equals(original, actual))
                             hayCambios = true;
                     }
@@ -435,10 +446,18 @@ namespace Utilities
                     if (valoresOriginales.TryGetValue(name, out var original))
                     {
                         var actual = Utils.ImageToByteArray(pic.Image);
-                        // Compara primero longitud y luego contenido
-                        var originalBytes = (byte[])original;
-                        if (originalBytes.Length != actual.Length || !originalBytes.SequenceEqual(actual))
-                            hayCambios = true;
+                        // Validar nulls
+                        if (original is byte[] originalBytes && actual != null)
+                        {
+                            if (originalBytes.Length != actual.Length || !originalBytes.SequenceEqual(actual))
+                                hayCambios = true;
+                        }
+                        else
+                        {
+                            // Si uno es null y el otro no, también hay cambios
+                            if (!(original == null && actual == null))
+                                hayCambios = true;
+                        }
                     }
                 }
             }

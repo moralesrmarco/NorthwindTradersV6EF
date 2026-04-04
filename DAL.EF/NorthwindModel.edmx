@@ -352,6 +352,31 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="SpCategoriaActualizar" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CategoryID" Type="int" Mode="In" />
+          <Parameter Name="CategoryName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Description" Type="ntext" Mode="In" />
+          <Parameter Name="Picture" Type="image" Mode="In" />
+          <Parameter Name="RowVersion" Type="binary" Mode="In" />
+        </Function>
+        <Function Name="SpCategoriaBuscar" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="IdIni" Type="int" Mode="In" />
+          <Parameter Name="IdFin" Type="int" Mode="In" />
+          <Parameter Name="CategoryName" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="SpCategoriaEliminar" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CategoryID" Type="int" Mode="In" />
+          <Parameter Name="RowVersion" Type="binary" Mode="In" />
+        </Function>
+        <Function Name="SpCategoriaInsertar" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CategoryName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Description" Type="ntext" Mode="In" />
+          <Parameter Name="Picture" Type="image" Mode="In" />
+          <Parameter Name="CategoryID" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="SpCategoriaObtener" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="top100" Type="bit" Mode="In" />
+        </Function>
         <EntityContainer Name="NorthwindModelStoreContainer">
           <EntitySet Name="CatalogoPermisos" EntityType="Self.CatalogoPermisos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
@@ -817,6 +842,31 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <EntitySet Name="VwClientesProveedores" EntityType="NorthwindModel.VwClientesProveedore" />
           <EntitySet Name="VwProductosPorCategoriaListadoes" EntityType="NorthwindModel.VwProductosPorCategoriaListado" />
           <EntitySet Name="VwProductosPorEncimaDelPrecioPromedios" EntityType="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio" />
+          <FunctionImport Name="SpCategoriaBuscar" ReturnType="Collection(NorthwindModel.SpCategoriaBuscar_Result)">
+            <Parameter Name="IdIni" Mode="In" Type="Int32" />
+            <Parameter Name="IdFin" Mode="In" Type="Int32" />
+            <Parameter Name="CategoryName" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SpCategoriaObtener" ReturnType="Collection(NorthwindModel.SpCategoriaObtener_Result)">
+          <Parameter Name="top100" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="SpCategoriaActualizar">
+            <Parameter Name="CategoryID" Mode="In" Type="Int32" />
+            <Parameter Name="CategoryName" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="Picture" Mode="In" Type="Binary" />
+            <Parameter Name="RowVersion" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="SpCategoriaEliminar">
+            <Parameter Name="CategoryID" Mode="In" Type="Int32" />
+            <Parameter Name="RowVersion" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="SpCategoriaInsertar">
+            <Parameter Name="CategoryName" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="Picture" Mode="In" Type="Binary" />
+            <Parameter Name="CategoryID" Mode="InOut" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <EntityType Name="VwCategoriasConProducto">
           <Key>
@@ -879,6 +929,20 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="Categoria" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="true" />
           <Property Name="Proveedor" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="true" />
         </EntityType>
+        <ComplexType Name="SpCategoriaBuscar_Result">
+          <Property Type="Int32" Name="CategoryID" Nullable="false" />
+          <Property Type="String" Name="CategoryName" Nullable="false" MaxLength="15" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="Max" />
+          <Property Type="Binary" Name="Picture" Nullable="true" MaxLength="Max" />
+          <Property Type="Binary" Name="RowVersion" Nullable="true" MaxLength="8" />
+        </ComplexType>
+        <ComplexType Name="SpCategoriaObtener_Result">
+          <Property Type="Int32" Name="CategoryID" Nullable="false" />
+          <Property Type="String" Name="CategoryName" Nullable="false" MaxLength="15" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="Max" />
+          <Property Type="Binary" Name="Picture" Nullable="true" MaxLength="Max" />
+          <Property Type="Binary" Name="RowVersion" Nullable="true" MaxLength="8" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1114,6 +1178,31 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="SpCategoriaBuscar" FunctionName="NorthwindModel.Store.SpCategoriaBuscar">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NorthwindModel.SpCategoriaBuscar_Result">
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Picture" ColumnName="Picture" />
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SpCategoriaObtener" FunctionName="NorthwindModel.Store.SpCategoriaObtener">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="NorthwindModel.SpCategoriaObtener_Result">
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Picture" ColumnName="Picture" />
+                <ScalarProperty Name="RowVersion" ColumnName="RowVersion" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SpCategoriaActualizar" FunctionName="NorthwindModel.Store.SpCategoriaActualizar" />
+          <FunctionImportMapping FunctionImportName="SpCategoriaEliminar" FunctionName="NorthwindModel.Store.SpCategoriaEliminar" />
+          <FunctionImportMapping FunctionImportName="SpCategoriaInsertar" FunctionName="NorthwindModel.Store.SpCategoriaInsertar" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1136,18 +1225,18 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
     </Options>
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
-      <Diagram DiagramId="25faa0ba7a9f483594159ed7d4d421b4" Name="Diagram1">
-        <EntityTypeShape EntityType="NorthwindModel.CatalogoPermiso" Width="1.5" PointX="5.75" PointY="6" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Category" Width="1.5" PointX="0.75" PointY="18.875" IsExpanded="true" />
+      <Diagram DiagramId="25faa0ba7a9f483594159ed7d4d421b4" Name="Diagram1" ZoomLevel="86">
+        <EntityTypeShape EntityType="NorthwindModel.CatalogoPermiso" Width="1.5" PointX="6.875" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Category" Width="1.5" PointX="5" PointY="6.125" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Customer" Width="1.5" PointX="0.5" PointY="1.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Employee" Width="1.5" PointX="0.75" PointY="9.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Employee" Width="1.5" PointX="0.5" PointY="5.5" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Order_Detail" Width="1.5" PointX="5" PointY="2" IsExpanded="true" />
         <EntityTypeShape EntityType="NorthwindModel.Order" Width="1.5" PointX="2.75" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Permiso" Width="1.5" PointX="8" PointY="5.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Product" Width="1.5" PointX="3" PointY="20.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Shipper" Width="1.5" PointX="0.75" PointY="15.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Supplier" Width="1.5" PointX="0.75" PointY="21.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="NorthwindModel.Usuario" Width="1.5" PointX="5.75" PointY="9.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Permiso" Width="1.5" PointX="9.125" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Product" Width="1.5" PointX="7.25" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Shipper" Width="1.5" PointX="2.625" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Supplier" Width="1.5" PointX="5" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="NorthwindModel.Usuario" Width="1.5" PointX="11" PointY="4" IsExpanded="true" />
         <AssociationConnector Association="NorthwindModel.FK_Permisos_CatalogoPermisos" ManuallyRouted="false" />
         <AssociationConnector Association="NorthwindModel.FK_Products_Categories" ManuallyRouted="false" />
         <AssociationConnector Association="NorthwindModel.FK_Orders_Customers" ManuallyRouted="false" />

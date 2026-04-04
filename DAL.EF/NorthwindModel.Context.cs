@@ -12,6 +12,8 @@ namespace DAL.EF
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class NorthwindContext : DbContext
     {
@@ -40,5 +42,86 @@ namespace DAL.EF
         public virtual DbSet<VwClientesProveedore> VwClientesProveedores { get; set; }
         public virtual DbSet<VwProductosPorCategoriaListado> VwProductosPorCategoriaListadoes { get; set; }
         public virtual DbSet<VwProductosPorEncimaDelPrecioPromedio> VwProductosPorEncimaDelPrecioPromedios { get; set; }
+    
+        public virtual ObjectResult<SpCategoriaBuscar_Result> SpCategoriaBuscar(Nullable<int> idIni, Nullable<int> idFin, string categoryName)
+        {
+            var idIniParameter = idIni.HasValue ?
+                new ObjectParameter("IdIni", idIni) :
+                new ObjectParameter("IdIni", typeof(int));
+    
+            var idFinParameter = idFin.HasValue ?
+                new ObjectParameter("IdFin", idFin) :
+                new ObjectParameter("IdFin", typeof(int));
+    
+            var categoryNameParameter = categoryName != null ?
+                new ObjectParameter("CategoryName", categoryName) :
+                new ObjectParameter("CategoryName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SpCategoriaBuscar_Result>("SpCategoriaBuscar", idIniParameter, idFinParameter, categoryNameParameter);
+        }
+    
+        public virtual ObjectResult<SpCategoriaObtener_Result> SpCategoriaObtener(Nullable<bool> top100)
+        {
+            var top100Parameter = top100.HasValue ?
+                new ObjectParameter("top100", top100) :
+                new ObjectParameter("top100", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<SpCategoriaObtener_Result>("SpCategoriaObtener", top100Parameter);
+        }
+    
+        public virtual int SpCategoriaActualizar(Nullable<int> categoryID, string categoryName, string description, byte[] picture, byte[] rowVersion)
+        {
+            var categoryIDParameter = categoryID.HasValue ?
+                new ObjectParameter("CategoryID", categoryID) :
+                new ObjectParameter("CategoryID", typeof(int));
+    
+            var categoryNameParameter = categoryName != null ?
+                new ObjectParameter("CategoryName", categoryName) :
+                new ObjectParameter("CategoryName", typeof(string));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var pictureParameter = picture != null ?
+                new ObjectParameter("Picture", picture) :
+                new ObjectParameter("Picture", typeof(byte[]));
+    
+            var rowVersionParameter = rowVersion != null ?
+                new ObjectParameter("RowVersion", rowVersion) :
+                new ObjectParameter("RowVersion", typeof(byte[]));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpCategoriaActualizar", categoryIDParameter, categoryNameParameter, descriptionParameter, pictureParameter, rowVersionParameter);
+        }
+    
+        public virtual int SpCategoriaEliminar(Nullable<int> categoryID, byte[] rowVersion)
+        {
+            var categoryIDParameter = categoryID.HasValue ?
+                new ObjectParameter("CategoryID", categoryID) :
+                new ObjectParameter("CategoryID", typeof(int));
+    
+            var rowVersionParameter = rowVersion != null ?
+                new ObjectParameter("RowVersion", rowVersion) :
+                new ObjectParameter("RowVersion", typeof(byte[]));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpCategoriaEliminar", categoryIDParameter, rowVersionParameter);
+        }
+    
+        public virtual int SpCategoriaInsertar(string categoryName, string description, byte[] picture, ObjectParameter categoryID)
+        {
+            var categoryNameParameter = categoryName != null ?
+                new ObjectParameter("CategoryName", categoryName) :
+                new ObjectParameter("CategoryName", typeof(string));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var pictureParameter = picture != null ?
+                new ObjectParameter("Picture", picture) :
+                new ObjectParameter("Picture", typeof(byte[]));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpCategoriaInsertar", categoryNameParameter, descriptionParameter, pictureParameter, categoryID);
+        }
     }
 }
