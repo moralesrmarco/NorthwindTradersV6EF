@@ -1,7 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,15 +10,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptProveedores : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        ProveedorBLL _proveedorBLL;
-
         public FrmRptProveedores()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _proveedorBLL = new ProveedorBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -32,7 +25,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var proveedores = _proveedorBLL.ObtenerProveedores(false, null, true);
+                var proveedores = SupplierBLL.ObtenerProveedores(false, null, true);
                 // Conteos
                 int totalProveedores = proveedores.Count();
                 // Conteo de ciudades distintas
@@ -70,7 +63,10 @@ namespace NorthwindTradersV6EF
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
                 if (proveedores.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
                     U.NotificacionWarning(Utils.noDatos);
+                }
             }
             catch (Exception ex)
             {
