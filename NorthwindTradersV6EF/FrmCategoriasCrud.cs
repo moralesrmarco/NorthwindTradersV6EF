@@ -83,13 +83,13 @@ namespace NorthwindTradersV6EF
                 // cambia mucho la estructuración, ojo no modificar.
                 var categorias = CategoryBLL.ObtenerCategorias(selectorRealizaBusqueda, criterios, false);
                 var categoriasSinRowVersionTimeStamp = categorias
-                                                        .Select(c => new Category
+                                                        .Select(c => new DtoCategoriaDgv
                                                         {
                                                             CategoryID = c.CategoryID,
                                                             CategoryName = c.CategoryName,
                                                             Description = c.Description,
                                                             Picture = c.Picture,
-                                                            RowVersionStr = c.RowVersionString
+                                                            RowVersionStr = c.RowVersionStr
                                                         })
                                                         .ToList();
                 Dgv.DataSource = categoriasSinRowVersionTimeStamp;
@@ -111,12 +111,7 @@ namespace NorthwindTradersV6EF
 
         private void ConfDgv()
         {
-            // Estas tres columnas son necesarias para poder manejar el LlenarDgv sin realizar una recarga del registro de la categoria, como en los otros metodos de los demas FrmCrud...
-            // cambia mucho la estructuración, ojo no modificar.
-            Dgv.Columns["RowVersion"].Visible = false;
-            Dgv.Columns["RowVersionString"].Visible = false;
             Dgv.Columns["RowVersionStr"].Visible = false;
-            Dgv.Columns["Products"].Visible = false;
 
             Dgv.Columns["CategoryID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["CategoryName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -364,6 +359,14 @@ namespace NorthwindTradersV6EF
             }
             else if (tabcOperacion.SelectedTab == tbpModificar)
             {
+                // Verificar si hubo cambios en el formulario
+                if (!Utils.HayCambios(this, valoresOriginales))
+                {
+                    U.NotificacionWarning(Utils.ndc);
+                    return; // Salir sin hacer UPDATE
+                }
+
+                // aqui no manejo la concurrencia con el entity framework, modo de simultaneidad = none, por que la concurrencia la maneja el stored procedure
                 if (ValidarControles())
                 {
                     btnOperacion.Enabled = false;
@@ -381,16 +384,16 @@ namespace NorthwindTradersV6EF
                             CategoryID = int.Parse(txtId.Text),
                             CategoryName = txtCategoria.Text.Trim(),
                             Description = txtDescripcion.Text.Trim(),
-                            Picture = fileFoto
+                            Picture = fileFoto,
+                            RowVersionStr = txtId.Tag.ToString() // reconstruye el byte[] a partir del string para enviarlo al BLL, y lo asigna al RowVersion del objeto categoria, ojo no eliminar esta linea porque es necesaria para el manejo de la concurrencia optimista, si se elimina se pierde la funcionalidad de la concurrencia optimista y se podrían presentar problemas de actualización sin que el usuario se dé cuenta, como por ejemplo que se sobreescriban cambios realizados por otro usuario sin que se muestre un mensaje de error indicando que hubo un conflicto de concurrencia.
                         };
-                        // las siguientes dos lineas son necesarias ojo no eliminar
-                        long valor = long.Parse(txtId.Tag.ToString());
-                        categoria.RowVersion = BitConverter.GetBytes(valor);
                         int numRegs = CategoryBLL.Actualizar(categoria);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string idyNombreCategoria = $"La categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}:";
                         if (numRegs > 0)
                             U.NotificacionInformation(idyNombreCategoria + Utils.sms);
+                        else if (numRegs == 0)
+                            U.NotificacionWarning(idyNombreCategoria + Utils.ndc);
                         else if (numRegs == -1)
                             U.NotificacionError(idyNombreCategoria + Utils.nfmfe);
                         else if (numRegs == -2)
@@ -406,37 +409,41 @@ namespace NorthwindTradersV6EF
                     ActualizaDgv();
                 }
             }
-            //else if (tabcOperacion.SelectedTab == tbpEliminar)
-            //{
-            //    if (U.NotificacionQuestion($"[orange]¿Esta seguro de eliminar la categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}?") == DialogResult.Yes)
-            //    {
-            //        btnOperacion.Enabled = false;
-            //        MDIPrincipal.ActualizarBarraDeEstado(Utils.eliminandoRegistro);
-            //        try
-            //        {
-            //            // las siguientes dos lineas son necesarias ojo no eliminar
-            //            long valor = long.Parse(txtId.Tag.ToString());
-            //            byte[] rowVersion = BitConverter.GetBytes(valor);
-            //            int numRegs = _categoriaBLL.Eliminar(Convert.ToInt32(txtId.Text), rowVersion);
-            //            MDIPrincipal.ActualizarBarraDeEstado($"Se eliminaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
-            //            string idyNombreCategoria = $"La categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}:";
-            //            if (numRegs > 0)
-            //                U.NotificacionInformation(idyNombreCategoria + Utils.ses);
-            //            else if (numRegs == -1)
-            //                U.NotificacionError(idyNombreCategoria + Utils.nfefe);
-            //            else if (numRegs == -2)
-            //                U.NotificacionError(idyNombreCategoria + Utils.nfefm);
-            //            else
-            //                U.NotificacionError(idyNombreCategoria + Utils.nfemd);
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            U.MsgCatchOue(ex);
-            //        }
-            //        picFoto.BackgroundImage = Properties.Resources.Categorias;
-            //        ActualizaDgv();
-            //    }
-            //}
+            else if (tabcOperacion.SelectedTab == tbpEliminar)
+            {
+                if (U.NotificacionQuestion($"[orange]¿Esta seguro de eliminar la categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}?") == DialogResult.Yes)
+                {
+                    btnOperacion.Enabled = false;
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.eliminandoRegistro);
+                    try
+                    {
+                        var categoria = new Category
+                        {
+                            CategoryID = int.Parse(txtId.Text),
+                            RowVersionStr = txtId.Tag.ToString() // reconstruye el byte[] a partir del string para enviarlo al BLL, y lo asigna al RowVersion del objeto categoria, ojo no eliminar esta linea porque es necesaria para el manejo de la concurrencia optimista, si se elimina se pierde la funcionalidad de la concurrencia optimista y se podrían presentar problemas de eliminación sin que el usuario se dé cuenta, como por ejemplo que se eliminen registros que otro usuario haya modificado sin que se muestre un mensaje de error indicando que hubo un conflicto de concurrencia.
+                        };
+                        int numRegs = CategoryBLL.Eliminar(categoria);
+                        MDIPrincipal.ActualizarBarraDeEstado($"Se eliminaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
+                        string idyNombreCategoria = $"La categoría con Id: {txtId.Text} - Nombre de categoría: {txtCategoria.Text}:";
+                        if (numRegs > 0)
+                            U.NotificacionInformation(idyNombreCategoria + Utils.ses);
+                        else if (numRegs == 0)
+                            U.NotificacionWarning(idyNombreCategoria + Utils.ndc);
+                        else if (numRegs == -1)
+                            U.NotificacionError(idyNombreCategoria + Utils.nfefe);
+                        else if (numRegs == -2)
+                            U.NotificacionError(idyNombreCategoria + Utils.nfefm);
+                        else
+                            U.NotificacionError(idyNombreCategoria + Utils.nfemd);
+                    }
+                    catch (Exception ex)
+                    {
+                        U.MsgCatchOue(ex);
+                    }
+                    picFoto.BackgroundImage = Properties.Resources.Categorias;
+                    ActualizaDgv();
+                }
+            }
             CargarValoresOriginales();
         }
 

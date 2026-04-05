@@ -2,7 +2,10 @@
 using DTOs.EF;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace BLL.EF
@@ -19,7 +22,7 @@ namespace BLL.EF
 
                     // Llamas al SP importado en el EDMX
                     // Supongamos que tu SP se llama SpCategoriaInsertar y devuelve el número de registros afectados
-                    var result = context.SpCategoriaInsertar(
+                    int result = context.SpCategoriaInsertar(
                                 categoria.CategoryName,
                                 categoria.Description,
                                 categoria.Picture,
@@ -44,15 +47,48 @@ namespace BLL.EF
         {
             try
             {
-                return 1; // Devuelve el int directamente
+                using (var context = new NorthwindContext())
+                {
+                    int result = context.Database
+                        .SqlQuery<int>(
+                            "EXEC SpCategoriaActualizar_EF @CategoryID, @CategoryName, @Description, @Picture, @RowVersion",
+                            new SqlParameter("@CategoryID", categoria.CategoryID),
+                            new SqlParameter("@CategoryName", categoria.CategoryName),
+                            new SqlParameter("@Description", categoria.Description),
+                            new SqlParameter("@Picture", categoria.Picture),
+                            new SqlParameter("@RowVersion", categoria.RowVersion)
+                        )
+                        .FirstOrDefault();
+                    return result;
+                }
             }
             catch (Exception ex)
             {
-                // Manejo de excepciones
-                throw new System.Exception("Error al modificar la categoría: " + ex.Message);
+                throw new Exception("Error al modificar la categoría: " + ex.Message);
             }
         }
 
+        public static int Eliminar(Category categoria)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    int result = context.Database
+                        .SqlQuery<int>(
+                            "EXEC SpCategoriaEliminar_EF @CategoryID, @RowVersion",
+                            new SqlParameter("@CategoryID", categoria.CategoryID),
+                            new SqlParameter("@RowVersion", categoria.RowVersion)
+                        )
+                        .FirstOrDefault();
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar la categoría: " + ex.Message);
+            }
+        }
 
         public static List<Category> ObtenerCategorias(bool selectorRealizaBusqueda, DtoCategoriasBuscar criterios, bool top100)
         {

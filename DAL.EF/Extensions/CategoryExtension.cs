@@ -4,13 +4,11 @@ namespace DAL.EF
 {
     public partial class Category
     {
-        public string RowVersionStr { get; set; }
-        // Propiedad auxiliar para que no tenga conflicto el DataGridView
-        public string RowVersionString
+        // Propiedad auxiliar para mostrar en el grid
+        public string RowVersionStr
         {
-            get => RowVersion != null
-                ? BitConverter.ToInt64(RowVersion, 0).ToString()
-                : string.Empty;
+            get => BitConverter.ToInt64(RowVersion, 0).ToString();
+            set => RowVersion = BitConverter.GetBytes(long.Parse(value)); // reconstruye el rowversion,lo asigna a la propiedad RowVersion a partir del valor string recibido
         }
     }
 }
