@@ -352,13 +352,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Function Name="SpCategoriaActualizar_EF" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="CategoryID" Type="int" Mode="In" />
-          <Parameter Name="CategoryName" Type="nvarchar" Mode="In" />
-          <Parameter Name="Description" Type="ntext" Mode="In" />
-          <Parameter Name="Picture" Type="image" Mode="In" />
-          <Parameter Name="RowVersion" Type="binary" Mode="In" />
-        </Function>
         <Function Name="SpCategoriaBuscar" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="IdIni" Type="int" Mode="In" />
           <Parameter Name="IdFin" Type="int" Mode="In" />
@@ -860,13 +853,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             <Parameter Name="Picture" Mode="In" Type="Binary" />
             <Parameter Name="CategoryID" Mode="InOut" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="SpCategoriaActualizar_EF" ReturnType="Collection(Int32)">
-            <Parameter Name="CategoryID" Mode="In" Type="Int32" />
-            <Parameter Name="CategoryName" Mode="In" Type="String" />
-            <Parameter Name="Description" Mode="In" Type="String" />
-            <Parameter Name="Picture" Mode="In" Type="Binary" />
-            <Parameter Name="RowVersion" Mode="In" Type="Binary" />
-          </FunctionImport>
         </EntityContainer>
         <EntityType Name="VwCategoriasConProducto">
           <Key>
@@ -1202,7 +1188,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="SpCategoriaEliminar" FunctionName="NorthwindModel.Store.SpCategoriaEliminar" />
           <FunctionImportMapping FunctionImportName="SpCategoriaInsertar" FunctionName="NorthwindModel.Store.SpCategoriaInsertar" />
-          <FunctionImportMapping FunctionImportName="SpCategoriaActualizar_EF" FunctionName="NorthwindModel.Store.SpCategoriaActualizar_EF" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

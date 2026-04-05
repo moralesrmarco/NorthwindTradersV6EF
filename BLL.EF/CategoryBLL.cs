@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -120,6 +119,58 @@ namespace BLL.EF
                         RowVersion = r.RowVersion
                     }).ToList();
                 }
+            }
+        }
+
+        public static List<Category> ObtenerCategoriasProductosDgv()
+        {
+            using (var context = new NorthwindContext())
+            {
+                // 🔹 Traer categorías con productos
+                var categorias = context.Categories
+                    .Include("Products.Supplier")
+                    .AsNoTracking()
+                    .OrderByDescending(c => c.CategoryID)
+                    .ToList();
+
+                // 🔹 Proyección en memoria (limpiar RowVersion y Picture)
+                var result = categorias.Select(c => new Category
+                {
+                    CategoryID = c.CategoryID,
+                    CategoryName = c.CategoryName,
+                    Description = c.Description,
+                    Picture = c.Picture,
+
+                    Products = c.Products
+                        .OrderByDescending(p => p.ProductID)
+                        .Select(p => new Product
+                        {
+                            ProductID = p.ProductID,
+                            ProductName = p.ProductName,
+                            QuantityPerUnit = p.QuantityPerUnit,
+                            UnitPrice = p.UnitPrice,
+                            UnitsInStock = p.UnitsInStock,
+                            CategoryID = p.CategoryID,
+                            SupplierID = p.SupplierID,
+
+                            // 🔹 navegación Category (ligera)
+                            Category = new Category
+                            {
+                                CategoryID = c.CategoryID,
+                                CategoryName = c.CategoryName,
+                                Description = c.Description
+                            },
+                            // Campo de Supplier (CompanyName)
+                            Supplier = new Supplier
+                            {
+                                SupplierID = p.Supplier.SupplierID,
+                                CompanyName = p.Supplier.CompanyName
+                            }
+                        }).ToList()
+
+                }).ToList();
+
+                return result;
             }
         }
     }

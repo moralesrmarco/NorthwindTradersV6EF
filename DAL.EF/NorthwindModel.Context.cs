@@ -98,30 +98,5 @@ namespace DAL.EF
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SpCategoriaInsertar", categoryNameParameter, descriptionParameter, pictureParameter, categoryID);
         }
-    
-        public virtual ObjectResult<Nullable<int>> SpCategoriaActualizar_EF(Nullable<int> categoryID, string categoryName, string description, byte[] picture, byte[] rowVersion)
-        {
-            var categoryIDParameter = categoryID.HasValue ?
-                new ObjectParameter("CategoryID", categoryID) :
-                new ObjectParameter("CategoryID", typeof(int));
-    
-            var categoryNameParameter = categoryName != null ?
-                new ObjectParameter("CategoryName", categoryName) :
-                new ObjectParameter("CategoryName", typeof(string));
-    
-            var descriptionParameter = description != null ?
-                new ObjectParameter("Description", description) :
-                new ObjectParameter("Description", typeof(string));
-    
-            var pictureParameter = picture != null ?
-                new ObjectParameter("Picture", picture) :
-                new ObjectParameter("Picture", typeof(byte[]));
-    
-            var rowVersionParameter = rowVersion != null ?
-                new ObjectParameter("RowVersion", rowVersion) :
-                new ObjectParameter("RowVersion", typeof(byte[]));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("SpCategoriaActualizar_EF", categoryIDParameter, categoryNameParameter, descriptionParameter, pictureParameter, rowVersionParameter);
-        }
     }
 }

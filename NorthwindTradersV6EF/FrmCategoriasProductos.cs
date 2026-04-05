@@ -1,6 +1,6 @@
-﻿using BLL;
+﻿using BLL.EF;
+using DAL.EF;
 using System;
-using System.Configuration;
 using System.Windows.Forms;
 using Utilities;
 
@@ -9,8 +9,6 @@ namespace NorthwindTradersV6EF
     public partial class FrmCategoriasProductos : Form
     {
 
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        CategoriaBLL _categoriaBLL;
         BindingSource bsCategorias = new BindingSource();
         BindingSource bsProductos = new BindingSource();
         bool ejecutarAlCargar = true;
@@ -18,10 +16,8 @@ namespace NorthwindTradersV6EF
         public FrmCategoriasProductos()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
             // Suscripción al evento
             bsCategorias.ListChanged += bsCategorias_ListChanged;
-            _categoriaBLL = new CategoriaBLL(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint2(this, sender, e);
@@ -51,24 +47,16 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var ds = _categoriaBLL.ObtenerCategoriasProductosDgv();
+                var categorias = CategoryBLL.ObtenerCategoriasProductosDgv();
 
-                bsCategorias.DataSource = ds;
-                bsCategorias.DataMember = "Categorias";
-
-                bsProductos.DataSource = bsCategorias;
-                bsProductos.DataMember = "CategoriasProductos";
-
-                // necesario para que funcione el ordenamiento al hacer clic en el encabezado de columna del dataGridView maestro
-                dgvCategorias.AutoGenerateColumns = true;   // 🔑
+                bsCategorias.DataSource = categorias;
+                dgvCategorias.AutoGenerateColumns = true;
                 dgvCategorias.DataSource = bsCategorias;
 
+                bsProductos.DataSource = bsCategorias;
+                bsProductos.DataMember = nameof(Category.Products);
                 dgvProductos.AutoGenerateColumns = true;
                 dgvProductos.DataSource = bsProductos;
-
-                // 🔑 habilitar ordenamiento automático
-                foreach (DataGridViewColumn col in dgvCategorias.Columns)
-                    col.SortMode = DataGridViewColumnSortMode.Automatic;
 
                 // Actualiza después de que el mensaje de UI regrese al loop (binding ya estable)
                 BeginInvoke((Action)(ActualizarEstadoCategorias));
@@ -82,23 +70,35 @@ namespace NorthwindTradersV6EF
 
         private void ConfDgvCategorias(DataGridView dgv)
         {
+            dgv.Columns["RowVersion"].Visible = false;
+            dgv.Columns["Products"].Visible = false;
+            dgv.Columns["RowVersionStr"].Visible = false;
+            dgv.Columns["Picture"].Visible = false;
+
             dgv.Columns["CategoryId"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dgv.Columns["CategoryName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
-            dgv.Columns["Picture"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            dgv.Columns["Picture"].Width = 80;
+            dgv.Columns["PictureImage"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            dgv.Columns["PictureImage"].Width = 80;
             dgv.RowTemplate.Height = 80;
-            dgv.Columns["Picture"].DefaultCellStyle.Padding = new Padding(4);
-            ((DataGridViewImageColumn)dgv.Columns["Picture"]).ImageLayout = DataGridViewImageCellLayout.Zoom;
+            dgv.Columns["PictureImage"].DefaultCellStyle.Padding = new Padding(4);
+            ((DataGridViewImageColumn)dgv.Columns["PictureImage"]).ImageLayout = DataGridViewImageCellLayout.Zoom;
 
             dgv.Columns["CategoryId"].HeaderText = "Id";
             dgv.Columns["CategoryName"].HeaderText = "Categoría";
             dgv.Columns["Description"].HeaderText = "Descripción";
-            dgv.Columns["Picture"].HeaderText = "Foto";
+            dgv.Columns["PictureImage"].HeaderText = "Foto";
         }
 
         private void ConfDgvProductos(DataGridView dgv)
         {
+            dgv.Columns["CategoryId"].Visible = false;
+            dgv.Columns["SupplierId"].Visible = false;
+            dgv.Columns["RowVersion"].Visible = false;
+            dgv.Columns["Category"].Visible = false;
+            dgv.Columns["Order_Details"].Visible = false;
+            dgv.Columns["Supplier"].Visible = false;
+
             dgv.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgv.Columns["UnitsInStock"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgv.Columns["UnitsOnOrder"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -111,19 +111,16 @@ namespace NorthwindTradersV6EF
             dgv.Columns["UnitsInStock"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dgv.Columns["UnitsOnOrder"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dgv.Columns["ReorderLevel"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dgv.Columns["CompanyName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dgv.Columns["Discontinued"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dgv.Columns["CategoryName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dgv.Columns["Description"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgv.Columns["CategoryDescription"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            dgv.Columns["SupplierCompanyName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
 
             dgv.Columns["UnitPrice"].DefaultCellStyle.Format = "c";
             dgv.Columns["UnitsInStock"].DefaultCellStyle.Format = "n0";
             dgv.Columns["UnitsOnOrder"].DefaultCellStyle.Format = "n0";
             dgv.Columns["ReorderLevel"].DefaultCellStyle.Format = "n0";
-
-            dgv.Columns["CategoryId"].Visible = false;
-            dgv.Columns["SupplierId"].Visible = false;
-
             dgv.Columns["ProductId"].HeaderText = "Id";
             dgv.Columns["CategoryName"].HeaderText = "Categoría";
             dgv.Columns["ProductName"].HeaderText = "Producto";
@@ -133,8 +130,8 @@ namespace NorthwindTradersV6EF
             dgv.Columns["UnitsOnOrder"].HeaderText = "Unidades en pedido";
             dgv.Columns["ReorderLevel"].HeaderText = "Punto de pedido";
             dgv.Columns["Discontinued"].HeaderText = "Descontinuado";
-            dgv.Columns["Description"].HeaderText = "Descripción de categoría";
-            dgv.Columns["CompanyName"].HeaderText = "Proveedor";
+            dgv.Columns["CategoryDescription"].HeaderText = "Descripción de categoría";
+            dgv.Columns["SupplierCompanyName"].HeaderText = "Proveedor";
 
             dgvProductos.Columns["ProductID"].DisplayIndex = 0;
             dgvProductos.Columns["ProductName"].DisplayIndex = 1;
@@ -145,10 +142,9 @@ namespace NorthwindTradersV6EF
             dgvProductos.Columns["ReorderLevel"].DisplayIndex = 6;
             dgvProductos.Columns["Discontinued"].DisplayIndex = 7;
             dgvProductos.Columns["CategoryName"].DisplayIndex = 8;
-            dgvProductos.Columns["Description"].DisplayIndex = 9;
-            dgvProductos.Columns["CompanyName"].DisplayIndex = 10;
+            dgvProductos.Columns["CategoryDescription"].DisplayIndex = 9;
+            dgvProductos.Columns["SupplierCompanyName"].DisplayIndex = 10;
         }
-
 
         private void dgvCategorias_SelectionChanged(object sender, EventArgs e) => ActualizarEstadoCategorias();
 

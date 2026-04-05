@@ -557,6 +557,43 @@ namespace Utilities
             }
         }
 
+        public static Image ByteArrayToImage(byte[] bytes)
+        {
+            if (bytes == null || bytes.Length == 0)
+                return null;
+
+            try
+            {
+                // 🔹 Intentar como imagen directa (JPEG, PNG, etc.)
+                using (var ms = new MemoryStream(bytes))
+                {
+                    return Image.FromStream(ms);
+                }
+            }
+            catch
+            {
+                try
+                {
+                    // 🔹 Intentar quitando header OLE (Northwind)
+                    const int oleHeaderSize = 78;
+
+                    if (bytes.Length > oleHeaderSize)
+                    {
+                        using (var ms = new MemoryStream(bytes, oleHeaderSize, bytes.Length - oleHeaderSize))
+                        {
+                            return Image.FromStream(ms);
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignorar
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Ajusta los valores de dos NumericUpDown que representan un rango (inicial y final).
         /// Usa el parámetro sender para identificar cuál control disparó el evento.

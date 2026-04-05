@@ -58,10 +58,6 @@ namespace NorthwindTradersV6EF
                 DgvProductos.AutoGenerateColumns = true;
                 DgvProductos.DataSource = bsProductos;
 
-                // 🔑 habilitar ordenamiento automático
-                foreach (DataGridViewColumn col in DgvProveedores.Columns)
-                    col.SortMode = DataGridViewColumnSortMode.Automatic;
-
                 // Actualiza después de que el mensaje de UI regrese al loop (binding ya estable)
                 BeginInvoke((Action)(ActualizarEstadoProveedores));
 
