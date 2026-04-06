@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="DtoCategoriaDgv.cs" />
     <Compile Include="DtoCategoriasBuscar.cs" />
+    <Compile Include="DtoCategoriasConProductos.cs" />
     <Compile Include="DtoClienteProveedor.cs" />
     <Compile Include="DtoEmpleadosBuscar.cs" />
     <Compile Include="DtoEmpleadosDgv.cs" />

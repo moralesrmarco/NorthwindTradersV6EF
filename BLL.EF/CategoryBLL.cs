@@ -191,5 +191,24 @@ namespace BLL.EF
                 throw new Exception("Error al obtener el listado de productos por categoría: " + ex.Message);
             }
         }
+
+        public static List<Category> ObtenerCategoriasConProductos()
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    // Incluye productos y proveedores en la misma consulta
+                    return context.Categories
+                                  .Include("Products.Supplier")
+                                  .OrderBy(c => c.CategoryName)
+                                  .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener categorías con productos: " + ex.Message);
+            }
+        }
     }
 }

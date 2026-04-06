@@ -1,8 +1,7 @@
-﻿using BLL;
-using Entities.DTOs;
+﻿using BLL.EF;
+using DTOs.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -13,16 +12,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptCategoriasConProductos: Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        CategoriaBLL _categoriaBLL;
-
-
         public FrmRptCategoriasConProductos()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _categoriaBLL = new CategoriaBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -35,8 +27,8 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var categoriasConProductos = _categoriaBLL.ObtenerCategoriasConProductos();
-                var productos = categoriasConProductos.SelectMany(c => c.Productos.DefaultIfEmpty(), (c, p) => new DtoCategoriasConProductos
+                var categoriasConProductos = CategoryBLL.ObtenerCategoriasConProductos();
+                var productos = categoriasConProductos.SelectMany(c => c.Products.DefaultIfEmpty(), (c, p) => new DtoCategoriasConProductos
                 {
                     ProductID = p?.ProductID,
                     ProductName = p?.ProductName,
@@ -47,7 +39,7 @@ namespace NorthwindTradersV6EF
                     ReorderLevel = p?.ReorderLevel,
                     Discontinued = p?.Discontinued ?? false,
                     CategoryName = c.CategoryName,
-                    CompanyName = p?.Proveedor?.CompanyName
+                    CompanyName = p?.Supplier?.CompanyName
                 }).ToList();
                 int totalProveedores = productos
                     .Where(p => !string.IsNullOrEmpty(p.CompanyName))
@@ -63,9 +55,9 @@ namespace NorthwindTradersV6EF
                 reportViewer1.LocalReport.Refresh();
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
-                if (categoriasConProductos.Count <= 0)
+                if (categoriasConProductos.Count == 0)
                 {
-                    MDIPrincipal.ActualizarBarraDeEstado("No se encontraron registros");
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
                     U.NotificacionWarning(Utils.noDatos);
                 }
             }

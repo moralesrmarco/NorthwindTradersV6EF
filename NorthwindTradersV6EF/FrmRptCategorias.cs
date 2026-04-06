@@ -1,7 +1,6 @@
 ﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Windows.Forms;
 using Utilities;
@@ -35,7 +34,11 @@ namespace NorthwindTradersV6EF
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
                 if (categorias.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
                     U.NotificacionWarning(Utils.noDatos);
+                }
+
             }
             catch (Exception ex)
             {
