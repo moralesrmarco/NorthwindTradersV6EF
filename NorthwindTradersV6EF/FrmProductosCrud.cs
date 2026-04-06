@@ -1,8 +1,10 @@
 ﻿using BLL;
+using BLL.EF;
+using BLL.EF.Services;
 using BLL.Services;
+using DAL.EF;
+using DTOs.EF;
 using Entities;
-using Entities.DTOs;
-using NorthwindTradersV6EF.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -20,6 +22,8 @@ namespace NorthwindTradersV6EF
         private ProductoBLL _productoBLL;
         private readonly CategoriaService _categoriaService;
         private readonly ProveedorService _proveedorService;
+
+
         private bool EjecutarConfDgv = true;
         internal Dictionary<string, object> valoresOriginales;
         bool EventoCargado = true; // esta variable es necesaria para controlar el manejador de eventos de la celda del dgv ojo no quitar
@@ -27,7 +31,8 @@ namespace NorthwindTradersV6EF
         public FrmProductosCrud()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
+
+
             _productoBLL = new ProductoBLL(_connectionString);
             _categoriaService = new CategoriaService(_connectionString);
             _proveedorService = new ProveedorService(_connectionString);
@@ -99,15 +104,26 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboCategoria = _categoriaService.ObtenerCategoriasCbo();
-                var dtBCboCategoria = dtCboCategoria.Copy();
-                ComboBoxHelper.LlenarCbo(cboCategoria, dtCboCategoria, "CategoryName", "CategoryID");
-                ComboBoxHelper.LlenarCbo(cboBCategoria, dtBCboCategoria, "CategoryName", "CategoryID");
-                MDIPrincipal.ActualizarBarraDeEstado();
+
+                var categorias = CategoryService.ObtenerCategoriasCbo();
+                
+                cboCategoria.DataSource = categorias;
+                cboCategoria.ValueMember = "CategoryID";
+                cboCategoria.DisplayMember = "CategoryName";
+                cboCategoria.SelectedIndex = 0;
+
+                cboBCategoria.DataSource = new List<Category>(categorias);
+                cboBCategoria.ValueMember = "CategoryID";
+                cboBCategoria.DisplayMember = "CategoryName";
+                cboBCategoria.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
                 U.MsgCatchOue(ex);
+            }
+            finally
+            {
+                MDIPrincipal.ActualizarBarraDeEstado();
             }
         }
 
@@ -116,15 +132,26 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboProveedor = _proveedorService.ObtenerProveedoresCbo();
-                var dtBCboProveedor = dtCboProveedor.Copy();
-                ComboBoxHelper.LlenarCbo(cboProveedor, dtCboProveedor, "CompanyName", "SupplierId");
-                ComboBoxHelper.LlenarCbo(cboBProveedor, dtBCboProveedor, "CompanyName", "SupplierId");
-                MDIPrincipal.ActualizarBarraDeEstado();
+                
+                var proveedores = SupplierService.ObtenerProveedoresCbo();
+
+                cboProveedor.DataSource = proveedores;
+                cboProveedor.ValueMember = "SupplierID";
+                cboProveedor.DisplayMember = "CompanyName";
+                cboProveedor.SelectedIndex = 0;
+
+                cboBProveedor.DataSource = new List<Supplier>(proveedores);
+                cboBProveedor.ValueMember = "SupplierID";
+                cboBProveedor.DisplayMember = "CompanyName";
+                cboBProveedor.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
                 U.MsgCatchOue(ex);
+            }
+            finally
+            {
+                MDIPrincipal.ActualizarBarraDeEstado();
             }
         }
 
@@ -145,7 +172,7 @@ namespace NorthwindTradersV6EF
                     };
                 else
                     criterios = null;
-                var productos = _productoBLL.ObtenerProductos(selectorRealizaBusqueda, criterios, false);
+                var productos = ProductBLL.ObtenerProductos(selectorRealizaBusqueda, criterios, false);
                 var dtoProductos = productos.Select(p => new DtoProducto
                 {
                     ProductID = p.ProductID,
@@ -156,11 +183,11 @@ namespace NorthwindTradersV6EF
                     UnitsOnOrder = p.UnitsOnOrder,
                     ReorderLevel = p.ReorderLevel,
                     Discontinued = p.Discontinued,
-                    CategoryName = p.Categoria?.CategoryName,
-                    Description = p.Categoria?.Description,
-                    CompanyName = p.Proveedor?.CompanyName,
-                    CategoryID = p.Categoria?.CategoryID ?? 0,
-                    SupplierID = p.Proveedor?.SupplierID ?? 0
+                    CategoryName = p.Category?.CategoryName,
+                    Description = p.Category?.Description,
+                    CompanyName = p.Supplier?.CompanyName,
+                    CategoryID = p.Category?.CategoryID ?? 0,
+                    SupplierID = p.Supplier?.SupplierID ?? 0
                 }).ToList();
                 Dgv.DataSource = dtoProductos;
                 if (EjecutarConfDgv)

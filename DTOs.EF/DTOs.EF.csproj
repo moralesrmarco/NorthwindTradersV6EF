@@ -48,6 +48,8 @@
     <Compile Include="DtoEmpleadosBuscar.cs" />
     <Compile Include="DtoEmpleadosDgv.cs" />
     <Compile Include="DtoEmpleadosPaisesCbo.cs" />
+    <Compile Include="DtoProducto.cs" />
+    <Compile Include="DtoProductosBuscar.cs" />
     <Compile Include="DtoProductosPorProveedor.cs" />
     <Compile Include="DtoProductosPorProveedorConDetProv.cs" />
     <Compile Include="DtoProveedoresBuscar.cs" />

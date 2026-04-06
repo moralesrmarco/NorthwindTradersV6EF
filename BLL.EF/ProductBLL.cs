@@ -1,5 +1,6 @@
 ﻿using DAL.EF;
 using DTOs.EF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +8,52 @@ namespace BLL.EF
 {
     public class ProductBLL
     {
+
+        public static List<Product> ObtenerProductos(bool selectorRealizaBusqueda, DtoProductosBuscar criterios, bool top100)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    IQueryable<Product> query = context.Products
+                        .Include("Supplier")
+                        .Include("Category");
+
+                    if (selectorRealizaBusqueda)
+                    {
+                        query = query.OrderBy(p => p.ProductID);
+
+                        if (criterios.IdIni > 0)
+                            query = query.Where(p => p.ProductID >= criterios.IdIni);
+
+                        if (criterios.IdFin > 0)
+                            query = query.Where(p => p.ProductID <= criterios.IdFin);
+
+                        if (!string.IsNullOrEmpty(criterios.Producto))
+                            query = query.Where(p => p.ProductName.Contains(criterios.Producto));
+
+                        if (criterios.Categoria > 0)
+                            query = query.Where(p => p.CategoryID == criterios.Categoria);
+
+                        if (criterios.Proveedor > 0)
+                            query = query.Where(p => p.SupplierID == criterios.Proveedor);
+                    }
+                    else
+                    {
+                        if (!top100)
+                            query = query.OrderByDescending(p => p.ProductID).Take(20);
+                    }
+
+                    return query
+                           .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener productos: " + ex.Message);
+            }
+        }
+
         public static List<DtoProductosPorProveedor> ObtenerProductosPorProveedor()
         {
             using (var context = new NorthwindContext())
