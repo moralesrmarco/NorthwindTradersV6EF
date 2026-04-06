@@ -833,7 +833,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           </AssociationSet>
           <EntitySet Name="VwCategoriasConProductos" EntityType="NorthwindModel.VwCategoriasConProducto" />
           <EntitySet Name="VwClientesProveedores" EntityType="NorthwindModel.VwClientesProveedore" />
-          <EntitySet Name="VwProductosPorCategoriaListadoes" EntityType="NorthwindModel.VwProductosPorCategoriaListado" />
           <EntitySet Name="VwProductosPorEncimaDelPrecioPromedios" EntityType="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio" />
           <FunctionImport Name="SpCategoriaBuscar" ReturnType="Collection(NorthwindModel.SpCategoriaBuscar_Result)">
             <Parameter Name="IdIni" Mode="In" Type="Int32" />
@@ -853,6 +852,7 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
             <Parameter Name="Picture" Mode="In" Type="Binary" />
             <Parameter Name="CategoryID" Mode="InOut" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="VwProductosPorCategoriaListadoes" EntityType="NorthwindModel.VwProductosPorCategoriaListado" />
         </EntityContainer>
         <EntityType Name="VwCategoriasConProducto">
           <Key>
@@ -885,21 +885,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Name="Phone" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
           <Property Name="Fax" Type="String" MaxLength="24" FixedLength="false" Unicode="true" />
         </EntityType>
-        <EntityType Name="VwProductosPorCategoriaListado">
-          <Key>
-            <PropertyRef Name="CategoryName" />
-          </Key>
-          <Property Name="CategoryName" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="true" />
-          <Property Name="ProductName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
-          <Property Name="ProductID" Type="Int32" />
-          <Property Name="QuantityPerUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
-          <Property Name="UnitsInStock" Type="Int16" />
-          <Property Name="UnitsOnOrder" Type="Int16" />
-          <Property Name="ReorderLevel" Type="Int16" />
-          <Property Name="Discontinued" Type="Boolean" />
-          <Property Name="CompanyName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
-        </EntityType>
         <EntityType Name="VwProductosPorEncimaDelPrecioPromedio">
           <Key>
             <PropertyRef Name="Producto" />
@@ -929,6 +914,21 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           <Property Type="Binary" Name="Picture" Nullable="true" MaxLength="Max" />
           <Property Type="Binary" Name="RowVersion" Nullable="true" MaxLength="8" />
         </ComplexType>
+        <EntityType Name="VwProductosPorCategoriaListado">
+          <Key>
+            <PropertyRef Name="CategoryName" />
+          </Key>
+          <Property Name="CategoryName" Type="String" Nullable="false" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="ProductName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="ProductID" Type="Int32" />
+          <Property Name="QuantityPerUnit" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="UnitsInStock" Type="Int16" />
+          <Property Name="UnitsOnOrder" Type="Int16" />
+          <Property Name="ReorderLevel" Type="Int16" />
+          <Property Name="Discontinued" Type="Boolean" />
+          <Property Name="CompanyName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1134,22 +1134,6 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="VwProductosPorCategoriaListadoes">
-            <EntityTypeMapping TypeName="NorthwindModel.VwProductosPorCategoriaListado">
-              <MappingFragment StoreEntitySet="VwProductosPorCategoriaListado">
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
-                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
-                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
-                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
-                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
-                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
-                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
-                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
-                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="VwProductosPorEncimaDelPrecioPromedios">
             <EntityTypeMapping TypeName="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio">
               <MappingFragment StoreEntitySet="VwProductosPorEncimaDelPrecioPromedio">
@@ -1188,6 +1172,22 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="SpCategoriaEliminar" FunctionName="NorthwindModel.Store.SpCategoriaEliminar" />
           <FunctionImportMapping FunctionImportName="SpCategoriaInsertar" FunctionName="NorthwindModel.Store.SpCategoriaInsertar" />
+          <EntitySetMapping Name="VwProductosPorCategoriaListadoes">
+            <EntityTypeMapping TypeName="NorthwindModel.VwProductosPorCategoriaListado">
+              <MappingFragment StoreEntitySet="VwProductosPorCategoriaListado">
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
+                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
+                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
+                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="CategoryName" ColumnName="CategoryName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -1234,8 +1234,8 @@ advertencia 6002: La tabla o vista 'Northwind2.dbo.VwProductosPorEncimaDelPrecio
         <AssociationConnector Association="NorthwindModel.FK_Products_Suppliers" ManuallyRouted="false" />
         <EntityTypeShape EntityType="NorthwindModel.VwCategoriasConProducto" Width="1.5" PointX="6.75" PointY="0.75" />
         <EntityTypeShape EntityType="NorthwindModel.VwClientesProveedore" Width="1.5" PointX="11.625" PointY="0.75" />
-        <EntityTypeShape EntityType="NorthwindModel.VwProductosPorCategoriaListado" Width="1.5" PointX="8.375" PointY="0.75" />
         <EntityTypeShape EntityType="NorthwindModel.VwProductosPorEncimaDelPrecioPromedio" Width="1.5" PointX="10" PointY="0.75" />
+        <EntityTypeShape EntityType="NorthwindModel.VwProductosPorCategoriaListado" Width="1.5" PointX="8.375" PointY="0.75" />
       </Diagram>
     </Diagrams>
   </Designer>

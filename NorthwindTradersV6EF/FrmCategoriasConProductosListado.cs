@@ -1,6 +1,5 @@
-﻿using BLL;
+﻿using BLL.EF;
 using System;
-using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,10 +9,6 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmCategoriasConProductosListado : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        CategoriaBLL _categoriaBLL;
-
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint2(this, sender, e);
 
         private void FrmCategoriaConProductos_FormClosed(object sender, FormClosedEventArgs e) => MDIPrincipal.ActualizarBarraDeEstado();
@@ -21,8 +16,6 @@ namespace NorthwindTradersV6EF
         public FrmCategoriasConProductosListado()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _categoriaBLL = new CategoriaBLL(_connectionString);
             // las dos siguientes lineas es para que se pueda habilitar el ordenamiento por cada columna
             DgvListado.ColumnHeaderMouseClick += (s, e) => Utils.OrdenarPorColumna(DgvListado, e); // vinculacion del evento al metodo
             DgvListado.DataBindingComplete += DgvListado_DataBindingComplete;
@@ -40,22 +33,28 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dt = _categoriaBLL.ObtenerProductosPorCategoriaListado();
-                DgvListado.DataSource = dt.DefaultView; // para activar el ordenamiento se debe enlazar al DefaultView del DataTable
-                // Total de categorías distintas
-                int totalCategorias = dt.AsEnumerable()
-                    .Select(r => r.Field<string>("CategoryName"))
+
+                // Obtener lista tipada desde EF
+                var lista = CategoryBLL.ObtenerProductosPorCategoriaListado();
+
+                // Enlazar directamente la lista al DataGridView
+                DgvListado.DataSource = lista;
+
+                // Totales usando LINQ sobre la lista
+                int totalCategorias = lista
+                    .Select(r => r.CategoryName)
                     .Distinct()
                     .Count();
-                // Total de productos (ignorando nulos)
-                int totalProductos = dt.AsEnumerable()
-                    .Count(r => !r.IsNull("ProductID"));
-                // Total de proveedores distintos
-                int totalProveedores = dt.AsEnumerable()
-                    .Where(r => !r.IsNull("CompanyName"))
-                    .Select(r => r.Field<string>("CompanyName"))
+
+                int totalProductos = lista
+                    .Count(r => r.ProductID != null);
+
+                int totalProveedores = lista
+                    .Where(r => !string.IsNullOrEmpty(r.CompanyName))
+                    .Select(r => r.CompanyName)
                     .Distinct()
                     .Count();
+
                 // Actualizar barra de estado
                 MDIPrincipal.ActualizarBarraDeEstado(
                     $"Se encontraron {totalCategorias} categoría(s), {totalProductos} producto(s) y {totalProveedores} proveedor(es) distinto(s)"

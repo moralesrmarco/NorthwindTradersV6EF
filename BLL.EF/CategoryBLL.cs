@@ -173,5 +173,23 @@ namespace BLL.EF
                 return result;
             }
         }
+
+        public static List<VwProductosPorCategoriaListado> ObtenerProductosPorCategoriaListado()
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    return context.VwProductosPorCategoriaListadoes
+                                  .OrderBy(x => x.CategoryName)
+                                  .ThenBy(x => x.ProductName)
+                                  .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener el listado de productos por categoría: " + ex.Message);
+            }
+        }
     }
 }
