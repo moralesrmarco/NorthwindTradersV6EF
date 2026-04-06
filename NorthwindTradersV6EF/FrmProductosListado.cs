@@ -1,9 +1,7 @@
-﻿using BLL;
-using BLL.Services;
-using Entities.DTOs;
-using NorthwindTradersV6EF.Helpers;
+﻿using BLL.EF;
+using BLL.EF.Services;
+using DTOs.EF;
 using System;
-using System.Configuration;
 using System.Linq;
 using System.Windows.Forms;
 using Utilities;
@@ -12,20 +10,11 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmProductosListado : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private ProductoBLL _productoBLL;
-        private readonly CategoriaService _categoriaService;
-        private readonly ProveedorService _proveedorService;
         private bool EjecutarConfDgv = true;
 
         public FrmProductosListado()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _productoBLL = new ProductoBLL(_connectionString);
-            _categoriaService = new CategoriaService(_connectionString);
-            _proveedorService = new ProveedorService(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint2(this, sender, e);
@@ -43,16 +32,12 @@ namespace NorthwindTradersV6EF
 
         private void LlenarCboCategoria()
         {
-            try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCategorias = _categoriaService.ObtenerCategoriasCbo();
-                ComboBoxHelper.LlenarCbo(cboBCategoria, dtCategorias, "CategoryName", "CategoryId");
-                MDIPrincipal.ActualizarBarraDeEstado();
-            }
-            catch (Exception ex)
-            {
-                U.MsgCatchOue(ex);
+                cboBCategoria.DataSource = CategoryService.ObtenerCategoriasCbo();
+                cboBCategoria.ValueMember = "CategoryID";
+                cboBCategoria.DisplayMember = "CategoryName";
+                cboBCategoria.SelectedIndex = 0;
             }
         }
 
@@ -61,13 +46,18 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtProveedores = _proveedorService.ObtenerProveedoresCbo();
-                ComboBoxHelper.LlenarCbo(cboBProveedor, dtProveedores, "CompanyName", "SupplierId");
-                MDIPrincipal.ActualizarBarraDeEstado();
+                cboBProveedor.DataSource = SupplierService.ObtenerProveedoresCbo();
+                cboBProveedor.ValueMember = "SupplierID";
+                cboBProveedor.DisplayMember = "CompanyName";
+                cboBProveedor.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
                 U.MsgCatchOue(ex);
+            }
+            finally
+            {
+                MDIPrincipal.ActualizarBarraDeEstado();
             }
         }
 
@@ -103,7 +93,7 @@ namespace NorthwindTradersV6EF
                 }
                 else
                     criterios = null;
-                var productos = _productoBLL.ObtenerProductos(selectorRealizaBusqueda, criterios, false);
+                var productos = ProductBLL.ObtenerProductos(selectorRealizaBusqueda, criterios, true);
                 var dtoProductos = productos.Select(p => new DtoProducto
                 {
                     ProductID = p.ProductID,
@@ -114,11 +104,11 @@ namespace NorthwindTradersV6EF
                     UnitsOnOrder = p.UnitsOnOrder,
                     ReorderLevel = p.ReorderLevel,
                     Discontinued = p.Discontinued,
-                    CategoryName = p.Categoria?.CategoryName,
-                    Description = p.Categoria?.Description,
-                    CompanyName = p.Proveedor?.CompanyName,
-                    CategoryID = p.Categoria?.CategoryID ?? 0,
-                    SupplierID = p.Proveedor?.SupplierID ?? 0
+                    CategoryName = p.Category?.CategoryName,
+                    Description = p.Category?.Description,
+                    CompanyName = p.Supplier?.CompanyName,
+                    CategoryID = p.Category?.CategoryID ?? 0,
+                    SupplierID = p.Supplier?.SupplierID ?? 0
                 }).ToList();
                 Dgv.DataSource = dtoProductos;
                 if (EjecutarConfDgv)
