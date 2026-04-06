@@ -1,4 +1,4 @@
-﻿using BLL;
+﻿using BLL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Configuration;
@@ -10,14 +10,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptCategorias : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        CategoriaBLL _categoriaBLL;
-
         public FrmRptCategorias()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _categoriaBLL = new CategoriaBLL(_connectionString);
             reportViewer1.BackColor = SystemColors.GradientInactiveCaption;
         }
 
@@ -30,7 +25,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var categorias = _categoriaBLL.ObtenerCategorias(false, null, true);
+                var categorias = CategoryBLL.ObtenerCategorias(false, null, true);
                 OleImageHelper.CleanOleHeader(categorias, "CategoryID", "Picture", 1, 8);
                 MDIPrincipal.ActualizarBarraDeEstado($"Se encontraron {categorias.Count} registro(s)");
                 ReportDataSource reportDataSource = new ReportDataSource("DataSet1", categorias);
