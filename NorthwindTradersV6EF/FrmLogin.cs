@@ -16,6 +16,9 @@ namespace NorthwindTradersV6EF
         {
             InitializeComponent();
             this.Text = Utils.nwtr;
+
+            // Al presionar Enter se ejecuta btnEntrar_Click
+            this.AcceptButton = btnEntrar;
         }
 
         private void btnEntrar_Click(object sender, EventArgs e)

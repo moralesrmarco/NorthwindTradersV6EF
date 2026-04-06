@@ -54,10 +54,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.grbProducto = new System.Windows.Forms.GroupBox();
-            this.nudPrecio = new Utilities.NudNoWheel();
-            this.nudPPedido = new Utilities.NudNoWheel();
-            this.nudUPedido = new Utilities.NudNoWheel();
-            this.nudUInventario = new Utilities.NudNoWheel();
             this.btnOperacion = new System.Windows.Forms.Button();
             this.label21 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
@@ -78,6 +74,10 @@
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.nudPrecio = new Utilities.NudNoWheel();
+            this.nudPPedido = new Utilities.NudNoWheel();
+            this.nudUPedido = new Utilities.NudNoWheel();
+            this.nudUInventario = new Utilities.NudNoWheel();
             this.tabcOperacion.SuspendLayout();
             this.tbpConsultar.SuspendLayout();
             this.tbpRegistrar.SuspendLayout();
@@ -89,11 +89,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudBIdFin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudBIdIni)).BeginInit();
             this.grbProducto.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPrecio)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPPedido)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudUPedido)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudUInventario)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // tabcOperacion
@@ -209,11 +209,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grbProductos.Controls.Add(this.Dgv);
             this.grbProductos.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grbProductos.Location = new System.Drawing.Point(21, 79);
+            this.grbProductos.Location = new System.Drawing.Point(21, 94);
             this.grbProductos.Margin = new System.Windows.Forms.Padding(4);
             this.grbProductos.Name = "grbProductos";
             this.grbProductos.Padding = new System.Windows.Forms.Padding(15);
-            this.grbProductos.Size = new System.Drawing.Size(1269, 295);
+            this.grbProductos.Size = new System.Drawing.Size(1269, 384);
             this.grbProductos.TabIndex = 1;
             this.grbProductos.TabStop = false;
             this.grbProductos.Text = "»   Productos:   «";
@@ -227,7 +227,7 @@
             this.Dgv.Margin = new System.Windows.Forms.Padding(4);
             this.Dgv.Name = "Dgv";
             this.Dgv.RowHeadersWidth = 51;
-            this.Dgv.Size = new System.Drawing.Size(1239, 249);
+            this.Dgv.Size = new System.Drawing.Size(1239, 338);
             this.Dgv.TabIndex = 0;
             this.Dgv.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.Dgv_CellClick);
             this.Dgv.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.Dgv_ColumnHeaderMouseClick);
@@ -249,11 +249,11 @@
             this.grbBuscar.Controls.Add(this.label6);
             this.grbBuscar.Controls.Add(this.label5);
             this.grbBuscar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grbBuscar.Location = new System.Drawing.Point(21, 384);
+            this.grbBuscar.Location = new System.Drawing.Point(21, 494);
             this.grbBuscar.Margin = new System.Windows.Forms.Padding(4);
             this.grbBuscar.Name = "grbBuscar";
             this.grbBuscar.Padding = new System.Windows.Forms.Padding(4);
-            this.grbBuscar.Size = new System.Drawing.Size(277, 402);
+            this.grbBuscar.Size = new System.Drawing.Size(277, 368);
             this.grbBuscar.TabIndex = 2;
             this.grbBuscar.TabStop = false;
             this.grbBuscar.Text = "»   Buscar un producto:   «";
@@ -425,83 +425,15 @@
             this.grbProducto.Controls.Add(this.label11);
             this.grbProducto.Controls.Add(this.label10);
             this.grbProducto.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.grbProducto.Location = new System.Drawing.Point(331, 384);
+            this.grbProducto.Location = new System.Drawing.Point(331, 494);
             this.grbProducto.Margin = new System.Windows.Forms.Padding(4);
             this.grbProducto.Name = "grbProducto";
             this.grbProducto.Padding = new System.Windows.Forms.Padding(4);
-            this.grbProducto.Size = new System.Drawing.Size(965, 402);
+            this.grbProducto.Size = new System.Drawing.Size(959, 368);
             this.grbProducto.TabIndex = 3;
             this.grbProducto.TabStop = false;
             this.grbProducto.Text = "»   Producto:   «";
             this.grbProducto.Paint += new System.Windows.Forms.PaintEventHandler(this.GrbPaint);
-            // 
-            // nudPrecio
-            // 
-            this.nudPrecio.DecimalPlaces = 2;
-            this.nudPrecio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nudPrecio.Location = new System.Drawing.Point(408, 184);
-            this.nudPrecio.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.nudPrecio.Name = "nudPrecio";
-            this.nudPrecio.Size = new System.Drawing.Size(150, 23);
-            this.nudPrecio.TabIndex = 4;
-            this.nudPrecio.ThousandsSeparator = true;
-            this.nudPrecio.WheelEnabled = true;
-            this.nudPrecio.Enter += new System.EventHandler(this.Nud_Enter);
-            // 
-            // nudPPedido
-            // 
-            this.nudPPedido.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nudPPedido.Location = new System.Drawing.Point(408, 284);
-            this.nudPPedido.Maximum = new decimal(new int[] {
-            32767,
-            0,
-            0,
-            0});
-            this.nudPPedido.Name = "nudPPedido";
-            this.nudPPedido.Size = new System.Drawing.Size(82, 23);
-            this.nudPPedido.TabIndex = 7;
-            this.nudPPedido.ThousandsSeparator = true;
-            this.nudPPedido.WheelEnabled = true;
-            this.nudPPedido.Enter += new System.EventHandler(this.Nud_Enter);
-            this.nudPPedido.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Nud_KeyPress);
-            // 
-            // nudUPedido
-            // 
-            this.nudUPedido.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nudUPedido.Location = new System.Drawing.Point(408, 251);
-            this.nudUPedido.Maximum = new decimal(new int[] {
-            32767,
-            0,
-            0,
-            0});
-            this.nudUPedido.Name = "nudUPedido";
-            this.nudUPedido.Size = new System.Drawing.Size(82, 23);
-            this.nudUPedido.TabIndex = 6;
-            this.nudUPedido.ThousandsSeparator = true;
-            this.nudUPedido.WheelEnabled = true;
-            this.nudUPedido.Enter += new System.EventHandler(this.Nud_Enter);
-            this.nudUPedido.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Nud_KeyPress);
-            // 
-            // nudUInventario
-            // 
-            this.nudUInventario.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nudUInventario.Location = new System.Drawing.Point(408, 217);
-            this.nudUInventario.Maximum = new decimal(new int[] {
-            32767,
-            0,
-            0,
-            0});
-            this.nudUInventario.Name = "nudUInventario";
-            this.nudUInventario.Size = new System.Drawing.Size(82, 23);
-            this.nudUInventario.TabIndex = 5;
-            this.nudUInventario.ThousandsSeparator = true;
-            this.nudUInventario.WheelEnabled = true;
-            this.nudUInventario.Enter += new System.EventHandler(this.Nud_Enter);
-            this.nudUInventario.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Nud_KeyPress);
             // 
             // btnOperacion
             // 
@@ -707,11 +639,79 @@
             // 
             this.errorProvider1.ContainerControl = this;
             // 
+            // nudPrecio
+            // 
+            this.nudPrecio.DecimalPlaces = 2;
+            this.nudPrecio.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nudPrecio.Location = new System.Drawing.Point(408, 184);
+            this.nudPrecio.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.nudPrecio.Name = "nudPrecio";
+            this.nudPrecio.Size = new System.Drawing.Size(150, 23);
+            this.nudPrecio.TabIndex = 4;
+            this.nudPrecio.ThousandsSeparator = true;
+            this.nudPrecio.WheelEnabled = true;
+            this.nudPrecio.Enter += new System.EventHandler(this.Nud_Enter);
+            // 
+            // nudPPedido
+            // 
+            this.nudPPedido.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nudPPedido.Location = new System.Drawing.Point(408, 284);
+            this.nudPPedido.Maximum = new decimal(new int[] {
+            32767,
+            0,
+            0,
+            0});
+            this.nudPPedido.Name = "nudPPedido";
+            this.nudPPedido.Size = new System.Drawing.Size(82, 23);
+            this.nudPPedido.TabIndex = 7;
+            this.nudPPedido.ThousandsSeparator = true;
+            this.nudPPedido.WheelEnabled = true;
+            this.nudPPedido.Enter += new System.EventHandler(this.Nud_Enter);
+            this.nudPPedido.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Nud_KeyPress);
+            // 
+            // nudUPedido
+            // 
+            this.nudUPedido.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nudUPedido.Location = new System.Drawing.Point(408, 251);
+            this.nudUPedido.Maximum = new decimal(new int[] {
+            32767,
+            0,
+            0,
+            0});
+            this.nudUPedido.Name = "nudUPedido";
+            this.nudUPedido.Size = new System.Drawing.Size(82, 23);
+            this.nudUPedido.TabIndex = 6;
+            this.nudUPedido.ThousandsSeparator = true;
+            this.nudUPedido.WheelEnabled = true;
+            this.nudUPedido.Enter += new System.EventHandler(this.Nud_Enter);
+            this.nudUPedido.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Nud_KeyPress);
+            // 
+            // nudUInventario
+            // 
+            this.nudUInventario.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nudUInventario.Location = new System.Drawing.Point(408, 217);
+            this.nudUInventario.Maximum = new decimal(new int[] {
+            32767,
+            0,
+            0,
+            0});
+            this.nudUInventario.Name = "nudUInventario";
+            this.nudUInventario.Size = new System.Drawing.Size(82, 23);
+            this.nudUInventario.TabIndex = 5;
+            this.nudUInventario.ThousandsSeparator = true;
+            this.nudUInventario.WheelEnabled = true;
+            this.nudUInventario.Enter += new System.EventHandler(this.Nud_Enter);
+            this.nudUInventario.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Nud_KeyPress);
+            // 
             // FrmProductosCrud
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(1312, 793);
+            this.ClientSize = new System.Drawing.Size(1312, 885);
             this.ControlBox = false;
             this.Controls.Add(this.grbProducto);
             this.Controls.Add(this.grbBuscar);
@@ -741,11 +741,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudBIdIni)).EndInit();
             this.grbProducto.ResumeLayout(false);
             this.grbProducto.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPrecio)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPPedido)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudUPedido)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudUInventario)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
 
         }

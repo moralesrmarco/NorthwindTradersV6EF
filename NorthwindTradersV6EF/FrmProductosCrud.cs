@@ -1,13 +1,9 @@
-﻿using BLL;
-using BLL.EF;
+﻿using BLL.EF;
 using BLL.EF.Services;
-using BLL.Services;
 using DAL.EF;
 using DTOs.EF;
-using Entities;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -17,25 +13,12 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmProductosCrud : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private ProductoBLL _productoBLL;
-        private readonly CategoriaService _categoriaService;
-        private readonly ProveedorService _proveedorService;
-
-
         private bool EjecutarConfDgv = true;
         internal Dictionary<string, object> valoresOriginales;
-        bool EventoCargado = true; // esta variable es necesaria para controlar el manejador de eventos de la celda del dgv ojo no quitar
 
         public FrmProductosCrud()
         {
             InitializeComponent();
-
-
-            _productoBLL = new ProductoBLL(_connectionString);
-            _categoriaService = new CategoriaService(_connectionString);
-            _proveedorService = new ProveedorService(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -212,15 +195,12 @@ namespace NorthwindTradersV6EF
             Dgv.Columns["SupplierID"].Visible = false;
 
             Dgv.Columns["ProductID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Dgv.Columns["ProductName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Dgv.Columns["QuantityPerUnit"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["UnitPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["UnitsInStock"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["UnitsOnOrder"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["ReorderLevel"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["Discontinued"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["CategoryName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Dgv.Columns["CompanyName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 
             Dgv.Columns["UnitPrice"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             Dgv.Columns["UnitsInStock"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -252,6 +232,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(true);
+            CargarValoresOriginales();
         }
 
         private void btnLimpiar_Click(object sender, EventArgs e)
@@ -262,6 +243,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(false);
+            CargarValoresOriginales();
         }
 
         private void BorrarDatosProducto()
@@ -317,15 +299,15 @@ namespace NorthwindTradersV6EF
                 DeshabilitarControles();
                 DataGridViewRow dgvr = Dgv.CurrentRow;
                 txtId.Text = dgvr.Cells["ProductID"].Value.ToString();
-                Producto producto = new Producto();
+                Product producto = new Product();
                 try
                 {
-                    producto = _productoBLL.ObtenerProductoPorId(Convert.ToInt32(txtId.Text));
+                    producto = ProductBLL.ObtenerProductoPorId(Convert.ToInt32(txtId.Text));
                     if (producto != null)
                     {
                         txtId.Tag = producto.RowVersion;
-                        cboCategoria.SelectedValue = producto.Categoria?.CategoryID ?? 0;
-                        cboProveedor.SelectedValue = producto.Proveedor?.SupplierID ?? 0;
+                        cboCategoria.SelectedValue = producto.Category?.CategoryID ?? 0;
+                        cboProveedor.SelectedValue = producto.Supplier?.SupplierID ?? 0;
                         txtProducto.Text = producto.ProductName ?? "";
                         txtCantidadxU.Text = producto.QuantityPerUnit ?? "";
                         nudPrecio.Value = producto.UnitPrice ?? 0m;
@@ -368,11 +350,8 @@ namespace NorthwindTradersV6EF
             BorrarMensajesError();
             if (tabcOperacion.SelectedTab == tbpRegistrar)
             {
-                if (EventoCargado)
-                {
-                    Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
-                    EventoCargado = false;
-                }
+                Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
+                Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
                 BorrarDatosBusqueda();
                 HabilitarControles();
                 btnOperacion.Text = "Registrar producto";
@@ -381,11 +360,8 @@ namespace NorthwindTradersV6EF
             }
             else
             {
-                if (!EventoCargado)
-                {
-                    Dgv.CellClick += new DataGridViewCellEventHandler(Dgv_CellClick);
-                    EventoCargado = true;
-                }
+                Dgv.CellClick -= new DataGridViewCellEventHandler(Dgv_CellClick);
+                Dgv.CellClick += new DataGridViewCellEventHandler(Dgv_CellClick);
                 DeshabilitarControles();
                 btnOperacion.Enabled = false;
                 if (tabcOperacion.SelectedTab == tbpConsultar)
@@ -447,18 +423,10 @@ namespace NorthwindTradersV6EF
                     btnOperacion.Enabled = false;
                     try
                     {
-                        var producto = new Producto
+                        var producto = new Product
                         {
-                            // Relación con Categoria
-                            Categoria = new Categoria
-                            {
-                                CategoryID = Convert.ToInt32(cboCategoria.SelectedValue)
-                            },
-                            // Relación con Proveedor
-                            Proveedor = new Proveedor
-                            {
-                                SupplierID = Convert.ToInt32(cboProveedor.SelectedValue)
-                            },
+                            CategoryID = Convert.ToInt32(cboCategoria.SelectedValue),
+                            SupplierID = Convert.ToInt32(cboProveedor.SelectedValue),
                             ProductName = txtProducto.Text,
                             QuantityPerUnit = string.IsNullOrEmpty(txtCantidadxU.Text) ? null : txtCantidadxU.Text,
                             UnitPrice = nudPrecio.Value,
@@ -467,7 +435,7 @@ namespace NorthwindTradersV6EF
                             ReorderLevel = Convert.ToInt16(nudPPedido.Value),
                             Discontinued = chkbDescontinuado.Checked
                         };
-                        int numRegs = _productoBLL.Insertar(producto);
+                        int numRegs = ProductBLL.Insertar(producto);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se insertaron {numRegs} registro(s)");
                         string idNombreProducto = $"El producto con Id: {txtId.Text} - Nombre de producto: {txtProducto.Text}:";
                         if (numRegs > 0)
@@ -491,6 +459,12 @@ namespace NorthwindTradersV6EF
             }
             else if (tabcOperacion.SelectedTab == tbpModificar)
             {
+                // Verificar si hubo cambios en el formulario
+                if (!Utils.HayCambios(this, valoresOriginales))
+                {
+                    U.NotificacionWarning(Utils.ndc);
+                    return; // Salir sin hacer UPDATE
+                }
                 if (ValidarControles())
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
@@ -498,19 +472,11 @@ namespace NorthwindTradersV6EF
                     btnOperacion.Enabled = false;
                     try
                     {
-                        var producto = new Producto
+                        var producto = new Product
                         {
                             ProductID = int.Parse(txtId.Text),
-                            // Relación con Categoria
-                            Categoria = new Categoria
-                            {
-                                CategoryID = Convert.ToInt32(cboCategoria.SelectedValue)
-                            },
-                            // Relación con Proveedor
-                            Proveedor = new Proveedor
-                            {
-                                SupplierID = Convert.ToInt32(cboProveedor.SelectedValue)
-                            },
+                            CategoryID = Convert.ToInt32(cboCategoria.SelectedValue),
+                            SupplierID = Convert.ToInt32(cboProveedor.SelectedValue),
                             ProductName = txtProducto.Text,
                             QuantityPerUnit = string.IsNullOrEmpty(txtCantidadxU.Text) ? null : txtCantidadxU.Text,
                             UnitPrice = nudPrecio.Value,
@@ -520,7 +486,7 @@ namespace NorthwindTradersV6EF
                             Discontinued = chkbDescontinuado.Checked,
                             RowVersion = (byte[])txtId.Tag
                         };
-                        int numRegs = _productoBLL.Actualizar(producto);
+                        int numRegs = ProductBLL.Actualizar(producto);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string idNombreProducto = $"El producto con Id: {txtId.Text} - Nombre de producto: {txtProducto.Text}:";
                         if (numRegs > 0)
@@ -548,7 +514,12 @@ namespace NorthwindTradersV6EF
                     btnOperacion.Enabled = false;
                     try
                     {
-                        int numRegs = _productoBLL.Eliminar(Convert.ToInt32(txtId.Text), (byte[])txtId.Tag);
+                        Product producto = new Product
+                        {
+                            ProductID = int.Parse(txtId.Text),
+                            RowVersion = (byte[])txtId.Tag
+                        };
+                        int numRegs = ProductBLL.Eliminar(producto);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se eliminaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string idyNombre = $"El producto con Id: {txtId.Text} - Nombre de producto: {txtProducto.Text}:";
                         if (numRegs > 0)

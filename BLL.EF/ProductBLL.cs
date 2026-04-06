@@ -2,12 +2,95 @@
 using DTOs.EF;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 
 namespace BLL.EF
 {
     public class ProductBLL
     {
+
+        public static int Insertar(Product producto)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    // Agregamos el producto al contexto
+                    context.Products.Add(producto);
+
+                    return context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al insertar producto: " + ex.Message);
+            }
+        }
+
+        public static int Actualizar(Product producto)
+        {
+            using (var context = new NorthwindContext())
+            {
+                context.Products.Attach(producto);
+                context.Entry(producto).State = EntityState.Modified;
+                context.Entry(producto).OriginalValues["RowVersion"] = producto.RowVersion;
+
+                try
+                {
+                    return context.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    var entry = ex.Entries.Single();
+                    var databaseEntity = entry.GetDatabaseValues();
+
+                    if (databaseEntity == null)
+                    {
+                        return -1; // Eliminado previamente
+                    }
+                    else
+                    {
+                        return -2; // Modificado previamente (RowVersion distinto)
+                    }
+                }
+                catch (Exception)
+                {
+                    return -3; // Otro error
+                }
+            }
+        }
+
+        public static int Eliminar(Product producto)
+        {
+            using (var context = new NorthwindContext())
+            {
+                context.Products.Attach(producto);
+                context.Entry(producto).State = EntityState.Deleted;
+                try
+                {
+                    return context.SaveChanges();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    var entry = ex.Entries.Single();
+                    var databaseEntity = entry.GetDatabaseValues();
+                    if (databaseEntity == null)
+                    {
+                        return -1; // Eliminado previamente
+                    }
+                    else
+                    {
+                        return -2; // Modificado previamente (RowVersion distinto)
+                    }
+                }
+                catch (Exception)
+                {
+                    return -3; // Error inesperado
+                }
+            }
+        }
 
         public static List<Product> ObtenerProductos(bool selectorRealizaBusqueda, DtoProductosBuscar criterios, bool top100)
         {
@@ -51,6 +134,27 @@ namespace BLL.EF
             catch (Exception ex)
             {
                 throw new Exception("Error al obtener productos: " + ex.Message);
+            }
+        }
+
+        public static Product ObtenerProductoPorId(int productId)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    // Incluimos las relaciones para que se carguen junto con el producto
+                    var producto = context.Products
+                                          .Include("Supplier")
+                                          .Include("Category")
+                                          .FirstOrDefault(p => p.ProductID == productId);
+
+                    return producto;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener producto por ID: " + ex.Message);
             }
         }
 
