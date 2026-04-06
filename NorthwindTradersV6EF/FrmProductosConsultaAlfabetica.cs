@@ -1,7 +1,6 @@
-﻿using BLL;
-using Entities.DTOs;
+﻿using BLL.EF;
+using DTOs.EF;
 using System;
-using System.Configuration;
 using System.Linq;
 using System.Windows.Forms;
 using Utilities;
@@ -10,15 +9,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmProductosConsultaAlfabetica : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private ProductoBLL _productoBLL;
-
         public FrmProductosConsultaAlfabetica()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _productoBLL = new ProductoBLL(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint2(this, sender, e);
@@ -37,7 +30,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var productos = _productoBLL.ObtenerProductos(false, null, true); // se esta reutilizando lo que ya esta programado, por eso esos parametros
+                var productos = ProductBLL.ObtenerProductos(false, null, true); // se esta reutilizando lo que ya esta programado, por eso esos parametros
                 var dtoProductos = productos.Select(p => new DtoProducto
                 {
                     ProductID = p.ProductID,
@@ -48,11 +41,11 @@ namespace NorthwindTradersV6EF
                     UnitsOnOrder = p.UnitsOnOrder,
                     ReorderLevel = p.ReorderLevel,
                     Discontinued = p.Discontinued,
-                    CategoryName = p.Categoria?.CategoryName,
-                    Description = p.Categoria?.Description,
-                    CompanyName = p.Proveedor?.CompanyName,
-                    CategoryID = p.Categoria?.CategoryID ?? 0,
-                    SupplierID = p.Proveedor?.SupplierID ?? 0
+                    CategoryName = p.Category?.CategoryName,
+                    Description = p.Category?.Description,
+                    CompanyName = p.Supplier?.CompanyName,
+                    CategoryID = p.Category?.CategoryID ?? 0,
+                    SupplierID = p.Supplier?.SupplierID ?? 0
                 })
                 .OrderBy(p => p.ProductName) // se reordena para cumplir con el orden alfabético
                 .ToList();
@@ -80,8 +73,6 @@ namespace NorthwindTradersV6EF
             Dgv.Columns["SupplierID"].Visible = false;
 
             Dgv.Columns["ProductID"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Dgv.Columns["ProductName"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Dgv.Columns["QuantityPerUnit"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["UnitPrice"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["UnitsInStock"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             Dgv.Columns["UnitsOnOrder"].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
