@@ -174,17 +174,34 @@ namespace BLL.EF
             }
         }
 
-        public static List<VwProductosPorCategoriaListado> ObtenerProductosPorCategoriaListado()
+        public static List<DtoProductoPorCategoria> ObtenerProductosPorCategoriaListado()
         {
             try
             {
                 using (var context = new NorthwindContext())
                 {
-                    return context.VwProductosPorCategoriaListadoes
-                                  .OrderBy(x => x.CategoryName)
-                                  .ThenBy(x => x.ProductName)
-                                  .ToList();
+                    // Traemos todo con LEFT JOIN usando LINQ
+                    var query = from c in context.Categories
+                                from p in c.Products.DefaultIfEmpty()   // LEFT JOIN
+                                from s in context.Suppliers
+                                             .Where(x => p.SupplierID == x.SupplierID)
+                                             .DefaultIfEmpty()          // LEFT JOIN
+                                select new DtoProductoPorCategoria
+                                {
+                                    CategoryName = c.CategoryName,
+                                    ProductName = p != null ? p.ProductName : null,
+                                    ProductID = p != null ? (int?)p.ProductID : null,
+                                    QuantityPerUnit = p != null ? p.QuantityPerUnit : null,
+                                    UnitPrice = p != null ? (decimal?)p.UnitPrice : null,
+                                    UnitsInStock = p != null ? (short?)p.UnitsInStock : null,
+                                    UnitsOnOrder = p != null ? (short?)p.UnitsOnOrder : null,
+                                    ReorderLevel = p != null ? (short?)p.ReorderLevel : null,
+                                    Discontinued = p != null && p.Discontinued,
+                                    CompanyName = s != null ? s.CompanyName : null
+                                };
+                    return query.ToList();
                 }
+
             }
             catch (Exception ex)
             {

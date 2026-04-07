@@ -41,7 +41,6 @@ namespace DAL.EF
         public virtual DbSet<VwCategoriasConProducto> VwCategoriasConProductos { get; set; }
         public virtual DbSet<VwClientesProveedore> VwClientesProveedores { get; set; }
         public virtual DbSet<VwProductosPorEncimaDelPrecioPromedio> VwProductosPorEncimaDelPrecioPromedios { get; set; }
-        public virtual DbSet<VwProductosPorCategoriaListado> VwProductosPorCategoriaListadoes { get; set; }
     
         public virtual ObjectResult<SpCategoriaBuscar_Result> SpCategoriaBuscar(Nullable<int> idIni, Nullable<int> idFin, string categoryName)
         {
