@@ -2,6 +2,7 @@
 using DTOs.EF;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -226,6 +227,62 @@ namespace BLL.EF
                             };
 
                 return query.ToList();
+            }
+        }
+
+        public static decimal ObtenerPrecioPromedio()
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    // Devuelve null si no hay registros
+                    var promedio = context.Products
+                                          .Select(p => (decimal?)p.UnitPrice)
+                                          .Average();
+
+                    return promedio ?? 0m; // Si es null, regresa 0
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener el precio promedio: " + ex.Message);
+            }
+        }
+
+        public static DataTable ObtenerProductosPorEncimaDelPrecioPromedio()
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    var productos = context.VwProductosPorEncimaDelPrecioPromedios
+                                                   .OrderBy(p => p.Fila)
+                                                   .ToList();
+
+                    var dt = new DataTable();
+                    dt.Columns.Add("Fila", typeof(int));
+                    dt.Columns.Add("Producto", typeof(string));
+                    dt.Columns.Add("Precio", typeof(decimal));
+                    dt.Columns.Add("PrecioPromedio", typeof(decimal));
+                    dt.Columns.Add("Diferencia", typeof(decimal));
+                    dt.Columns.Add("PorcentajeSobrePromedio", typeof(decimal));
+                    dt.Columns.Add("Categoria", typeof(string));
+                    dt.Columns.Add("Proveedor", typeof(string));
+
+                    foreach (var p in productos)
+                    {
+                        dt.Rows.Add(p.Fila, p.Producto, p.Precio, p.PrecioPromedio,
+                                    p.Diferencia, p.PorcentajeSobrePromedio,
+                                    p.Categoria, p.Proveedor);
+                    }
+
+                    return dt;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener productos por encima del precio promedio: " + ex.Message);
             }
         }
     }

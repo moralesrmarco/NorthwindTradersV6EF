@@ -1,7 +1,5 @@
-﻿using BLL;
+﻿using BLL.EF;
 using System;
-using System.Configuration;
-using System.Globalization;
 using System.Windows.Forms;
 using Utilities;
 
@@ -9,15 +7,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmProductosPorEncimaPrecioPromedio : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private ProductoBLL _productoBLL;
-
         public FrmProductosPorEncimaPrecioPromedio()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _productoBLL = new ProductoBLL(_connectionString);
             // las dos siguientes lineas es para que se pueda habilitar el ordenamiento por cada columna
             Dgv.ColumnHeaderMouseClick += (s, e) => Utils.OrdenarPorColumna(Dgv, e); // vinculacion del evento al metodo
             Dgv.DataBindingComplete += Dgv_DataBindingComplete;
@@ -40,7 +32,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var precioPromedio = _productoBLL.ObtenerPrecioPromedio();
+                var precioPromedio = ProductBLL.ObtenerPrecioPromedio();
                 string strPrecioPromedio = precioPromedio.ToString("c4");
                 Grb.Text = $"» Listado de productos con el precio por encima del precio promedio: {strPrecioPromedio} «";
                 MDIPrincipal.ActualizarBarraDeEstado();
@@ -55,7 +47,7 @@ namespace NorthwindTradersV6EF
         {
             try
             {
-                var dt = _productoBLL.ObtenerProductosPorEncimaDelPrecioPromedio();
+                var dt = ProductBLL.ObtenerProductosPorEncimaDelPrecioPromedio();
                 Dgv.DataSource = dt.DefaultView; // para activar el ordenamiento se debe enlazar al DefaultView del DataTable
                 MDIPrincipal.ActualizarBarraDeEstado($"Se encontraron {Dgv.RowCount} registro(s)");
             }
