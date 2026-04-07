@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace BLL.EF
@@ -130,6 +131,32 @@ namespace BLL.EF
 
                     return query
                            .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener productos: " + ex.Message);
+            }
+        }
+
+        public static List<DtoProductoListado> ObtenerProductos(DtoProductosBuscar criterios)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    var productos = context.Database.SqlQuery<DtoProductoListado>(
+                        "EXEC SpProductoBuscarV4 @IdIni, @IdFin, @Producto, @Categoria, @Proveedor, @OrdenadoPor, @AscDesc",
+                        new SqlParameter("@IdIni", criterios.IdIni),
+                        new SqlParameter("@IdFin", criterios.IdFin),
+                        new SqlParameter("@Producto", criterios.Producto ?? string.Empty),
+                        new SqlParameter("@Categoria", criterios.Categoria),
+                        new SqlParameter("@Proveedor", criterios.Proveedor),
+                        new SqlParameter("@OrdenadoPor", criterios.OrdenadoPor),
+                        new SqlParameter("@AscDesc", criterios.AscDesc)
+                    ).ToList();
+
+                    return productos;
                 }
             }
             catch (Exception ex)

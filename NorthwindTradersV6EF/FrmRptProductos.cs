@@ -1,11 +1,9 @@
-﻿using BLL;
-using BLL.Services;
-using Entities.DTOs;
+﻿using BLL.EF;
+using BLL.EF.Services;
+using DTOs.EF;
 using Microsoft.Reporting.WinForms;
-using NorthwindTradersV6EF.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -16,11 +14,6 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptProductos : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private ProductoBLL _productoBLL;
-        private readonly CategoriaService _categoriaService;
-        private readonly ProveedorService _proveedorService;
         string titulo = "» Reporte de productos «";
         string subtitulo = "";
 
@@ -50,10 +43,6 @@ namespace NorthwindTradersV6EF
         public FrmRptProductos()
         {
             InitializeComponent();
-            WindowState = FormWindowState.Maximized;
-            _productoBLL = new ProductoBLL(_connectionString);
-            _categoriaService = new CategoriaService(_connectionString);
-            _proveedorService = new ProveedorService(_connectionString);
             nudBIdIni.Leave += nudBIdIni_Leave;
             nudBIdFin.Leave += nudBIdFin_Leave;
             nudBIdIni.Enter += Nud_Enter;
@@ -94,9 +83,10 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCategorias = _categoriaService.ObtenerCategoriasCbo();
-                ComboBoxHelper.LlenarCbo(cboCategoria, dtCategorias, "CategoryName", "CategoryId");
-                MDIPrincipal.ActualizarBarraDeEstado();
+                cboCategoria.DataSource = CategoryService.ObtenerCategoriasCbo();
+                cboCategoria.ValueMember = "CategoryID";
+                cboCategoria.DisplayMember = "CategoryName";
+                cboCategoria.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -109,9 +99,10 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtProveedores = _proveedorService.ObtenerProveedoresCbo();
-                ComboBoxHelper.LlenarCbo(cboProveedor, dtProveedores, "CompanyName", "SupplierId");
-                MDIPrincipal.ActualizarBarraDeEstado();
+                cboProveedor.DataSource = SupplierService.ObtenerProveedoresCbo();
+                cboProveedor.ValueMember = "SupplierID";
+                cboProveedor.DisplayMember = "CompanyName";
+                cboProveedor.SelectedIndex = 0;
             }
             catch (Exception ex)
             {
@@ -195,7 +186,7 @@ namespace NorthwindTradersV6EF
                     subtitulo = $"Ordenado por: [ {Cbo1OrdenadoPor.Text} ] [ {Cbo1AscDesc.Text} ]";
                 }
                 groupBox1.Text = titulo + " | » " + subtitulo + " «";
-                var productos = _productoBLL.ObtenerProductos(criterios);
+                var productos = ProductBLL.ObtenerProductos(criterios);
                 var dtoProductos = productos.Select(p => new DtoProducto
                 {
                     ProductID = p.ProductID,
@@ -206,10 +197,10 @@ namespace NorthwindTradersV6EF
                     UnitsOnOrder = p.UnitsOnOrder,
                     ReorderLevel = p.ReorderLevel,
                     Discontinued = p.Discontinued,
-                    CategoryName = p.Categoria?.CategoryName,
-                    CompanyName = p.Proveedor?.CompanyName,
-                    CategoryID = p.Categoria?.CategoryID ?? 0,
-                    SupplierID = p.Proveedor?.SupplierID ?? 0
+                    CategoryName = p.CategoryName,
+                    CompanyName = p.CompanyName,
+                    CategoryID = p.CategoryID ?? 0,
+                    SupplierID = p.SupplierID ?? 0
                 }).ToList();
                 // Conteo de categorías y proveedores distintos
                 int totalCategorias = dtoProductos.Select(c => c.CategoryID).Distinct().Count();
@@ -217,8 +208,6 @@ namespace NorthwindTradersV6EF
                 string leyenda = string.Empty;
                 if (dtoProductos.Count > 0)
                     leyenda = $"Se encontraron {dtoProductos.Count} producto(s), en {totalCategorias} categoría(s) y {totalProveedores} proveedor(es)";
-                else
-                    leyenda = "No se encontraron registros";
                 MDIPrincipal.ActualizarBarraDeEstado(leyenda);
                 ReportDataSource reportDataSource = new ReportDataSource("DataSet1", dtoProductos);
                 reportViewer1.LocalReport.DataSources.Clear();
@@ -229,7 +218,10 @@ namespace NorthwindTradersV6EF
                 reportViewer1.BackColor = Color.White;
                 reportViewer1.RefreshReport();
                 if (dtoProductos.Count == 0)
+                {
+                    MDIPrincipal.ActualizarBarraDeEstado(Utils.noDatos, true);
                     U.NotificacionWarning(Utils.noDatos);
+                }
             }
             catch (Exception ex) { U.MsgCatchOue(ex); }
         }
