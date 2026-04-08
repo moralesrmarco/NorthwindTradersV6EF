@@ -1,8 +1,8 @@
 ﻿using BLL;
+using BLL.EF.Services;
 using BLL.Services;
 using Entities;
 using Entities.DTOs;
-using NorthwindTradersV6EF.Controles;
 using NorthwindTradersV6EF.Helpers;
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,6 @@ namespace NorthwindTradersV6EF
         private ProductoService _productoService;
         private VentaService _ventaService;
         internal Dictionary<string, object> valoresOriginales;
-        bool EventoCargado = true; // esta variable es necesaria para controlar el manejador de eventos de la celda del dgv ojo no quitar
         int numDetalle = 1;
         bool VentaGenerada = false;
         private short CantidadOld = 0;
@@ -103,7 +102,6 @@ namespace NorthwindTradersV6EF
 
         private void FrmVentasCrud_Load(object sender, EventArgs e)
         {
-            WindowState = FormWindowState.Maximized;
             _ventaBLL = new VentaBLL(_connectionString);
             _ventaDetalleBLL = new VentaDetalleBLL(_connectionString);
             _clienteService = new ClienteService(_connectionString);
@@ -295,7 +293,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboCliente = _clienteService.ObtenerClientesCbo();
+                var dtCboCliente = CustomerService.ObtenerClientesCbo();
                 ComboBoxHelper.LlenarCbo(cboCliente, dtCboCliente, "CompanyName", "CustomerID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -310,7 +308,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboEmpleado = _empleadoService.ObtenerEmpleadosCbo();
+                var dtCboEmpleado = EmployeeService.ObtenerEmpleadosCbo();
                 ComboBoxHelper.LlenarCbo(cboEmpleado, dtCboEmpleado, "EmployeeName", "EmployeeID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -325,7 +323,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboTransportista = _transportistaService.ObtenerTransportistasCbo();
+                var dtCboTransportista = ShipperService.ObtenerTransportistasCbo();
                 ComboBoxHelper.LlenarCbo(cboTransportista, dtCboTransportista, "CompanyName", "ShipperID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -1243,11 +1241,8 @@ namespace NorthwindTradersV6EF
             OcultarControlAgregarProducto();
             if (tabcOperacion.SelectedTab == tabpRegistrar)
             {
-                if (EventoCargado)
-                {
-                    dgvVentas.CellClick -= dgvVentas_CellClick;
-                    EventoCargado = false;
-                }
+                dgvVentas.CellClick -= dgvVentas_CellClick;
+                dgvVentas.CellClick -= dgvVentas_CellClick;
                 grbVenta.Text = "»   Registro de ventas:   «";
                 MostrarControlAgregarProducto();
                 VentaGenerada = false;
@@ -1270,12 +1265,9 @@ namespace NorthwindTradersV6EF
             }
             else
             {
-                if (!EventoCargado)
-                {
-                    //dgvVentas.CellClick -= dgvVentas_CellClick; // para evitar que se duplique el evento al cambiar varias veces de pestaña
-                    dgvVentas.CellClick += dgvVentas_CellClick;
-                    EventoCargado = true;
-                }
+                //dgvVentas.CellClick -= dgvVentas_CellClick; // para evitar que se duplique el evento al cambiar varias veces de pestaña
+                dgvVentas.CellClick -= dgvVentas_CellClick;
+                dgvVentas.CellClick += dgvVentas_CellClick;
                 DeshabilitarTodosControles();
                 OcultarCols();
                 InicializarDtps();

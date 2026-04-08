@@ -1,12 +1,12 @@
 ﻿using DAL.EF;
-using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace BLL.EF.Services
 {
     public class EmployeeService
     {
-        public static List<dynamic> ObtenerEmpleadosCbo()
+        public static DataTable ObtenerEmpleadosCbo()
         {
             using (var context = new NorthwindContext())
             {
@@ -16,16 +16,17 @@ namespace BLL.EF.Services
                         e.EmployeeID,
                         EmployeeName = e.LastName + ", " + e.FirstName
                     })
-                    .ToList<dynamic>();
-
-                // Insertar la fila "Seleccione" al inicio
-                empleados.Insert(0, new
+                    .OrderBy(e => e.EmployeeName)
+                    .ToList();
+                DataTable dt = new DataTable();
+                dt.Columns.Add("EmployeeID", typeof(int));
+                dt.Columns.Add("EmployeeName", typeof(string));
+                dt.Rows.Add(0, "»--- Seleccione ---«");
+                foreach (var empleado in empleados)
                 {
-                    EmployeeID = 0,
-                    EmployeeName = "»--- Seleccione ---«"
-                });
-
-                return empleados;
+                    dt.Rows.Add(empleado.EmployeeID, empleado.EmployeeName);
+                }
+                return dt;
             }
         }
     }

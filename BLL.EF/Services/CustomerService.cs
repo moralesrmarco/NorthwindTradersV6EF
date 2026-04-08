@@ -1,12 +1,12 @@
 ﻿using DAL.EF;
-using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace BLL.EF.Services
 {
     public class CustomerService
     {
-        public static List<dynamic> ObtenerClientesCbo()
+        public static DataTable ObtenerClientesCbo()
         {
             using (var context = new NorthwindContext())
             {
@@ -18,16 +18,20 @@ namespace BLL.EF.Services
                         c.CompanyName
                     })
                     .OrderBy(c => c.CompanyName) // opcional, si quieres ordenarlos
-                    .ToList<dynamic>();
+                    .ToList();
+
+                // Crear el DataTable con las columnas necesarias
+                DataTable dt = new DataTable();
+                dt.Columns.Add("CustomerID", typeof(string));
+                dt.Columns.Add("CompanyName", typeof(string));
 
                 // Insertar la fila "Seleccione" al inicio
-                clientes.Insert(0, new 
+                dt.Rows.Add("", "»--- Seleccione ---«");
+                foreach (var cliente in clientes)
                 {
-                    CustomerID = "00000",
-                    CompanyName = "»--- Seleccione ---«"
-                });
-
-                return clientes;
+                    dt.Rows.Add(cliente.CustomerID, cliente.CompanyName);
+                }
+                return dt;
             }
         }
     }
