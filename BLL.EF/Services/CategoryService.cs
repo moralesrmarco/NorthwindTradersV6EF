@@ -31,5 +31,17 @@ namespace BLL.EF.Services
                 throw new Exception("Error al obtener las categorías" + ex.Message);
             }
         }
+
+        public static DataTable ObtenerCategoriasCbo(bool varGhost = true)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("CategoryID", typeof(int));
+            dt.Columns.Add("CategoryName", typeof(string));
+            foreach (var categoria in ObtenerCategoriasCbo())
+            {
+                dt.Rows.Add(categoria.CategoryID, categoria.CategoryName);
+            }
+            return dt;
+        }
     }
 }

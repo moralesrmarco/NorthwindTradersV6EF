@@ -55,6 +55,8 @@
     <Compile Include="DtoProductosPorProveedor.cs" />
     <Compile Include="DtoProductosPorProveedorConDetProv.cs" />
     <Compile Include="DtoProveedoresBuscar.cs" />
+    <Compile Include="DtoVentaDgv.cs" />
+    <Compile Include="DtoVentasBuscar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

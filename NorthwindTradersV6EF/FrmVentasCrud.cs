@@ -1,6 +1,8 @@
 ﻿using BLL;
+using BLL.EF;
 using BLL.EF.Services;
 using BLL.Services;
+using DTOs.EF;
 using Entities;
 using Entities.DTOs;
 using NorthwindTradersV6EF.Helpers;
@@ -338,7 +340,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboCategoria = _categoriaService.ObtenerCategoriasCbo();
+                var dtCboCategoria = CategoryService.ObtenerCategoriasCbo(true);
                 ComboBoxHelper.LlenarCbo(controlAgregarProducto.CboCategoria, dtCboCategoria, "CategoryName", "CategoryID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -353,10 +355,10 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                DtoVentasBuscar criterios;
+                DTOs.EF.DtoVentasBuscar criterios;
                 if (selectorRealizaBusqueda == true)
                 {
-                    criterios = new DtoVentasBuscar
+                    criterios = new DTOs.EF.DtoVentasBuscar
                     {
                         IdIni = Convert.ToInt32(controlBuscarVenta.NudBIdIni.Value),
                         IdFin = Convert.ToInt32(controlBuscarVenta.NudBIdFin.Value),
@@ -384,7 +386,7 @@ namespace NorthwindTradersV6EF
                 }
                 else
                     criterios = null;
-                var ventas = _ventaBLL.ObtenerVentas(selectorRealizaBusqueda, criterios, false);
+                var ventas = OrderBLL.ObtenerVentas(selectorRealizaBusqueda, criterios, false);
                 dgvVentas.DataSource = ventas;
                 if (!selectorRealizaBusqueda)
                     MDIPrincipal.ActualizarBarraDeEstado($"Se muestran las últimas {dgvVentas.RowCount} venta(s) registrada(s)");
@@ -470,7 +472,7 @@ namespace NorthwindTradersV6EF
         private void dgvVentas_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // debe estar vinculado a la clase List<> a la cual esta vinculado el DataGridView.DataSource
-            Utils.OrdenarPorColumna<DtoVentaDgv>(dgvVentas, e);
+            Utils.OrdenarPorColumna<DTOs.EF.DtoVentaDgv>(dgvVentas, e);
         }
 
         private void ControlBuscarVenta_LimpiarClick(object sender, EventArgs e)
