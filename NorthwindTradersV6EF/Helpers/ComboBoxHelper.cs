@@ -1,7 +1,5 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Windows.Forms;
-using Utilities;
 
 namespace NorthwindTradersV6EF.Helpers
 {

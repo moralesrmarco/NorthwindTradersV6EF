@@ -1,4 +1,7 @@
-﻿namespace NorthwindTradersV6EF
+﻿using NorthwindTradersV6EF;
+using System.Windows.Forms;
+
+namespace NorthwindTradersV6EF
 {
     partial class FrmVentasCrud
     {
@@ -381,7 +384,7 @@
             // 
             // grbTransportista
             // 
-            this.grbTransportista.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.grbTransportista.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grbTransportista.Controls.Add(this.nudFlete);
             this.grbTransportista.Controls.Add(this.txtCP);

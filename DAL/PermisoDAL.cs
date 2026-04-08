@@ -155,7 +155,7 @@ namespace DAL
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al llenar el catálogo de permisos concedidos");
+                throw new Exception("Error al llenar el catálogo de permisos concedidos: " + ex.Message);
             }
             return dt;
         }

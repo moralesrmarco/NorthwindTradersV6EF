@@ -1,5 +1,4 @@
-﻿using System.Data.SqlTypes;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace NorthwindTradersV6EF.Controles
