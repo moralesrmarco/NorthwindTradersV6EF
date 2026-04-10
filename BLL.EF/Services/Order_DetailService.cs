@@ -18,6 +18,7 @@ namespace BLL.EF.Services
                         .Include(od => od.Product)
                         .Include(od => od.Order)
                         .Where(od => od.OrderID == orderId)
+                        .AsNoTracking()
                         .ToList();
                     return detalles;
                 }

@@ -9,6 +9,80 @@ namespace BLL.EF
 {
     public class OrderBLL
     {
+        public static int InsertarVentaCompleta(Order venta)
+        {
+            try
+            {
+                int filasAfectadas = 0;
+                using (var context = new NorthwindContext())
+                using (var tx = context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        // 1) Insertar registro padre (Order)
+                        var order = new Order()
+                        {
+                            CustomerID = venta.Customer.CustomerID,
+                            EmployeeID = venta.Employee.EmployeeID,
+                            OrderDate = venta.OrderDate,
+                            RequiredDate = venta.RequiredDate,
+                            ShippedDate = venta.ShippedDate,
+                            ShipVia = venta.ShipVia,
+                            Freight = venta.Freight,
+                            ShipName = venta.ShipName,
+                            ShipAddress = venta.ShipAddress,
+                            ShipCity = venta.ShipCity,
+                            ShipRegion = venta.ShipRegion,
+                            ShipPostalCode = venta.ShipPostalCode,
+                            ShipCountry = venta.ShipCountry
+                        };
+                        context.Orders.Add(order);
+                        context.SaveChanges(); // Guarda para obtener el OrderID generado
+                        filasAfectadas++;
+
+                        // 2) Procesar cada detalle
+                        foreach (var d in venta.Order_Details)
+                        {
+                            // 2.1) Validar existencia y stock
+                            var producto = context.Products
+                                .SingleOrDefault(p => p.ProductID == d.Product.ProductID);
+                            if (producto == null)
+                                throw new InvalidOperationException($"Producto con ID {d.Product.ProductID} no existe.");
+                            if (producto.UnitsInStock < d.Quantity)
+                                throw new InvalidOperationException($"Producto 'Id:{producto.ProductID}, {producto.ProductName}' no tiene suficiente inventario. Disponible: {producto.UnitsInStock}, Requerido: {d.Quantity}.");
+                            // 2.2) Actualizar stock
+                            producto.UnitsInStock -= d.Quantity;
+                            context.Entry(producto).State = EntityState.Modified;
+                            // 2.3) Insertar detalle
+                            var detalle = new Order_Detail()
+                            {
+                                OrderID = order.OrderID, // Asocia el detalle con el OrderID generado
+                                ProductID = producto.ProductID,
+                                UnitPrice = d.UnitPrice,
+                                Quantity = d.Quantity,
+                                Discount = d.Discount
+                            };
+                            context.Order_Details.Add(detalle);
+                            filasAfectadas++;
+                        }
+                        // Guardar cambios de detalles y stock
+                        context.SaveChanges();
+                        tx.Commit();
+                    }
+                    catch 
+                    {
+                        try { tx.Rollback(); } catch { }
+                        throw;
+                    }
+                }
+                return filasAfectadas;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al insertar la venta completa: " + ex.Message, ex);
+            }
+        }
+
         public static List<DtoVentaDgv> ObtenerVentas(bool selectorRealizaBusqueda, DtoVentasBuscar criterios, bool top100 = false)
         {
             // Validación defensiva del criterio para evitar NRE
