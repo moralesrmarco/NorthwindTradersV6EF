@@ -26,86 +26,85 @@ namespace DAL.EF
             get { return Product.ProductName; }
         }
 
+        // Helpers privados para centralizar lógica y redondeo
+        private decimal TasaIVADecimal => (decimal)TasaIVA;
+
+        private decimal DescuentoDecimal => (decimal)Discount;
+
+        private decimal FactorDescuento => 1 - DescuentoDecimal;
+
+        private decimal FactorIVA => 1 + TasaIVADecimal;
+
+        private decimal Bruto() => UnitPrice * Quantity;
+
+        private decimal BaseDesdeTotalIncluyeIva(decimal totalConIva)
+            => (TasaIVADecimal == 0) ? totalConIva : totalConIva / FactorIVA;
+
+        private decimal IvaDesdeTotalIncluyeIva(decimal totalConIva) => totalConIva - BaseDesdeTotalIncluyeIva(totalConIva);
+
+        private decimal TotalConDescuentoSinRedondeo() => Bruto() * FactorDescuento;
+
+        private decimal Round2(decimal value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);
+
         // Base sin IVA (separando el impuesto del precio con IVA)
         // Precio unitario sin IVA después del descuento
-        public decimal PrecioBaseSinIva => Math.Round(PrecioPorUnidadConIVADespuesDescuento / (1 + (decimal)TasaIVA), 2, MidpointRounding.AwayFromZero);
-        public decimal PrecioPorUnidadSinIVASinDescuento => Math.Round(UnitPrice / (1 + (decimal)TasaIVA), 2, MidpointRounding.AwayFromZero);
+        public decimal PrecioBaseSinIva => Round2(PrecioPorUnidadConIVADespuesDescuento / FactorIVA);
 
-        public decimal IVADelPrecioPorUnidadSinDescuento => Math.Round(UnitPrice - PrecioPorUnidadSinIVASinDescuento, 2, MidpointRounding.AwayFromZero);
+        public decimal PrecioPorUnidadSinIVASinDescuento => Round2(UnitPrice / FactorIVA);
 
-        public decimal PrecioPorUnidadConIVADespuesDescuento => Math.Round(UnitPrice * (1 - (decimal)Discount), 2, MidpointRounding.AwayFromZero);
+        public decimal IVADelPrecioPorUnidadSinDescuento => Round2(UnitPrice - PrecioPorUnidadSinIVASinDescuento);
 
-        public decimal IVADelPrecioporUnidadDespuesDescuento => Math.Round(PrecioPorUnidadConIVADespuesDescuento - PrecioPorUnidadSinIVADepuesDescuento, 2, MidpointRounding.AwayFromZero);
+        public decimal PrecioPorUnidadConIVADespuesDescuento => Round2(UnitPrice * FactorDescuento);
 
-        public decimal PrecioPorUnidadSinIVADepuesDescuento => Math.Round(PrecioPorUnidadConIVADespuesDescuento / (1 + (decimal)TasaIVA), 2, MidpointRounding.AwayFromZero);
+        public decimal IVADelPrecioporUnidadDespuesDescuento => Round2(PrecioPorUnidadConIVADespuesDescuento - PrecioPorUnidadSinIVADepuesDescuento);
 
-        public decimal AhorroPorUnidadSinIVA => Math.Round(PrecioPorUnidadSinIVASinDescuento - PrecioPorUnidadSinIVADepuesDescuento, 2, MidpointRounding.AwayFromZero);
+        public decimal PrecioPorUnidadSinIVADepuesDescuento => Round2(PrecioPorUnidadConIVADespuesDescuento / FactorIVA);
 
-        public decimal AhorroEnIVAPorUnidadDespuesDescuento => Math.Round(IVADelPrecioPorUnidadSinDescuento - IVADelPrecioporUnidadDespuesDescuento, 2, MidpointRounding.AwayFromZero);
+        public decimal AhorroPorUnidadSinIVA => Round2(PrecioPorUnidadSinIVASinDescuento - PrecioPorUnidadSinIVADepuesDescuento);
 
-        public decimal AhorroTotalPorUnidadConIVA => Math.Round(UnitPrice - PrecioPorUnidadConIVADespuesDescuento, 2, MidpointRounding.AwayFromZero);
+        public decimal AhorroEnIVAPorUnidadDespuesDescuento => Round2(IVADelPrecioPorUnidadSinDescuento - IVADelPrecioporUnidadDespuesDescuento);
+
+        public decimal AhorroTotalPorUnidadConIVA => Round2(UnitPrice - PrecioPorUnidadConIVADespuesDescuento);
 
         // Tasas expresadas en porcentaje
-        public decimal TasaDescuentoPorcentaje => Math.Round((decimal)Discount * 100, 2, MidpointRounding.AwayFromZero);
-        public decimal TasaIVAPorcentaje => Math.Round((decimal)TasaIVA * 100, 2, MidpointRounding.AwayFromZero);
+        public decimal TasaDescuentoPorcentaje => Round2((decimal)Discount * 100m);
+        public decimal TasaIVAPorcentaje => Round2((decimal)TasaIVA * 100m);
 
         // Importe bruto (con IVA incluido)
-        public decimal SubtotalDelImporteConIVAIncluido => Math.Round(UnitPrice * Quantity, 2, MidpointRounding.AwayFromZero);
+        public decimal SubtotalDelImporteConIVAIncluido => Round2(Bruto());
 
-        public decimal SubtotalDelImporteSinIVASinDescuento => Math.Round(PrecioPorUnidadSinIVASinDescuento * Quantity, 2, MidpointRounding.AwayFromZero);
+        public decimal SubtotalDelImporteSinIVASinDescuento => Round2(PrecioPorUnidadSinIVASinDescuento * Quantity);
 
-        public decimal SubtotalDelImporteDelIVASinDescuento => Math.Round(IVADelPrecioPorUnidadSinDescuento * Quantity, 2, MidpointRounding.AwayFromZero);
+        public decimal SubtotalDelImporteDelIVASinDescuento => Round2(IVADelPrecioPorUnidadSinDescuento * Quantity);
 
         // Importe neto con descuento (todavía incluye IVA)
-        public decimal SubtotalDelImporteConIVAConDescuento => Math.Round(SubtotalDelImporteConIVAIncluido * (1 - (decimal)Discount), 2, MidpointRounding.AwayFromZero);
+        public decimal SubtotalDelImporteConIVAConDescuento => Round2(TotalConDescuentoSinRedondeo());
 
-        //public decimal SubtotalIVADespuesDelDescuento => Math.Round(SubtotalDelImporteConIVAConDescuento - SubtotalDelImporteSinIVAConDescuento, 2, MidpointRounding.AwayFromZero);
-
+        // IVA calculado sobre el total con descuento (parte incluida en el total)
         public decimal SubtotalIVADespuesDelDescuento
         {
             get
             {
-                // Total bruto (con IVA incluido) sin redondeos intermedios
-                decimal bruto = UnitPrice * Quantity;
-
-                // Total del descuento (valor absoluto)
-                decimal descuento = bruto * (decimal)Discount;
-
-                // Total con descuento (sigue incluyendo IVA)
-                decimal totalConDescuento = bruto - descuento;
-
-                // Si la tasa es 0 no hay IVA
-                if (TasaIVA == 0)
-                    return 0m;
-
-                // Extraer la parte de IVA que está incluida en totalConDescuento:
-                // base = total / (1 + tasa); iva = total - base
-                decimal baseSinIva = totalConDescuento / (1 + (decimal)TasaIVA);
-                decimal iva = totalConDescuento - baseSinIva;
-
-                return Math.Round(iva, 2, MidpointRounding.AwayFromZero);
+                decimal totalSinRedondeo = TotalConDescuentoSinRedondeo();
+                return Round2(IvaDesdeTotalIncluyeIva(totalSinRedondeo));
             }
         }
 
         public decimal SubtotalDelImporteSinIVAConDescuento
-            => Math.Round(SubtotalDelImporteConIVAConDescuento / (1 + (decimal)TasaIVA), 2, MidpointRounding.AwayFromZero);
+            => Round2(BaseDesdeTotalIncluyeIva(TotalConDescuentoSinRedondeo()));
 
-        public decimal SubtotalDelAhorroSinIvaDespuesDescuento => Math.Round(AhorroPorUnidadSinIVA * Quantity, 2, MidpointRounding.AwayFromZero);
+        public decimal SubtotalDelAhorroSinIvaDespuesDescuento => Round2(AhorroPorUnidadSinIVA * Quantity);
 
-        public decimal SubtotalDelAhorroEnIVADespuesDescuento => Math.Round(AhorroEnIVAPorUnidadDespuesDescuento * Quantity, 2, MidpointRounding.AwayFromZero);
-
-        //public decimal SubtotalDelAhorroTotalDespuesDescuento => Math.Round(AhorroTotalPorUnidadConIVA * Quantity, 2, MidpointRounding.AwayFromZero);
+        public decimal SubtotalDelAhorroEnIVADespuesDescuento => Round2(AhorroEnIVAPorUnidadDespuesDescuento * Quantity);
 
         // El importe del ahorro total debe ser: importe total - importe con descuento.
-        // Calcular sobre totales sin redondeo intermedio y redondear al final para evitar imprecisiones acumuladas.
         public decimal SubtotalDelAhorroTotalDespuesDescuento
         {
             get
             {
-                decimal bruto = UnitPrice * Quantity; // sin redondeo intermedio
-                decimal conDescuento = bruto * (1 - (decimal)Discount);
-                decimal ahorro = bruto - conDescuento; // equivalente a bruto * Discount
-                return Math.Round(ahorro, 2, MidpointRounding.AwayFromZero);
+                decimal bruto = Bruto();
+                decimal conDescuento = TotalConDescuentoSinRedondeo();
+                return Round2(bruto - conDescuento);
             }
         }
 
