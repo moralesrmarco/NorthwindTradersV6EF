@@ -60,6 +60,7 @@
     <Compile Include="Category.cs">
       <DependentUpon>NorthwindModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Config\ConfiguracionFiscal.cs" />
     <Compile Include="Customer.cs">
       <DependentUpon>NorthwindModel.tt</DependentUpon>
     </Compile>
@@ -69,6 +70,7 @@
     <Compile Include="Extensions\CategoryExtension.cs" />
     <Compile Include="Extensions\EmployeeExtension.cs" />
     <Compile Include="Extensions\OrderExtension.cs" />
+    <Compile Include="Extensions\Order_DetailExtension.cs" />
     <Compile Include="Extensions\ProductExtension.cs" />
     <Compile Include="Extensions\UsuarioExtension.cs" />
     <Compile Include="NorthwindModel.Context.cs">

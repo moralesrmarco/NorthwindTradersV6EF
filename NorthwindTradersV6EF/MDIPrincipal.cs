@@ -1,6 +1,5 @@
 ﻿using BLL.EF;
 using DAL.EF;
-using Entities.Config;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

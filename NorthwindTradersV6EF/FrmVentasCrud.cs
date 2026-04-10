@@ -484,6 +484,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tabpRegistrar)
                 DeshabilitarControles();
             LlenarDgvVentas(false);
+            CargarValoresOriginales();
             tableLayoutPanel1.Focus();
         }
 
@@ -495,6 +496,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tabpRegistrar)
                 DeshabilitarControles();
             LlenarDgvVentas(true);
+            CargarValoresOriginales();
             tableLayoutPanel1.Focus();
         }
 
@@ -827,7 +829,7 @@ namespace NorthwindTradersV6EF
                 try
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                    var dtCboProductos = _productoService.ObtenerProductosPorCategoriaCbo(int.Parse(controlAgregarProducto.CboCategoria.SelectedValue.ToString()));
+                    var dtCboProductos = ProductService.ObtenerProductosPorCategoriaCbo(int.Parse(controlAgregarProducto.CboCategoria.SelectedValue.ToString()));
                     controlAgregarProducto.CboProducto.DataSource = dtCboProductos;
                     controlAgregarProducto.CboProducto.DisplayMember = "ProductName";
                     controlAgregarProducto.CboProducto.ValueMember = "ProductID";
@@ -854,7 +856,7 @@ namespace NorthwindTradersV6EF
                 try
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                    var dtoEnvioInformacion = _ventaService.ObtenerUltimaInformacionDeEnvio(cboCliente.SelectedValue?.ToString());
+                    var dtoEnvioInformacion = OrderService.ObtenerUltimaInformacionDeEnvio(cboCliente.SelectedValue?.ToString());
                     if (dtoEnvioInformacion != null)
                     {
                         txtDirigidoa.Text = dtoEnvioInformacion.ShipName ?? "";
@@ -888,7 +890,7 @@ namespace NorthwindTradersV6EF
                     var productId = controlAgregarProducto.CboProducto.SelectedValue?.ToString();
                     InicializarValoresAgregarProducto();
                     InicializarNudsProducto();
-                    var dtoProductoCostoInventario = _productoService.ObtenerProductoCostoEInventario(int.Parse(productId));
+                    var dtoProductoCostoInventario = ProductService.ObtenerProductoCostoEInventario(int.Parse(productId));
                     if (dtoProductoCostoInventario != null)
                     {
                         controlAgregarProducto.NudPrecioConIVAIncluido.Value = dtoProductoCostoInventario.UnitPrice;
@@ -1010,16 +1012,16 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var venta = _ventaBLL.ObtenerVentaPorId(orderId);
+                var venta = OrderService.ObtenerVentaPorId(orderId);
                 if (venta != null)
                 {
                     txtId.Text = venta.OrderID.ToString();
-                    txtId.Tag = venta.RowVersionString;
+                    txtId.Tag = venta.RowVersionStr;
                     cboCliente.SelectedIndexChanged -= new EventHandler(cboCliente_SelectedIndexChanged);
-                    cboCliente.SelectedValue = venta.Cliente.CustomerID;
+                    cboCliente.SelectedValue = venta.Customer.CustomerID;
                     cboCliente.SelectedIndexChanged += new EventHandler(cboCliente_SelectedIndexChanged);
-                    cboEmpleado.SelectedValue = venta.Empleado.EmployeeID;
-                    cboTransportista.SelectedValue = venta.Transportista.ShipperID;
+                    cboEmpleado.SelectedValue = venta.Employee.EmployeeID;
+                    cboTransportista.SelectedValue = venta.Shipper.ShipperID;
                     txtDirigidoa.Text = venta.ShipName ?? "";
                     txtDomicilio.Text = venta.ShipAddress ?? "";
                     txtCiudad.Text = venta.ShipCity ?? "";
@@ -1108,7 +1110,7 @@ namespace NorthwindTradersV6EF
             {
                 numDetalle = 1;
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var detalles = _ventaDetalleBLL.ObtenerVentaDetallePorVentaId(orderId);
+                var detalles = Order_DetailService.ObtenerVentaDetallePorVentaId(orderId);
                 if (detalles.Count == 0)
                 {
                     U.NotificacionWarning("No se encontraron detalles para la venta especificada");
@@ -1120,7 +1122,7 @@ namespace NorthwindTradersV6EF
                         controlDetalleDeLaVenta.DgvDetalle.Rows.Add(new object[]
                         {
                             numDetalle,
-                            ventaDetalle.Producto.ProductName,
+                            ventaDetalle.Product.ProductName,
                             ventaDetalle.UnitPrice,
                             ventaDetalle.Quantity,
                             ventaDetalle.SubtotalDelImporteConIVAIncluido,
@@ -1133,7 +1135,7 @@ namespace NorthwindTradersV6EF
                             ventaDetalle.Subtotal,
                             " Modificar ",
                             " Eliminar ",
-                            ventaDetalle.Producto.ProductID,
+                            ventaDetalle.Product.ProductID,
                             ventaDetalle.RowVersion
                         });
                         ++numDetalle;

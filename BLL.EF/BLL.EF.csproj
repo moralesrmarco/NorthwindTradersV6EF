@@ -60,6 +60,9 @@
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Services\EmployeeService.cs" />
+    <Compile Include="Services\OrderService.cs" />
+    <Compile Include="Services\Order_DetailService.cs" />
+    <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\ShipperService.cs" />
     <Compile Include="Services\SupplierService.cs" />
     <Compile Include="SupplierBLL.cs" />
