@@ -4,6 +4,8 @@ using BLL.EF.Services;
 //using BLL.Services;
 using DAL.EF;
 using DTOs.EF;
+using Entities;
+
 //using Entities;
 using Entities.DTOs;
 using NorthwindTradersV6EF.Helpers;
@@ -1337,17 +1339,15 @@ namespace NorthwindTradersV6EF
                         DeshabilitarTodosControles();
                         btnGenerar.Enabled = false;
                         Order venta = new Order();
-                        venta.Customer.CustomerID = cboCliente.SelectedValue.ToString().Trim();
-                        venta.Employee.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
-
+                        venta.CustomerID = cboCliente.SelectedValue.ToString().Trim();
+                        venta.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        venta.ShipVia = int.Parse(cboTransportista.SelectedValue.ToString());
                         if (dtpVenta != null && dtpHoraVenta != null)
                             venta.OrderDate = Utils.ObtenerFechaHora(dtpVenta, dtpHoraVenta);
                         if (dtpRequerido != null && dtpHoraRequerido != null)
                             venta.RequiredDate = Utils.ObtenerFechaHora(dtpRequerido, dtpHoraRequerido);
                         if (dtpEnvio != null && dtpHoraEnvio != null)
                             venta.ShippedDate = Utils.ObtenerFechaHora(dtpEnvio, dtpHoraEnvio);
-
-                        venta.Shipper.ShipperID = int.Parse(cboTransportista.SelectedValue.ToString());
                         venta.ShipName = txtDirigidoa.Text.Trim();
                         venta.ShipAddress = txtDomicilio.Text.Trim();
                         venta.ShipCity = txtCiudad.Text.Trim();
@@ -1361,16 +1361,19 @@ namespace NorthwindTradersV6EF
                             DataGridViewRow row = controlDetalleDeLaVenta.DgvDetalle.Rows[i];
                             // defensiva: ignorar filas nuevas o vacías
                             if (row.IsNewRow) continue;
+                            int productId;
+
+                            if (!int.TryParse(row.Cells["ProductoId"].Value?.ToString(), out productId))
+                            {
+                                throw new Exception("ProductID inválido en el grid.");
+                            }
                             Order_Detail ventaDetalles = new Order_Detail()
                             {
-                                Product = new Product
-                                {
-                                    ProductID = Convert.ToInt32(row.Cells["ProductoId"].Value),
-                                    ProductName = row.Cells["Producto"].Value.ToString()
-                                },
+                                ProductID = productId,
                                 UnitPrice = Convert.ToDecimal(row.Cells["Precio"].Value),
                                 Quantity = Convert.ToInt16(row.Cells["Cantidad"].Value),
                                 Discount = (float)Convert.ToDecimal(row.Cells["Descuento"].Value),
+                                TasaIVA = (float)Convert.ToDecimal(row.Cells["TasaIVA"].Value)
                             };
                             venta.Order_Details.Add(ventaDetalles);
                         }

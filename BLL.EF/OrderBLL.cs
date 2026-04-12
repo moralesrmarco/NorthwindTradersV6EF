@@ -3,7 +3,12 @@ using DTOs.EF;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity; // Habilita .Include con expresiones
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Windows.Forms;
 
 namespace BLL.EF
 {
@@ -11,75 +16,154 @@ namespace BLL.EF
     {
         public static int InsertarVentaCompleta(Order venta)
         {
-            try
-            {
-                int filasAfectadas = 0;
-                using (var context = new NorthwindContext())
-                using (var tx = context.Database.BeginTransaction())
-                {
-                    try
-                    {
-                        // 1) Insertar registro padre (Order)
-                        var order = new Order()
-                        {
-                            CustomerID = venta.Customer.CustomerID,
-                            EmployeeID = venta.Employee.EmployeeID,
-                            OrderDate = venta.OrderDate,
-                            RequiredDate = venta.RequiredDate,
-                            ShippedDate = venta.ShippedDate,
-                            ShipVia = venta.ShipVia,
-                            Freight = venta.Freight,
-                            ShipName = venta.ShipName,
-                            ShipAddress = venta.ShipAddress,
-                            ShipCity = venta.ShipCity,
-                            ShipRegion = venta.ShipRegion,
-                            ShipPostalCode = venta.ShipPostalCode,
-                            ShipCountry = venta.ShipCountry
-                        };
-                        context.Orders.Add(order);
-                        context.SaveChanges(); // Guarda para obtener el OrderID generado
-                        filasAfectadas++;
+            if (venta == null) throw new ArgumentNullException(nameof(venta));
 
-                        // 2) Procesar cada detalle
-                        foreach (var d in venta.Order_Details)
-                        {
-                            // 2.1) Validar existencia y stock
-                            var producto = context.Products
-                                .SingleOrDefault(p => p.ProductID == d.Product.ProductID);
-                            if (producto == null)
-                                throw new InvalidOperationException($"Producto con ID {d.Product.ProductID} no existe.");
-                            if (producto.UnitsInStock < d.Quantity)
-                                throw new InvalidOperationException($"Producto 'Id:{producto.ProductID}, {producto.ProductName}' no tiene suficiente inventario. Disponible: {producto.UnitsInStock}, Requerido: {d.Quantity}.");
-                            // 2.2) Actualizar stock
-                            producto.UnitsInStock -= d.Quantity;
-                            context.Entry(producto).State = EntityState.Modified;
-                            // 2.3) Insertar detalle
-                            var detalle = new Order_Detail()
-                            {
-                                OrderID = order.OrderID, // Asocia el detalle con el OrderID generado
-                                ProductID = producto.ProductID,
-                                UnitPrice = d.UnitPrice,
-                                Quantity = d.Quantity,
-                                Discount = d.Discount
-                            };
-                            context.Order_Details.Add(detalle);
-                            filasAfectadas++;
-                        }
-                        // Guardar cambios de detalles y stock
-                        context.SaveChanges();
-                        tx.Commit();
-                    }
-                    catch 
-                    {
-                        try { tx.Rollback(); } catch { }
-                        throw;
-                    }
-                }
-                return filasAfectadas;
-            }
-            catch (Exception ex)
+            if (venta.Order_Details == null || venta.Order_Details.Count == 0)
+                throw new InvalidOperationException("La venta debe contener al menos un detalle.");
+
+            using (var context = new NorthwindContext())
+            using (var tx = context.Database.BeginTransaction())
             {
-                throw new Exception("Error al insertar la venta completa: " + ex.Message, ex);
+                try
+                {
+                    // ===============================
+                    // 🔥 COPIA PLANA DE DETALLES
+                    // ===============================
+                    var detalles = venta.Order_Details
+                        .Select(d => new
+                        {
+                            d.ProductID,
+                            d.UnitPrice,
+                            d.Quantity,
+                            d.Discount,
+                            d.TasaIVA
+                        })
+                        .ToList();
+
+                    // ===============================
+                    // 🔥 ROMPER NAVEGACIONES
+                    // ===============================
+                    venta.Order_Details.Clear();
+                    venta.Customer = null;
+                    venta.Employee = null;
+                    venta.Shipper = null;
+
+                    // ===============================
+                    // 🔑 VALIDACIONES
+                    // ===============================
+                    if (string.IsNullOrWhiteSpace(venta.CustomerID))
+                        throw new InvalidOperationException("Cliente inválido.");
+
+                    if (!venta.EmployeeID.HasValue || venta.EmployeeID == 0)
+                        throw new InvalidOperationException("Empleado inválido.");
+
+                    if (!venta.ShipVia.HasValue || venta.ShipVia == 0)
+                        throw new InvalidOperationException("Transportista inválido.");
+
+                    // ===============================
+                    // 🧾 CREAR ORDER
+                    // ===============================
+                    var order = new Order
+                    {
+                        CustomerID = venta.CustomerID,
+                        EmployeeID = venta.EmployeeID,
+                        OrderDate = venta.OrderDate,
+                        RequiredDate = venta.RequiredDate,
+                        ShippedDate = venta.ShippedDate,
+                        ShipVia = venta.ShipVia,
+                        Freight = venta.Freight,
+                        ShipName = venta.ShipName,
+                        ShipAddress = venta.ShipAddress,
+                        ShipCity = venta.ShipCity,
+                        ShipRegion = venta.ShipRegion,
+                        ShipPostalCode = venta.ShipPostalCode,
+                        ShipCountry = venta.ShipCountry
+                    };
+
+                    context.Orders.Add(order);
+                    context.SaveChanges(); // 🔑 genera OrderID
+
+                    int filasAfectadas = 1;
+
+                    // ===============================
+                    // 📦 PROCESAR DETALLES (SIN BLOQUEO)
+                    // ===============================
+                    foreach (var d in detalles)
+                    {
+                        if (d.ProductID <= 0)
+                            throw new InvalidOperationException("Producto inválido.");
+
+                        if (d.Quantity <= 0)
+                            throw new InvalidOperationException($"Cantidad inválida para el producto {d.ProductID}.");
+
+                        // 🔥 UPDATE ATÓMICO (CLAVE)
+                        //🔥 FRASE CLAVE
+                        //EF es para CRUD
+                        //SQL es para lógica crítica(como inventario)
+                        int rows = context.Database.ExecuteSqlCommand(
+                            @"UPDATE Products
+                                  SET UnitsInStock = UnitsInStock - @p0
+                                  WHERE ProductID = @p1
+                                  AND UnitsInStock >= @p0",
+                            d.Quantity,
+                            d.ProductID
+                        );
+
+                        // ❌ SI NO SE ACTUALIZÓ → NO HAY STOCK O NO EXISTE
+                        if (rows == 0)
+                        {
+                            bool existe = context.Products.Any(p => p.ProductID == d.ProductID);
+
+                            if (!existe)
+                                throw new InvalidOperationException($"Producto con ID {d.ProductID} no existe.");
+
+                            throw new InvalidOperationException(
+                                $"Inventario insuficiente para el producto {d.ProductID}."
+                            );
+                        }
+
+                        // 🧾 INSERTAR DETALLE
+                        var detalle = new Order_Detail
+                        {
+                            OrderID = order.OrderID,
+                            ProductID = d.ProductID,
+                            UnitPrice = d.UnitPrice,
+                            Quantity = d.Quantity,
+                            Discount = d.Discount,
+                            TasaIVA = d.TasaIVA,
+                            Product = null,
+                            Order = null
+                        };
+
+                        context.Order_Details.Add(detalle);
+                        filasAfectadas++;
+                    }
+
+                    // ===============================
+                    // 💾 GUARDAR DETALLES
+                    // ===============================
+                    context.SaveChanges();
+
+                    tx.Commit();
+
+                    // ===============================
+                    // 🔁 DEVOLVER A UI
+                    // ===============================
+                    venta.OrderID = order.OrderID;
+                    venta.RowVersion = order.RowVersion;
+
+                    return filasAfectadas;
+                }
+                catch (Exception ex)
+                {
+                    try { tx.Rollback(); } catch { }
+
+                    Exception inner = ex;
+                    while (inner.InnerException != null)
+                        inner = inner.InnerException;
+
+                    throw new Exception(inner.Message, ex);
+                }
             }
         }
 
