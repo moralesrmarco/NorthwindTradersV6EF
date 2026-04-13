@@ -2,13 +2,10 @@
 using DTOs.EF;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity; // Habilita .Include con expresiones
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Validation;
-using System.Diagnostics;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace BLL.EF
 {
@@ -164,6 +161,121 @@ namespace BLL.EF
 
                     throw new Exception(inner.Message, ex);
                 }
+            }
+        }
+
+        public static int Actualizar(Order venta)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    using (var conn = context.Database.Connection)
+                    {
+                        if (conn.State != ConnectionState.Open)
+                            conn.Open();
+
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.CommandText = "SpVentaActualizar";
+                            cmd.CommandType = CommandType.StoredProcedure;
+
+                            cmd.Parameters.Add(new SqlParameter("@OrderID", venta.OrderID));
+                            cmd.Parameters.Add(new SqlParameter("@CustomerID", venta.Customer.CustomerID));
+                            cmd.Parameters.Add(new SqlParameter("@EmployeeID", venta.Employee.EmployeeID));
+                            cmd.Parameters.Add(new SqlParameter("@OrderDate", (object)venta.OrderDate ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@RequiredDate", (object)venta.RequiredDate ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShippedDate", (object)venta.ShippedDate ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipVia", (object)venta.Shipper.ShipperID ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@Freight", (object)venta.Freight ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipName", (object)venta.ShipName ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipAddress", (object)venta.ShipAddress ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipCity", (object)venta.ShipCity ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipRegion", (object)venta.ShipRegion ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipPostalCode", (object)venta.ShipPostalCode ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipCountry", (object)venta.ShipCountry ?? DBNull.Value));
+
+                            var pRowVersion = new SqlParameter("@RowVersion", SqlDbType.Binary, 8)
+                            {
+                                Direction = ParameterDirection.InputOutput,
+                                Value = (object)venta.RowVersion ?? DBNull.Value
+                            };
+                            cmd.Parameters.Add(pRowVersion);
+
+                            var pReturn = new SqlParameter
+                            {
+                                ParameterName = "@RETURN_VALUE",
+                                SqlDbType = SqlDbType.Int,
+                                Direction = ParameterDirection.ReturnValue
+                            };
+                            cmd.Parameters.Add(pReturn);
+
+                            cmd.ExecuteNonQuery();
+
+                            int returnCode = (int)pReturn.Value;
+                            if (returnCode == 1)
+                            {
+                                venta.RowVersion = (byte[])pRowVersion.Value;
+                            }
+                            return returnCode;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar la venta: " + ex.Message);
+            }
+        }
+
+        public static int Eliminar(Order venta, out string productoExcede)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    using (var conn = context.Database.Connection)
+                    {
+                        if (conn.State != ConnectionState.Open)
+                            conn.Open();
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.CommandText = "SpVentaEliminar";
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Add(new SqlParameter("@OrderID", venta.OrderID));
+                            var pProductoExcede = new SqlParameter
+                            {
+                                ParameterName = "@ProductoExcede",
+                                SqlDbType = SqlDbType.NVarChar,
+                                Size = 200,
+                                Direction = ParameterDirection.Output
+                            };
+                            cmd.Parameters.Add(pProductoExcede);
+                            var pRowVersion = new SqlParameter("@RowVersion", SqlDbType.Binary, 8)
+                            {
+                                Direction = ParameterDirection.Input,
+                                Value = (object)venta.RowVersion ?? DBNull.Value
+                            };
+                            cmd.Parameters.Add(pRowVersion);
+                            var pReturn = new SqlParameter
+                            {
+                                ParameterName = "@RETURN_VALUE",
+                                SqlDbType = SqlDbType.Int,
+                                Direction = ParameterDirection.ReturnValue
+                            };
+                            cmd.Parameters.Add(pReturn);
+
+                            cmd.ExecuteNonQuery();
+                            productoExcede = pProductoExcede.Value as string;
+                            int returnCode = (int)pReturn.Value;
+                            return returnCode;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar la venta: " + ex.Message);
             }
         }
 
