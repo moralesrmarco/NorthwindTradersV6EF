@@ -115,6 +115,7 @@ namespace DAL.EF
         {
             Order = new Order();
             Product = new Product();
+            TasaIVA = (float)ConfiguracionFiscal.TasaIVA; // Asignar la tasa de IVA desde la configuración
         }
     }
 }

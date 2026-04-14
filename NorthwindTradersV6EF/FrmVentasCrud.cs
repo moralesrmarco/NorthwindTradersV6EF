@@ -16,15 +16,6 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmVentasCrud : Form
     {
-        //string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        //private VentaBLL _ventaBLL;
-        //private VentaDetalleBLL _ventaDetalleBLL;
-        //private ClienteService _clienteService;
-        //private EmpleadoService _empleadoService;
-        //private TransportistaService _transportistaService;
-        //private CategoriaService _categoriaService;
-        //private ProductoService _productoService;
-        //private VentaService _ventaService;
         internal Dictionary<string, object> valoresOriginales;
         int numDetalle = 1;
         bool VentaGenerada = false;
@@ -99,21 +90,10 @@ namespace NorthwindTradersV6EF
 
         private void FrmVentasCrud_Load(object sender, EventArgs e)
         {
-            //_ventaBLL = new VentaBLL(_connectionString);
-            //_ventaDetalleBLL = new VentaDetalleBLL(_connectionString);
-            //_clienteService = new ClienteService(_connectionString);
-            //_empleadoService = new EmpleadoService(_connectionString);
-            //_transportistaService = new TransportistaService(_connectionString);
-            //_categoriaService = new CategoriaService(_connectionString);
-            //_productoService = new ProductoService(_connectionString);
-            //_ventaService = new VentaService(_connectionString);
-
             tabcOperacion.Appearance = TabAppearance.Normal;
             tabcOperacion.ItemSize = new Size(0, 1);
             tabcOperacion.SizeMode = TabSizeMode.Fixed;
-
             InicializarDtps();
-
             DeshabilitarNudsNoSeleccionables();
             DeshabilitarTodosControles();
             LlenarCboCliente();
@@ -1167,8 +1147,7 @@ namespace NorthwindTradersV6EF
                     },
                     UnitPrice = controlAgregarProducto.NudPrecioConIVAIncluido.Value,
                     Quantity = (short)controlAgregarProducto.NudCantidad.Value,
-                    Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m),
-                    TasaIVA = (float)ConfiguracionFiscal.TasaIVA
+                    Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m)
                 };
                 AgregarFila(ventaDetalle);
                 CalcularTotales();
@@ -1364,8 +1343,7 @@ namespace NorthwindTradersV6EF
                                 ProductID = productId,
                                 UnitPrice = Convert.ToDecimal(row.Cells["Precio"].Value),
                                 Quantity = Convert.ToInt16(row.Cells["Cantidad"].Value),
-                                Discount = (float)Convert.ToDecimal(row.Cells["Descuento"].Value),
-                                TasaIVA = (float)Convert.ToDecimal(row.Cells["TasaIVA"].Value)
+                                Discount = (float)Convert.ToDecimal(row.Cells["Descuento"].Value)
                             };
                             venta.Order_Details.Add(ventaDetalles);
                         }

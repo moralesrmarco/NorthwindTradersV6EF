@@ -1,5 +1,8 @@
-﻿using BLL;
-using Entities;
+﻿//using BLL;
+//using Entities;
+using BLL.EF;
+using BLL.EF.Services;
+using DAL.EF;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,10 +16,10 @@ namespace NorthwindTradersV6EF
     {
         string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
         internal Dictionary<string, object> valoresOriginales;
-        private VentaDetalleBLL _ventaDetalleBLL;
-        private ProductoBLL _productoBLL;
+        //private VentaDetalleBLL _ventaDetalleBLL;
+        //private ProductoBLL _productoBLL;
 
-        public VentaDetalle ventaDetalle;
+        public Order_Detail ventaDetalle;
         private short CantidadOld;
         private decimal DescuentoOld;
         private short UInventarioOld;
@@ -25,8 +28,8 @@ namespace NorthwindTradersV6EF
         public FrmVentasDetalleModificar()
         {
             InitializeComponent();
-            _ventaDetalleBLL = new VentaDetalleBLL(_connectionString);
-            _productoBLL = new ProductoBLL(_connectionString);
+            //_ventaDetalleBLL = new VentaDetalleBLL(_connectionString);
+            //_productoBLL = new ProductoBLL(_connectionString);
         }
 
         private void FrmVentasDetalleModificar_FormClosed(object sender, FormClosedEventArgs e) => MDIPrincipal.ActualizarBarraDeEstado();
@@ -42,11 +45,11 @@ namespace NorthwindTradersV6EF
         {
             controlAgregarProducto.GrbProducto.Text = "»   Modificar producto de la venta:   «";
             controlAgregarProducto.BtnAgregar.Visible = false;
-            txtId.Text = ventaDetalle.Venta.OrderID.ToString();
+            txtId.Text = ventaDetalle.Order.OrderID.ToString();
             controlAgregarProducto.CboCategoria.Enabled = false;
             controlAgregarProducto.CboProducto.Enabled = false;
 
-            var categoria = _productoBLL.ObtenerProductoPorId(ventaDetalle.Producto.ProductID).Categoria.CategoryName;
+            var categoria = ProductBLL.ObtenerProductoPorId(ventaDetalle.Product.ProductID).Category.CategoryName;
             // Si el ComboBox está vacío o no contiene ese texto, lo agregas
             if (string.IsNullOrEmpty(categoria))
             {
@@ -59,11 +62,11 @@ namespace NorthwindTradersV6EF
             }
             controlAgregarProducto.CboCategoria.SelectedItem = categoria;
 
-            if (!controlAgregarProducto.CboProducto.Items.Contains(ventaDetalle.Producto.ProductName))
+            if (!controlAgregarProducto.CboProducto.Items.Contains(ventaDetalle.Product.ProductName))
             {
-                controlAgregarProducto.CboProducto.Items.Add(ventaDetalle.Producto.ProductName);
+                controlAgregarProducto.CboProducto.Items.Add(ventaDetalle.Product.ProductName);
             }
-            controlAgregarProducto.CboProducto.SelectedItem = ventaDetalle.Producto.ProductName;
+            controlAgregarProducto.CboProducto.SelectedItem = ventaDetalle.Product.ProductName;
             controlAgregarProducto.NudPrecioConIVAIncluido.Value = ventaDetalle.UnitPrice;
 
             InventarioRealDb = ObtenerUInventario();
@@ -121,7 +124,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                uInventario = Convert.ToDecimal(_ventaDetalleBLL.ObtenerUInventario(ventaDetalle.Producto.ProductID));
+                uInventario = Convert.ToDecimal(Order_DetailService.ObtenerUInventario(ventaDetalle.Product.ProductID));
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
             catch (Exception ex)
@@ -243,11 +246,11 @@ namespace NorthwindTradersV6EF
         {
             try
             {
-                VentaDetalle ventaDetalle = new VentaDetalle()
+                Order_Detail ventaDetalle = new Order_Detail()
                 {
                     UnitPrice = controlAgregarProducto.NudPrecioConIVAIncluido.Value,
                     Quantity = Convert.ToInt16(controlAgregarProducto.NudCantidad.Value),
-                    Discount = controlAgregarProducto.NudDescuento.Value / 100m
+                    Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m)
                 };
                 controlAgregarProducto.NudPrecioPorUnidadSinIVAIncluidoAntesDescuento.Value = ventaDetalle.PrecioPorUnidadSinIVASinDescuento;
                 controlAgregarProducto.NudIVADelPrecioPorUnidadAntesDescuento.Value = ventaDetalle.IVADelPrecioPorUnidadSinDescuento;
@@ -284,21 +287,21 @@ namespace NorthwindTradersV6EF
             {
                 btnModificar.Enabled = false;
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
-                VentaDetalle ventaDetalleModificacion = new VentaDetalle
+                Order_Detail ventaDetalleModificacion = new Order_Detail
                 {
-                    Venta = new Venta() 
+                    Order = new Order() 
                     { 
-                        OrderID = ventaDetalle.Venta.OrderID,
-                        RowVersion = ventaDetalle.Venta.RowVersion
+                        OrderID = ventaDetalle.Order.OrderID,
+                        RowVersion = ventaDetalle.Order.RowVersion
                     },
-                    Producto = new Producto() { ProductID = ventaDetalle.Producto.ProductID },
+                    Product = new Product() { ProductID = ventaDetalle.Product.ProductID },
                     Quantity = short.Parse(controlAgregarProducto.NudCantidad.Value.ToString()),
-                    Discount = decimal.Parse((controlAgregarProducto.NudDescuento.Value / 100m).ToString()),
+                    Discount = float.Parse((controlAgregarProducto.NudDescuento.Value / 100m).ToString()),
                     RowVersion = ventaDetalle.RowVersion
                 };
-                numRegs = _ventaDetalleBLL.Actualizar(ventaDetalleModificacion);
-                string strProductoVenta = $"El producto: {ventaDetalle.ProductName} - Venta: {ventaDetalle.Venta.OrderID}:";
-                string strVenta = $"La venta con Id: {ventaDetalle.Venta.OrderID}:";
+                numRegs = Order_DetailBLL.Actualizar(ventaDetalleModificacion);
+                string strProductoVenta = $"El producto: {ventaDetalle.ProductName} - Venta: {ventaDetalle.Order.OrderID}:";
+                string strVenta = $"La venta con Id: {ventaDetalle.Order.OrderID}:";
                 if (numRegs > 0)
                 {
                     // deja que continue el proceso para cerrar el formulario

@@ -1,5 +1,6 @@
 ﻿using BLL;
 using BLL.Services;
+using DAL.EF;
 using Entities;
 using Entities.DTOs;
 using NorthwindTradersV6EF.Helpers;
@@ -1421,23 +1422,23 @@ namespace NorthwindTradersV6EF
                     DataGridViewRow dgvr = dgv.CurrentRow;
                     using (FrmVentasDetalleModificar frmVentasDetalleModificar = new FrmVentasDetalleModificar())
                     {
-                        VentaDetalle ventaDetalle = new VentaDetalle()
+                        Order_Detail ventaDetalle = new Order_Detail()
                         {
-                            Venta = new Venta()
+                            Order = new Order()
                             {
                                 OrderID = int.Parse(txtId.Text),
                                 RowVersion = (txtId.Tag != null && long.TryParse(txtId.Tag.ToString(), out long tagVal))
                                                 ? BitConverter.GetBytes(tagVal)
                                                 : null // para evitar excepcion devuelve null si el valor no es convertible a long
                             },
-                            Producto = new Producto()
+                            Product = new Product()
                             {
                                 ProductID = (int)dgvr.Cells["ProductoId"].Value,
                                 ProductName = dgvr.Cells["Producto"].Value.ToString()
                             },
                             UnitPrice = decimal.Parse(dgvr.Cells["Precio"].Value.ToString()),
                             Quantity = short.Parse(dgvr.Cells["Cantidad"].Value.ToString()),
-                            Discount = decimal.Parse(dgvr.Cells["Descuento"].Value.ToString()),
+                            Discount = float.Parse(dgvr.Cells["Descuento"].Value.ToString()),
                             RowVersion = dgvr.Cells["RowVersion"].Value as byte[] // devuelve null si es DBNull o no es byte[]
                         };
                         frmVentasDetalleModificar.ventaDetalle = ventaDetalle;
