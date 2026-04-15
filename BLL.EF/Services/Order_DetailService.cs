@@ -2,7 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Data.Entity; // Agregar este using para habilitar Include con expresiones lambda
+using System.Data.Entity;
+using System.Data; // Agregar este using para habilitar Include con expresiones lambda
 
 namespace BLL.EF.Services
 {

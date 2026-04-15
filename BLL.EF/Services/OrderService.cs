@@ -1,6 +1,7 @@
 ﻿using DAL.EF;
 using DTOs.EF;
 using System;
+using System.Data;
 using System.Data.Entity; // Agregar esta directiva para habilitar Include
 using System.Linq;
 
@@ -89,6 +90,44 @@ namespace BLL.EF.Services
             {
                 throw new Exception("Error al obtener la venta por ID: " + ex.Message);
             }
+        }
+
+
+        public static DataTable ObtenerVentaPorIdDt(int orderId)
+        {
+            Order venta = ObtenerVentaPorId(orderId);
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Id", typeof(int));
+            dt.Columns.Add("Cliente", typeof(string));
+            dt.Columns.Add("Vendedor", typeof(string));
+            dt.Columns.Add("FechaDePedido", typeof(DateTime));
+            dt.Columns.Add("FechaRequerido", typeof(DateTime));
+            dt.Columns.Add("FechaDeEnvio", typeof(DateTime));
+            dt.Columns.Add("CompaniaTransportista", typeof(string));
+            dt.Columns.Add("DirigidoA", typeof(string));
+            dt.Columns.Add("Domicilio", typeof(string));
+            dt.Columns.Add("Ciudad", typeof(string));
+            dt.Columns.Add("Region", typeof(string));
+            dt.Columns.Add("CodigoPostal", typeof(string));
+            dt.Columns.Add("Pais", typeof(string));
+            dt.Columns.Add("Flete", typeof(decimal));
+            DataRow dr = dt.NewRow();
+            dr["Id"] = venta.OrderID;
+            dr["Cliente"] = venta.Customer.CompanyName;
+            dr["Vendedor"] = venta.Employee.NameByLastName;
+            dr["FechaDePedido"] = venta.OrderDate ?? (object)DBNull.Value;
+            dr["FechaRequerido"] = venta.RequiredDate ?? (object)DBNull.Value;
+            dr["FechaDeEnvio"] = venta.ShippedDate ?? (object)DBNull.Value;
+            dr["CompaniaTransportista"] = venta.Shipper.CompanyName;
+            dr["DirigidoA"] = venta.ShipName;
+            dr["Domicilio"] = venta.ShipAddress;
+            dr["Ciudad"] = venta.ShipCity;
+            dr["Region"] = venta.ShipRegion;
+            dr["CodigoPostal"] = venta.ShipPostalCode;
+            dr["Pais"] = venta.ShipCountry;
+            dr["Flete"] = venta.Freight;
+            dt.Rows.Add(dr);
+            return dt;
         }
     }
 }

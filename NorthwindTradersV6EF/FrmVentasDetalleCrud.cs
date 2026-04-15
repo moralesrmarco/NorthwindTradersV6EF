@@ -1,12 +1,9 @@
-﻿using BLL;
-using BLL.EF;
+﻿using BLL.EF;
 using BLL.EF.Services;
-using BLL.Services;
 using DAL.EF;
 using NorthwindTradersV6EF.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
