@@ -1,12 +1,9 @@
-﻿using BLL;
-using BLL.Services;
+﻿using BLL.EF;
+using BLL.EF.Services;
 using DAL.EF;
-using Entities;
-using Entities.DTOs;
 using NorthwindTradersV6EF.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -20,17 +17,7 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmVentasCrudV2 : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private VentaBLL _ventaBLL;
-        private VentaDetalleBLL _ventaDetalleBLL;
-        private ClienteService _clienteService;
-        private EmpleadoService _empleadoService;
-        private TransportistaService _transportistaService;
-        private CategoriaService _categoriaService;
-        private ProductoService _productoService;
-        private VentaService _ventaService;
         internal Dictionary<string, object> valoresOriginales;
-        bool EventoCargado = true; // esta variable es necesaria para controlar el manejador de eventos de la celda del dgv ojo no quitar
         int numDetalle = 1;
         bool VentaGenerada = false;
         private short CantidadOld = 0;
@@ -104,16 +91,6 @@ namespace NorthwindTradersV6EF
 
         private void FrmVentasCrud_Load(object sender, EventArgs e)
         {
-            WindowState = FormWindowState.Maximized;
-            _ventaBLL = new VentaBLL(_connectionString);
-            _ventaDetalleBLL = new VentaDetalleBLL(_connectionString);
-            _clienteService = new ClienteService(_connectionString);
-            _empleadoService = new EmpleadoService(_connectionString);
-            _transportistaService = new TransportistaService(_connectionString);
-            _categoriaService = new CategoriaService(_connectionString);
-            _productoService = new ProductoService(_connectionString);
-            _ventaService = new VentaService(_connectionString);
-
             tabcOperacion.Appearance = TabAppearance.Normal;
             tabcOperacion.ItemSize = new Size(0, 1);
             tabcOperacion.SizeMode = TabSizeMode.Fixed;
@@ -281,6 +258,11 @@ namespace NorthwindTradersV6EF
             DeshabilitarControlesProducto();
         }
 
+        private void DeshabilitarDtpsFechas()
+        {
+            dtpVenta.Enabled = dtpHoraVenta.Enabled = dtpRequerido.Enabled = dtpHoraRequerido.Enabled = dtpEnvio.Enabled = dtpHoraEnvio.Enabled = false;
+        }
+
         private void OcultarIconosValidacion()
         {
             StatusIconHelper.HideIcons(controlAgregarProducto.PbError, controlAgregarProducto.PbInfo, controlAgregarProducto.PbWarning);
@@ -294,7 +276,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboCliente = _clienteService.ObtenerClientesCbo();
+                var dtCboCliente = CustomerService.ObtenerClientesCbo();
                 ComboBoxHelper.LlenarCbo(cboCliente, dtCboCliente, "CompanyName", "CustomerID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -309,7 +291,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboEmpleado = _empleadoService.ObtenerEmpleadosCbo();
+                var dtCboEmpleado = EmployeeService.ObtenerEmpleadosCbo();
                 ComboBoxHelper.LlenarCbo(cboEmpleado, dtCboEmpleado, "EmployeeName", "EmployeeID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -324,7 +306,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboTransportista = _transportistaService.ObtenerTransportistasCbo();
+                var dtCboTransportista = ShipperService.ObtenerTransportistasCbo();
                 ComboBoxHelper.LlenarCbo(cboTransportista, dtCboTransportista, "CompanyName", "ShipperID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -339,7 +321,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dtCboCategoria = _categoriaService.ObtenerCategoriasCbo();
+                var dtCboCategoria = CategoryService.ObtenerCategoriasCbo(true);
                 ComboBoxHelper.LlenarCbo(controlAgregarProducto.CboCategoria, dtCboCategoria, "CategoryName", "CategoryID");
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -354,10 +336,10 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                DtoVentasBuscar criterios;
+                DTOs.EF.DtoVentasBuscar criterios;
                 if (selectorRealizaBusqueda == true)
                 {
-                    criterios = new DtoVentasBuscar
+                    criterios = new DTOs.EF.DtoVentasBuscar
                     {
                         IdIni = Convert.ToInt32(controlBuscarVenta.NudBIdIni.Value),
                         IdFin = Convert.ToInt32(controlBuscarVenta.NudBIdFin.Value),
@@ -385,7 +367,7 @@ namespace NorthwindTradersV6EF
                 }
                 else
                     criterios = null;
-                var ventas = _ventaBLL.ObtenerVentas(selectorRealizaBusqueda, criterios, false);
+                var ventas = OrderBLL.ObtenerVentas(selectorRealizaBusqueda, criterios, false);
                 dgvVentas.DataSource = ventas;
                 if (!selectorRealizaBusqueda)
                     MDIPrincipal.ActualizarBarraDeEstado($"Se muestran las últimas {dgvVentas.RowCount} venta(s) registrada(s)");
@@ -471,7 +453,7 @@ namespace NorthwindTradersV6EF
         private void dgvVentas_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             // debe estar vinculado a la clase List<> a la cual esta vinculado el DataGridView.DataSource
-            Utils.OrdenarPorColumna<DtoVentaDgv>(dgvVentas, e);
+            Utils.OrdenarPorColumna<DTOs.EF.DtoVentaDgv>(dgvVentas, e);
         }
 
         private void ControlBuscarVenta_LimpiarClick(object sender, EventArgs e)
@@ -483,6 +465,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tabpRegistrar)
                 DeshabilitarControles();
             LlenarDgvVentas(false);
+            CargarValoresOriginales();
             tableLayoutPanel1.Focus();
         }
 
@@ -494,6 +477,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tabpRegistrar)
                 DeshabilitarControles();
             LlenarDgvVentas(true);
+            CargarValoresOriginales();
             tableLayoutPanel1.Focus();
         }
 
@@ -667,10 +651,10 @@ namespace NorthwindTradersV6EF
                 }
             }
             // necesario crear un objeto temporal para calcular el subtotal con la formulas ya definidas en la clase VentaDetalle
-            VentaDetalle ventaDetalle = new VentaDetalle();
+            Order_Detail ventaDetalle = new Order_Detail();
             ventaDetalle.UnitPrice = controlAgregarProducto.NudPrecioConIVAIncluido.Value;
             ventaDetalle.Quantity = (short)controlAgregarProducto.NudCantidad.Value;
-            ventaDetalle.Discount = controlAgregarProducto.NudDescuento.Value / 100m;
+            ventaDetalle.Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m);
             CalcularTotalProducto(ventaDetalle);
             if (ventaDetalle.Subtotal == 0)
             {
@@ -732,7 +716,7 @@ namespace NorthwindTradersV6EF
             return valida;
         }
 
-        private void CalcularTotalProducto(VentaDetalle ventaDetalle)
+        private void CalcularTotalProducto(Order_Detail ventaDetalle)
         {
             controlAgregarProducto.NudPrecioPorUnidadSinIVAIncluidoAntesDescuento.Value = ventaDetalle.PrecioPorUnidadSinIVASinDescuento;
             controlAgregarProducto.NudIVADelPrecioPorUnidadAntesDescuento.Value = ventaDetalle.IVADelPrecioPorUnidadSinDescuento;
@@ -828,7 +812,7 @@ namespace NorthwindTradersV6EF
                 try
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                    var dtCboProductos = _productoService.ObtenerProductosPorCategoriaCbo(int.Parse(controlAgregarProducto.CboCategoria.SelectedValue.ToString()));
+                    var dtCboProductos = ProductService.ObtenerProductosPorCategoriaCbo(int.Parse(controlAgregarProducto.CboCategoria.SelectedValue.ToString()));
                     controlAgregarProducto.CboProducto.DataSource = dtCboProductos;
                     controlAgregarProducto.CboProducto.DisplayMember = "ProductName";
                     controlAgregarProducto.CboProducto.ValueMember = "ProductID";
@@ -855,7 +839,7 @@ namespace NorthwindTradersV6EF
                 try
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                    var dtoEnvioInformacion = _ventaService.ObtenerUltimaInformacionDeEnvio(cboCliente.SelectedValue?.ToString());
+                    var dtoEnvioInformacion = OrderService.ObtenerUltimaInformacionDeEnvio(cboCliente.SelectedValue?.ToString());
                     if (dtoEnvioInformacion != null)
                     {
                         txtDirigidoa.Text = dtoEnvioInformacion.ShipName ?? "";
@@ -889,7 +873,7 @@ namespace NorthwindTradersV6EF
                     var productId = controlAgregarProducto.CboProducto.SelectedValue?.ToString();
                     InicializarValoresAgregarProducto();
                     InicializarNudsProducto();
-                    var dtoProductoCostoInventario = _productoService.ObtenerProductoCostoEInventario(int.Parse(productId));
+                    var dtoProductoCostoInventario = ProductService.ObtenerProductoCostoEInventario(int.Parse(productId));
                     if (dtoProductoCostoInventario != null)
                     {
                         controlAgregarProducto.NudPrecioConIVAIncluido.Value = dtoProductoCostoInventario.UnitPrice;
@@ -1011,16 +995,16 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var venta = _ventaBLL.ObtenerVentaPorId(orderId);
+                var venta = OrderService.ObtenerVentaPorId(orderId);
                 if (venta != null)
                 {
                     txtId.Text = venta.OrderID.ToString();
-                    txtId.Tag = venta.RowVersionString;
+                    txtId.Tag = venta.RowVersionStr;
                     cboCliente.SelectedIndexChanged -= new EventHandler(cboCliente_SelectedIndexChanged);
-                    cboCliente.SelectedValue = venta.Cliente.CustomerID;
+                    cboCliente.SelectedValue = venta.Customer.CustomerID;
                     cboCliente.SelectedIndexChanged += new EventHandler(cboCliente_SelectedIndexChanged);
-                    cboEmpleado.SelectedValue = venta.Empleado.EmployeeID;
-                    cboTransportista.SelectedValue = venta.Transportista.ShipperID;
+                    cboEmpleado.SelectedValue = venta.Employee.EmployeeID;
+                    cboTransportista.SelectedValue = venta.Shipper.ShipperID;
                     txtDirigidoa.Text = venta.ShipName ?? "";
                     txtDomicilio.Text = venta.ShipAddress ?? "";
                     txtCiudad.Text = venta.ShipCity ?? "";
@@ -1109,7 +1093,7 @@ namespace NorthwindTradersV6EF
             {
                 numDetalle = 1;
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var detalles = _ventaDetalleBLL.ObtenerVentaDetallePorVentaId(orderId);
+                var detalles = Order_DetailService.ObtenerVentaDetallePorVentaId(orderId);
                 if (detalles.Count == 0)
                 {
                     U.NotificacionWarning("No se encontraron detalles para la venta especificada");
@@ -1121,7 +1105,7 @@ namespace NorthwindTradersV6EF
                         controlDetalleDeLaVenta.DgvDetalle.Rows.Add(new object[]
                         {
                             numDetalle,
-                            ventaDetalle.Producto.ProductName,
+                            ventaDetalle.Product.ProductName,
                             ventaDetalle.UnitPrice,
                             ventaDetalle.Quantity,
                             ventaDetalle.SubtotalDelImporteConIVAIncluido,
@@ -1134,7 +1118,7 @@ namespace NorthwindTradersV6EF
                             ventaDetalle.Subtotal,
                             " Modificar ",
                             " Eliminar ",
-                            ventaDetalle.Producto.ProductID,
+                            ventaDetalle.Product.ProductID,
                             ventaDetalle.RowVersion
                         });
                         ++numDetalle;
@@ -1165,16 +1149,16 @@ namespace NorthwindTradersV6EF
                 if (tabcOperacion.SelectedTab == tabpRegistrar & !VentaGenerada)
                 {
                     InicializarNudsProducto();
-                    var ventaDetalle = new VentaDetalle()
+                    var ventaDetalle = new Order_Detail()
                     {
-                        Producto = new Producto()
+                        Product = new Product()
                         {
                             ProductID = (int)controlAgregarProducto.CboProducto.SelectedValue,
                             ProductName = controlAgregarProducto.CboProducto.Text
                         },
                         UnitPrice = controlAgregarProducto.NudPrecioConIVAIncluido.Value,
                         Quantity = (short)controlAgregarProducto.NudCantidad.Value,
-                        Discount = controlAgregarProducto.NudDescuento.Value / 100m,
+                        Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m),
                     };
                     AgregarFila(ventaDetalle);
                     CalcularTotales();
@@ -1194,10 +1178,11 @@ namespace NorthwindTradersV6EF
                         if (Utils.HayCambiosEnVenta(this, valoresOriginales))
                         {
                             MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
-                            Venta venta = new Venta();
+                            Order venta = new Order();
                             venta.OrderID = int.Parse(txtId.Text);
-                            venta.Cliente.CustomerID = cboCliente.SelectedValue.ToString().Trim();
-                            venta.Empleado.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                            venta.CustomerID = cboCliente.SelectedValue.ToString().Trim();
+                            venta.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                            venta.ShipVia = Convert.ToInt32(cboTransportista.SelectedValue);
 
                             if (dtpVenta != null && dtpHoraVenta != null)
                                 venta.OrderDate = Utils.ObtenerFechaHora(dtpVenta, dtpHoraVenta);
@@ -1206,7 +1191,6 @@ namespace NorthwindTradersV6EF
                             if (dtpEnvio != null && dtpHoraEnvio != null)
                                 venta.ShippedDate = Utils.ObtenerFechaHora(dtpEnvio, dtpHoraEnvio);
 
-                            venta.Transportista.ShipperID = Convert.ToInt32(cboTransportista.SelectedValue);
                             venta.ShipName = txtDirigidoa.Text.Trim();
                             venta.ShipAddress = txtDomicilio.Text.Trim();
                             venta.ShipCity = txtCiudad.Text.Trim();
@@ -1215,7 +1199,7 @@ namespace NorthwindTradersV6EF
                             venta.ShipCountry = txtPais.Text.Trim();
                             venta.Freight = nudFlete.Value;
                             venta.RowVersion = RowVersionHelper.RowVersionObjToByteArray(txtId.Tag);
-                            numRegs = _ventaBLL.Actualizar(venta);
+                            numRegs = OrderBLL.Actualizar(venta);
                             txtId.Tag = venta.RowVersionStr; // se tiene que actualizar por la nota de remision no detecte un cambio
                             MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                             string idVentaCliente = $"La venta con Id: {venta.OrderID} - Cliente: {cboCliente.Text}:";
@@ -1254,25 +1238,25 @@ namespace NorthwindTradersV6EF
                             }
                         }
                         MDIPrincipal.ActualizarBarraDeEstado(Utils.insertandoRegistro);
-                        VentaDetalle ventaDetalle = new VentaDetalle();
-                        ventaDetalle.Venta.OrderID = int.Parse(txtId.Text);
-                        ventaDetalle.Venta.RowVersion = (txtId.Tag != null && long.TryParse(txtId.Tag.ToString(), out long tagVal))
+                        Order_Detail ventaDetalle = new Order_Detail();
+                        ventaDetalle.Order.OrderID = int.Parse(txtId.Text);
+                        ventaDetalle.Order.RowVersion = (txtId.Tag != null && long.TryParse(txtId.Tag.ToString(), out long tagVal))
                                                         ? BitConverter.GetBytes(tagVal)
                                                         : null; // para evitar excepcion devuelve null si el valor no es convertible a long
-                        ventaDetalle.Producto.ProductID = int.Parse(controlAgregarProducto.CboProducto.SelectedValue.ToString());
+                        ventaDetalle.Product.ProductID = int.Parse(controlAgregarProducto.CboProducto.SelectedValue.ToString());
                         ventaDetalle.UnitPrice = controlAgregarProducto.NudPrecioConIVAIncluido.Value;
                         ventaDetalle.Quantity = Convert.ToInt16(controlAgregarProducto.NudCantidad.Value);
-                        ventaDetalle.Discount = controlAgregarProducto.NudDescuento.Value / 100m;
-                        ventaDetalle.Producto.ProductName = controlAgregarProducto.CboProducto.Text;
-                        numRegs = _ventaDetalleBLL.Insertar(ventaDetalle);
+                        ventaDetalle.Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m);
+                        ventaDetalle.Product.ProductName = controlAgregarProducto.CboProducto.Text;
+                        numRegs = Order_DetailBLL.Insertar(ventaDetalle);
                         // Recuperar el nuevo RowVersion y asignarlo al Tag
-                        if (ventaDetalle.Venta.RowVersion != null)
+                        if (ventaDetalle.Order.RowVersion != null)
                         {
                             // Convierte el byte[] a long para almacenarlo en Tag
-                            txtId.Tag = ventaDetalle.Venta.RowVersionStr;
+                            txtId.Tag = ventaDetalle.Order.RowVersionStr;
                         }
-                        string strProductoVenta = $"El producto: {ventaDetalle.ProductName} - Venta: {ventaDetalle.Venta.OrderID}:";
-                        string strVenta = $"La venta con Id: {ventaDetalle.Venta.OrderID}:";
+                        string strProductoVenta = $"El producto: {ventaDetalle.ProductName} - Venta: {ventaDetalle.Order.OrderID}:";
+                        string strVenta = $"La venta con Id: {ventaDetalle.Order.OrderID}:";
                         if (numRegs > 0 || numRegs == -1)
                         {
                             controlAgregarProducto.NudCantidadDescuento_LeaveValueChanged -= NudCantidadDescuento_LeaveValueChangedHandler;
@@ -1289,6 +1273,7 @@ namespace NorthwindTradersV6EF
                             controlDetalleDeLaVenta.DgvDetalle.Focus();
                             controlAgregarProducto.CboCategoria.Focus();
                             controlAgregarProducto.NudCantidadDescuento_LeaveValueChanged += NudCantidadDescuento_LeaveValueChangedHandler;
+                            DeshabilitarDtpsFechas();
                             if (numRegs == -1)
                                 U.NotificacionError(strProductoVenta + Utils.nfrfa);
                         }
@@ -1354,12 +1339,12 @@ namespace NorthwindTradersV6EF
             }
         }
 
-        private void AgregarFila(VentaDetalle ventaDetalle)
+        private void AgregarFila(Order_Detail ventaDetalle)
         {
             controlDetalleDeLaVenta.DgvDetalle.Rows.Insert(0, new object[]
             {
                 0, // valor temporal, se corregirá en ReenumerarFilas
-                ventaDetalle.Producto.ProductName,
+                ventaDetalle.Product.ProductName,
                 ventaDetalle.UnitPrice,
                 ventaDetalle.Quantity,
                 ventaDetalle.SubtotalDelImporteConIVAIncluido,
@@ -1372,7 +1357,7 @@ namespace NorthwindTradersV6EF
                 ventaDetalle.Subtotal,
                 " Modificar ",
                 " Eliminar ",
-                ventaDetalle.Producto.ProductID
+                ventaDetalle.Product.ProductID
             });
         }
 
@@ -1401,21 +1386,22 @@ namespace NorthwindTradersV6EF
                 if ((e.ColumnIndex == dgv.Columns["Eliminar"].Index & tabcOperacion.SelectedTab == tabpModificar) | (VentaGenerada & e.ColumnIndex == dgv.Columns["Eliminar"].Index & tabcOperacion.SelectedTab == tabpRegistrar))
                 {
                     DataGridViewRow dgvr = dgv.CurrentRow;
-                    VentaDetalle ventaDetalle = new VentaDetalle();
-                    ventaDetalle.Venta.OrderID = int.Parse(txtId.Text);
-                    ventaDetalle.Producto.ProductID = (int)dgvr.Cells["ProductoId"].Value;
-                    ventaDetalle.Producto.ProductName = dgvr.Cells["Producto"].Value.ToString();
+                    Order_Detail ventaDetalle = new Order_Detail();
+                    ventaDetalle.Order.OrderID = int.Parse(txtId.Text);
+                    ventaDetalle.Product.ProductID = (int)dgvr.Cells["ProductoId"].Value;
+                    ventaDetalle.Product.ProductName = dgvr.Cells["Producto"].Value.ToString();
                     object cellValue = dgvr.Cells["RowVersion"].Value;
                     ventaDetalle.RowVersion = (cellValue == null || cellValue == DBNull.Value) ? null : (byte[])cellValue;
                     if (txtId.Tag != null && long.TryParse(txtId.Tag.ToString(), out long valor)) // para evitar excepcion devuelve null si el valor no es convertible a long
                     {
-                        ventaDetalle.Venta.RowVersion = BitConverter.GetBytes(valor);
+                        ventaDetalle.Order.RowVersion = BitConverter.GetBytes(valor);
                     }
                     else
                     {
-                        ventaDetalle.Venta.RowVersion = null; // o manejar el error según tu lógica
+                        ventaDetalle.Order.RowVersion = null; // o manejar el error según tu lógica
                     }
                     EliminarProducto(ventaDetalle);
+                    DeshabilitarDtpsFechas();
                 }
                 if ((e.ColumnIndex == dgv.Columns["Modificar"].Index & tabcOperacion.SelectedTab == tabpModificar) | (VentaGenerada & e.ColumnIndex == dgv.Columns["Modificar"].Index & tabcOperacion.SelectedTab == tabpRegistrar))
                 {
@@ -1452,6 +1438,7 @@ namespace NorthwindTradersV6EF
                             LlenarDatosVenta(ref orderId); // necesario para actualizar el RowVersion de la venta
                             LlenarDatosDetalleVenta(orderId);
                             CargarValoresOriginales();
+                            DeshabilitarDtpsFechas();
                         }
                         else if (dialogResult == DialogResult.Cancel)
                         {
@@ -1466,16 +1453,16 @@ namespace NorthwindTradersV6EF
                     DataGridViewRow dgvr = dgv.CurrentRow;
                     using (FrmVentasDetalleModificar2 frmPedidosDetalleModificar2 = new FrmVentasDetalleModificar2())
                     {
-                        VentaDetalle ventaDetalle = new VentaDetalle()
+                        Order_Detail ventaDetalle = new Order_Detail()
                         {
-                            Producto = new Producto()
+                            Product = new Product()
                             {
                                 ProductID = (int)dgvr.Cells["ProductoId"].Value,
                                 ProductName = dgvr.Cells["Producto"].Value.ToString()
                             },
                             UnitPrice = decimal.Parse(dgvr.Cells["Precio"].Value.ToString()),
                             Quantity = short.Parse(dgvr.Cells["Cantidad"].Value.ToString()),
-                            Discount = decimal.Parse(dgvr.Cells["Descuento"].Value.ToString())
+                            Discount = float.Parse(dgvr.Cells["Descuento"].Value.ToString())
                         };
                         frmPedidosDetalleModificar2.ventaDetalle = ventaDetalle;
                         DialogResult dialogResult = frmPedidosDetalleModificar2.ShowDialog();
@@ -1491,6 +1478,7 @@ namespace NorthwindTradersV6EF
                             dgvr.Cells["ImporteDelIVA"].Value = frmPedidosDetalleModificar2.ventaDetalle.SubtotalIVADespuesDelDescuento;
                             dgvr.Cells["Subtotal"].Value = frmPedidosDetalleModificar2.ventaDetalle.Subtotal;
                             CalcularTotales();
+                            DeshabilitarDtpsFechas();
                         }
                     }
                 }
@@ -1512,11 +1500,8 @@ namespace NorthwindTradersV6EF
             OcultarControlAgregarProducto();
             if (tabcOperacion.SelectedTab == tabpRegistrar)
             {
-                if (EventoCargado)
-                {
-                    dgvVentas.CellClick -= new DataGridViewCellEventHandler(dgvVentas_CellClick);
-                    EventoCargado = false;
-                }
+                dgvVentas.CellClick -= new DataGridViewCellEventHandler(dgvVentas_CellClick);
+                dgvVentas.CellClick -= new DataGridViewCellEventHandler(dgvVentas_CellClick);
                 grbVenta.Text = "»   Registro de ventas:   «";
                 MostrarControlAgregarProducto();
                 VentaGenerada = false;
@@ -1539,11 +1524,8 @@ namespace NorthwindTradersV6EF
             }
             else
             {
-                if (!EventoCargado)
-                {
-                    dgvVentas.CellClick += new DataGridViewCellEventHandler(dgvVentas_CellClick);
-                    EventoCargado = true;
-                }
+                dgvVentas.CellClick -= new DataGridViewCellEventHandler(dgvVentas_CellClick);
+                dgvVentas.CellClick += new DataGridViewCellEventHandler(dgvVentas_CellClick);
                 DeshabilitarTodosControles();
                 OcultarCols();
                 InicializarDtps();
@@ -1591,21 +1573,21 @@ namespace NorthwindTradersV6EF
             }
         }
 
-        private void EliminarProducto(VentaDetalle ventaDetalle)
+        private void EliminarProducto(Order_Detail ventaDetalle)
         {
             int numRegs = 0;
             BorrarMensajesError();
             BorrarDatosAgregarProducto();
             try
             {
-                if (U.NotificacionQuestion($"[orange]¿Esta seguro de eliminar el producto: {ventaDetalle.ProductName} de la venta: {ventaDetalle.Venta.OrderID}?") == DialogResult.Yes)
+                if (U.NotificacionQuestion($"[orange]¿Esta seguro de eliminar el producto: {ventaDetalle.Product.ProductName} de la venta: {ventaDetalle.Order.OrderID}?") == DialogResult.Yes)
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.eliminandoRegistro);
                     DeshabilitarControles();
                     DeshabilitarControlesProducto();
-                    numRegs = _ventaDetalleBLL.Eliminar(ventaDetalle);
-                    string strProductoVenta = $"El producto: {ventaDetalle.ProductName} - Venta: {ventaDetalle.Venta.OrderID}:";
-                    string strVenta = $"La venta con Id: {ventaDetalle.Venta.OrderID}:";
+                    numRegs = Order_DetailBLL.Eliminar(ventaDetalle);
+                    string strProductoVenta = $"El producto: {ventaDetalle.Product.ProductName} - Venta: {ventaDetalle.Order.OrderID}:";
+                    string strVenta = $"La venta con Id: {ventaDetalle.Order.OrderID}:";
                     if (numRegs > 0 || numRegs == -1 || numRegs == -2 || numRegs == -4)
                     {
                         int orderId = string.IsNullOrEmpty(txtId.Text) ? 0 : Convert.ToInt32(txtId.Text);
@@ -1678,9 +1660,10 @@ namespace NorthwindTradersV6EF
                         MDIPrincipal.ActualizarBarraDeEstado(Utils.insertandoRegistro);
                         DeshabilitarTodosControles();
                         btnGenerar.Enabled = false;
-                        Venta venta = new Venta();
-                        venta.Cliente.CustomerID = cboCliente.SelectedValue.ToString().Trim();
-                        venta.Empleado.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        Order venta = new Order();
+                        venta.CustomerID = cboCliente.SelectedValue.ToString().Trim();
+                        venta.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        venta.ShipVia = int.Parse(cboTransportista.SelectedValue.ToString());
 
                         if (dtpVenta != null && dtpHoraVenta != null)
                             venta.OrderDate = Utils.ObtenerFechaHora(dtpVenta, dtpHoraVenta);
@@ -1689,7 +1672,6 @@ namespace NorthwindTradersV6EF
                         if (dtpEnvio != null && dtpHoraEnvio != null)
                             venta.ShippedDate = Utils.ObtenerFechaHora(dtpEnvio, dtpHoraEnvio);
 
-                        venta.Transportista.ShipperID = int.Parse(cboTransportista.SelectedValue.ToString());
                         venta.ShipName = txtDirigidoa.Text.Trim();
                         venta.ShipAddress = txtDomicilio.Text.Trim();
                         venta.ShipCity = txtCiudad.Text.Trim();
@@ -1703,27 +1685,28 @@ namespace NorthwindTradersV6EF
                             DataGridViewRow row = controlDetalleDeLaVenta.DgvDetalle.Rows[i];
                             // defensiva: ignorar filas nuevas o vacías
                             if (row.IsNewRow) continue;
-                            VentaDetalle ventaDetalles = new VentaDetalle
+                            int productId;
+
+                            if (!int.TryParse(row.Cells["ProductoId"].Value?.ToString(), out productId))
                             {
-                                Producto = new Producto
-                                {
-                                    ProductID = Convert.ToInt32(row.Cells["ProductoId"].Value),
-                                    ProductName = row.Cells["Producto"].Value.ToString()
-                                },
+                                throw new Exception("ProductID inválido en el grid.");
+                            }
+                            Order_Detail ventaDetalles = new Order_Detail()
+                            {
+                                ProductID = productId,
                                 UnitPrice = Convert.ToDecimal(row.Cells["Precio"].Value),
                                 Quantity = Convert.ToInt16(row.Cells["Cantidad"].Value),
-                                Discount = Convert.ToDecimal(row.Cells["Descuento"].Value),
+                                Discount = (float)(row.Cells["Descuento"].Value),
                             };
-                            venta.VentaDetalles.Add(ventaDetalles);
+                            venta.Order_Details.Add(ventaDetalles);
                         }
-                        numRegs = _ventaBLL.InsertarVentaCompleta(venta, out int orderId, out byte[] rowVersion);
-                        txtId.Text = orderId.ToString();
-                        venta.RowVersion = rowVersion;
+                        numRegs = OrderBLL.InsertarVentaCompleta(venta);
+                        txtId.Text = venta.OrderID.ToString();
                         txtId.Tag = venta.RowVersionStr;
                         string paraNotificacion = $"La venta con Id: {txtId.Text} del Cliente: {cboCliente.Text}:";
                         if (numRegs > 0)
                         {
-                            MDIPrincipal.ActualizarBarraDeEstado($"Se insertaron 1 registro en ventas y {venta.VentaDetalles.Count} registro(s) en el detalle de ventas");
+                            MDIPrincipal.ActualizarBarraDeEstado($"Se insertaron 1 registro en ventas y {venta.Order_Details.Count} registro(s) en el detalle de ventas");
                             U.NotificacionInformation(paraNotificacion + Utils.srs);
                             VentaGenerada = true;
                             numDetalle = 1;
@@ -1752,6 +1735,12 @@ namespace NorthwindTradersV6EF
             {
                 try
                 {
+                    // Verificar si hubo cambios en el formulario
+                    if (!Utils.HayCambios(this, valoresOriginales))
+                    {
+                        U.NotificacionWarning(Utils.ndc);
+                        return; // Salir sin hacer UPDATE
+                    }
                     if (!ValidarControlesVenta())
                     {
                         grbVenta.Focus();
@@ -1762,10 +1751,11 @@ namespace NorthwindTradersV6EF
                         MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
                         DeshabilitarTodosControles();
                         btnGenerar.Enabled = false;
-                        Venta venta = new Venta();
+                        Order venta = new Order();
                         venta.OrderID = int.Parse(txtId.Text);
-                        venta.Cliente.CustomerID = cboCliente.SelectedValue.ToString().Trim();
-                        venta.Empleado.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        venta.CustomerID = cboCliente.SelectedValue.ToString().Trim();
+                        venta.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        venta.ShipVia = Convert.ToInt32(cboTransportista.SelectedValue);
 
                         if (dtpVenta != null && dtpHoraVenta != null)
                             venta.OrderDate = Utils.ObtenerFechaHora(dtpVenta, dtpHoraVenta);
@@ -1774,7 +1764,6 @@ namespace NorthwindTradersV6EF
                         if (dtpEnvio != null && dtpHoraEnvio != null)
                             venta.ShippedDate = Utils.ObtenerFechaHora(dtpEnvio, dtpHoraEnvio);
 
-                        venta.Transportista.ShipperID = Convert.ToInt32(cboTransportista.SelectedValue);
                         venta.ShipName = txtDirigidoa.Text.Trim();
                         venta.ShipAddress = txtDomicilio.Text.Trim();
                         venta.ShipCity = txtCiudad.Text.Trim();
@@ -1783,7 +1772,7 @@ namespace NorthwindTradersV6EF
                         venta.ShipCountry = txtPais.Text.Trim();
                         venta.Freight = nudFlete.Value;
                         venta.RowVersion = RowVersionHelper.RowVersionObjToByteArray(txtId.Tag);
-                        numRegs = _ventaBLL.Actualizar(venta);
+                        numRegs = OrderBLL.Actualizar(venta);
                         txtId.Tag = venta.RowVersionStr; // se tiene que actualizar por la nota de remision no detecte un cambio
                         MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string idVentaCliente = $"La venta con Id: {venta.OrderID} - Cliente: {cboCliente.Text}:";
@@ -1793,6 +1782,7 @@ namespace NorthwindTradersV6EF
                             U.NotificacionInformation(idVentaCliente + Utils.sms);
                             VentaGenerada = true;
                             btnNota.Enabled = true;
+                            controlAgregarProducto.CboCategoria.Enabled = true;
                         }
                         else if (numRegs == -1)
                         {
@@ -1833,10 +1823,10 @@ namespace NorthwindTradersV6EF
                     btnGenerar.Enabled = false;
                     try
                     {
-                        Venta venta = new Venta();
+                        Order venta = new Order();
                         venta.OrderID = int.Parse(txtId.Text);
                         venta.RowVersion = RowVersionHelper.RowVersionObjToByteArray(txtId.Tag);
-                        numRegs = _ventaBLL.Eliminar(venta, out string productoExcede);
+                        numRegs = OrderBLL.Eliminar(venta, out string productoExcede);
                         string idVentaCliente = $"La venta con Id: {txtId.Text} - Cliente: {cboCliente.Text}:";
                         if (numRegs > 0)
                             U.NotificacionInformation(idVentaCliente + Utils.ses);
@@ -1985,7 +1975,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                Venta venta = _ventaBLL.ObtenerVentaPorId(int.Parse(txtId.Text));
+                Order venta = OrderService.ObtenerVentaPorId(int.Parse(txtId.Text));
                 if (venta == null)
                     return -2;
                 // no se necesita checar los rowversions de los detalles de la venta porque si un detalle cambia o es eliminado o es insertado uno nuevo, el rowversion de la venta también cambia, es suficiente con checar el rowversion de la venta

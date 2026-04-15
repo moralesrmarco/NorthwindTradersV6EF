@@ -181,12 +181,12 @@ namespace BLL.EF
                             cmd.CommandType = CommandType.StoredProcedure;
 
                             cmd.Parameters.Add(new SqlParameter("@OrderID", venta.OrderID));
-                            cmd.Parameters.Add(new SqlParameter("@CustomerID", venta.Customer.CustomerID));
-                            cmd.Parameters.Add(new SqlParameter("@EmployeeID", venta.Employee.EmployeeID));
+                            cmd.Parameters.Add(new SqlParameter("@CustomerID", venta.CustomerID));
+                            cmd.Parameters.Add(new SqlParameter("@EmployeeID", venta.EmployeeID));
                             cmd.Parameters.Add(new SqlParameter("@OrderDate", (object)venta.OrderDate ?? DBNull.Value));
                             cmd.Parameters.Add(new SqlParameter("@RequiredDate", (object)venta.RequiredDate ?? DBNull.Value));
                             cmd.Parameters.Add(new SqlParameter("@ShippedDate", (object)venta.ShippedDate ?? DBNull.Value));
-                            cmd.Parameters.Add(new SqlParameter("@ShipVia", (object)venta.Shipper.ShipperID ?? DBNull.Value));
+                            cmd.Parameters.Add(new SqlParameter("@ShipVia", (object)venta.ShipVia ?? DBNull.Value));
                             cmd.Parameters.Add(new SqlParameter("@Freight", (object)venta.Freight ?? DBNull.Value));
                             cmd.Parameters.Add(new SqlParameter("@ShipName", (object)venta.ShipName ?? DBNull.Value));
                             cmd.Parameters.Add(new SqlParameter("@ShipAddress", (object)venta.ShipAddress ?? DBNull.Value));

@@ -1,8 +1,8 @@
-﻿using BLL;
-using Entities;
+﻿using BLL.EF;
+using BLL.EF.Services;
+using DAL.EF;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Windows.Forms;
 using Utilities;
 using static Utilities.InventarioHelper;
@@ -12,12 +12,9 @@ namespace NorthwindTradersV6EF
     public partial class FrmVentasDetalleModificar2 : Form
     {
 
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
         internal Dictionary<string, object> valoresOriginales;
-        private VentaDetalleBLL _ventaDetalleBLL;
-        private ProductoBLL _productoBLL;
 
-        public VentaDetalle ventaDetalle { get; set; }
+        public Order_Detail ventaDetalle { get; set; }
 
         private short CantidadOld;
         private decimal DescuentoOld;
@@ -28,8 +25,6 @@ namespace NorthwindTradersV6EF
         public FrmVentasDetalleModificar2()
         {
             InitializeComponent();
-            _ventaDetalleBLL = new VentaDetalleBLL(_connectionString);
-            _productoBLL = new ProductoBLL(_connectionString);
         }
 
         private void FrmVentasDetalleModificar2_FormClosed(object sender, FormClosedEventArgs e) => MDIPrincipal.ActualizarBarraDeEstado();
@@ -49,7 +44,7 @@ namespace NorthwindTradersV6EF
             controlAgregarProducto.CboCategoria.Enabled = false;
             controlAgregarProducto.CboProducto.Enabled = false;
 
-            var categoria = _productoBLL.ObtenerProductoPorId(ventaDetalle.Producto.ProductID).Categoria.CategoryName;
+            var categoria = ProductBLL.ObtenerProductoPorId(ventaDetalle.Product.ProductID).Category.CategoryName;
             // Si el ComboBox está vacío o no contiene ese texto, lo agregas
             if (string.IsNullOrEmpty(categoria))
             {
@@ -62,11 +57,11 @@ namespace NorthwindTradersV6EF
             }
             controlAgregarProducto.CboCategoria.SelectedItem = categoria;
 
-            if (!controlAgregarProducto.CboProducto.Items.Contains(ventaDetalle.Producto.ProductName))
+            if (!controlAgregarProducto.CboProducto.Items.Contains(ventaDetalle.Product.ProductName))
             {
-                controlAgregarProducto.CboProducto.Items.Add(ventaDetalle.Producto.ProductName);
+                controlAgregarProducto.CboProducto.Items.Add(ventaDetalle.Product.ProductName);
             }
-            controlAgregarProducto.CboProducto.SelectedItem = ventaDetalle.Producto.ProductName;
+            controlAgregarProducto.CboProducto.SelectedItem = ventaDetalle.Product.ProductName;
             controlAgregarProducto.NudPrecioConIVAIncluido.Value = ventaDetalle.UnitPrice;
             InventarioRealDb = ObtenerUInventario();
             InventarioCalculado = InventarioHelper.ActualizarInventarioUi(
@@ -123,7 +118,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                uInventario = Convert.ToDecimal(_ventaDetalleBLL.ObtenerUInventario(ventaDetalle.Producto.ProductID));
+                uInventario = Convert.ToDecimal(Order_DetailService.ObtenerUInventario(ventaDetalle.Product.ProductID));
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
             catch (Exception ex)
@@ -247,11 +242,11 @@ namespace NorthwindTradersV6EF
         {
             try
             {
-                VentaDetalle ventaDetalle = new VentaDetalle()
+                Order_Detail ventaDetalle = new Order_Detail()
                 {
                     UnitPrice = controlAgregarProducto.NudPrecioConIVAIncluido.Value,
                     Quantity = Convert.ToInt16(controlAgregarProducto.NudCantidad.Value),
-                    Discount = controlAgregarProducto.NudDescuento.Value / 100m
+                    Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m)
                 };
                 controlAgregarProducto.NudPrecioPorUnidadSinIVAIncluidoAntesDescuento.Value = ventaDetalle.PrecioPorUnidadSinIVASinDescuento;
                 controlAgregarProducto.NudIVADelPrecioPorUnidadAntesDescuento.Value = ventaDetalle.IVADelPrecioPorUnidadSinDescuento;
@@ -288,7 +283,7 @@ namespace NorthwindTradersV6EF
                 btnModificar.Enabled = false;
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
                 ventaDetalle.Quantity = (short)controlAgregarProducto.NudCantidad.Value;
-                ventaDetalle.Discount = controlAgregarProducto.NudDescuento.Value / 100m;
+                ventaDetalle.Discount = (float)(controlAgregarProducto.NudDescuento.Value / 100m);
             }
             catch (Exception ex)
             {
