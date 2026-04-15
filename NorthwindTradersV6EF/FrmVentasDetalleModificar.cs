@@ -1,11 +1,8 @@
-﻿//using BLL;
-//using Entities;
-using BLL.EF;
+﻿using BLL.EF;
 using BLL.EF.Services;
 using DAL.EF;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Windows.Forms;
 using Utilities;
 using static Utilities.InventarioHelper;
@@ -14,10 +11,7 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmVentasDetalleModificar : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
         internal Dictionary<string, object> valoresOriginales;
-        //private VentaDetalleBLL _ventaDetalleBLL;
-        //private ProductoBLL _productoBLL;
 
         public Order_Detail ventaDetalle;
         private short CantidadOld;
@@ -28,8 +22,6 @@ namespace NorthwindTradersV6EF
         public FrmVentasDetalleModificar()
         {
             InitializeComponent();
-            //_ventaDetalleBLL = new VentaDetalleBLL(_connectionString);
-            //_productoBLL = new ProductoBLL(_connectionString);
         }
 
         private void FrmVentasDetalleModificar_FormClosed(object sender, FormClosedEventArgs e) => MDIPrincipal.ActualizarBarraDeEstado();
