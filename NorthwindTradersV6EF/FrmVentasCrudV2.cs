@@ -1385,6 +1385,72 @@ namespace NorthwindTradersV6EF
                 }
                 if ((e.ColumnIndex == dgv.Columns["Eliminar"].Index & tabcOperacion.SelectedTab == tabpModificar) | (VentaGenerada & e.ColumnIndex == dgv.Columns["Eliminar"].Index & tabcOperacion.SelectedTab == tabpRegistrar))
                 {
+                    if (Utils.HayCambiosEnVenta(this, valoresOriginales))
+                    {
+                        MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
+                        Order venta = new Order();
+                        venta.OrderID = int.Parse(txtId.Text);
+                        venta.CustomerID = cboCliente.SelectedValue.ToString().Trim();
+                        venta.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        venta.ShipVia = Convert.ToInt32(cboTransportista.SelectedValue);
+
+                        if (dtpVenta != null && dtpHoraVenta != null)
+                            venta.OrderDate = Utils.ObtenerFechaHora(dtpVenta, dtpHoraVenta);
+                        if (dtpRequerido != null && dtpHoraRequerido != null)
+                            venta.RequiredDate = Utils.ObtenerFechaHora(dtpRequerido, dtpHoraRequerido);
+                        if (dtpEnvio != null && dtpHoraEnvio != null)
+                            venta.ShippedDate = Utils.ObtenerFechaHora(dtpEnvio, dtpHoraEnvio);
+
+                        venta.ShipName = txtDirigidoa.Text.Trim();
+                        venta.ShipAddress = txtDomicilio.Text.Trim();
+                        venta.ShipCity = txtCiudad.Text.Trim();
+                        venta.ShipRegion = txtRegion.Text.Trim();
+                        venta.ShipPostalCode = txtCP.Text.Trim();
+                        venta.ShipCountry = txtPais.Text.Trim();
+                        venta.Freight = nudFlete.Value;
+                        venta.RowVersion = RowVersionHelper.RowVersionObjToByteArray(txtId.Tag);
+                        int numRegs = OrderBLL.Actualizar(venta);
+                        txtId.Tag = venta.RowVersionStr; // se tiene que actualizar por la nota de remision no detecte un cambio
+                        MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
+                        string idVentaCliente = $"La venta con Id: {venta.OrderID} - Cliente: {cboCliente.Text}:";
+                        DeshabilitarTodosControles();
+                        if (numRegs > 0)
+                        {
+                            LlenarDgvVentas(false);
+                            controlAgregarProducto.CboCategoria.Enabled = true;
+                            btnGenerar.Enabled = false;
+                            VentaGenerada = true;
+                            btnNuevo.Enabled = true;
+                        }
+                        else if (numRegs == -1)
+                        {
+                            U.NotificacionError(idVentaCliente + Utils.nfmfe);
+                            BorrarDatosVenta();
+                            BorrarDatosDetalleVenta();
+                            btnNuevo.Enabled = true;
+                            return;
+                        }
+                        else if (numRegs == -2)
+                        {
+                            int orderId = string.IsNullOrEmpty(txtId.Text) ? 0 : Convert.ToInt32(txtId.Text);
+                            LlenarDgvVentas(false);
+                            U.NotificacionError(idVentaCliente + Utils.nfmfm);
+                            BorrarDatosVenta();
+                            BorrarDatosDetalleVenta();
+                            LlenarDatosVenta(ref orderId);
+                            LlenarDatosDetalleVenta(orderId);
+                            btnNuevo.Enabled = true;
+                            return;
+                        }
+                        else
+                        {
+                            U.NotificacionError(idVentaCliente + Utils.nfmmd);
+                            BorrarDatosVenta();
+                            BorrarDatosDetalleVenta();
+                            btnNuevo.Enabled = true;
+                            return;
+                        }
+                    }
                     DataGridViewRow dgvr = dgv.CurrentRow;
                     Order_Detail ventaDetalle = new Order_Detail();
                     ventaDetalle.Order.OrderID = int.Parse(txtId.Text);
@@ -1404,7 +1470,73 @@ namespace NorthwindTradersV6EF
                     DeshabilitarDtpsFechas();
                 }
                 if ((e.ColumnIndex == dgv.Columns["Modificar"].Index & tabcOperacion.SelectedTab == tabpModificar) | (VentaGenerada & e.ColumnIndex == dgv.Columns["Modificar"].Index & tabcOperacion.SelectedTab == tabpRegistrar))
-                {
+                { 
+                    if (Utils.HayCambiosEnVenta(this, valoresOriginales))
+                    {
+                        MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
+                        Order venta = new Order();
+                        venta.OrderID = int.Parse(txtId.Text);
+                        venta.CustomerID = cboCliente.SelectedValue.ToString().Trim();
+                        venta.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        venta.ShipVia = Convert.ToInt32(cboTransportista.SelectedValue);
+
+                        if (dtpVenta != null && dtpHoraVenta != null)
+                            venta.OrderDate = Utils.ObtenerFechaHora(dtpVenta, dtpHoraVenta);
+                        if (dtpRequerido != null && dtpHoraRequerido != null)
+                            venta.RequiredDate = Utils.ObtenerFechaHora(dtpRequerido, dtpHoraRequerido);
+                        if (dtpEnvio != null && dtpHoraEnvio != null)
+                            venta.ShippedDate = Utils.ObtenerFechaHora(dtpEnvio, dtpHoraEnvio);
+
+                        venta.ShipName = txtDirigidoa.Text.Trim();
+                        venta.ShipAddress = txtDomicilio.Text.Trim();
+                        venta.ShipCity = txtCiudad.Text.Trim();
+                        venta.ShipRegion = txtRegion.Text.Trim();
+                        venta.ShipPostalCode = txtCP.Text.Trim();
+                        venta.ShipCountry = txtPais.Text.Trim();
+                        venta.Freight = nudFlete.Value;
+                        venta.RowVersion = RowVersionHelper.RowVersionObjToByteArray(txtId.Tag);
+                        int numRegs = OrderBLL.Actualizar(venta);
+                        txtId.Tag = venta.RowVersionStr; // se tiene que actualizar por la nota de remision no detecte un cambio
+                        MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
+                        string idVentaCliente = $"La venta con Id: {venta.OrderID} - Cliente: {cboCliente.Text}:";
+                        DeshabilitarTodosControles();
+                        if (numRegs > 0)
+                        {
+                            LlenarDgvVentas(false);
+                            controlAgregarProducto.CboCategoria.Enabled = true;
+                            btnGenerar.Enabled = false;
+                            VentaGenerada = true;
+                            btnNuevo.Enabled = true;
+                        }
+                        else if (numRegs == -1)
+                        {
+                            U.NotificacionError(idVentaCliente + Utils.nfmfe);
+                            BorrarDatosVenta();
+                            BorrarDatosDetalleVenta();
+                            btnNuevo.Enabled = true;
+                            return;
+                        }
+                        else if (numRegs == -2)
+                        {
+                            int orderId = string.IsNullOrEmpty(txtId.Text) ? 0 : Convert.ToInt32(txtId.Text);
+                            LlenarDgvVentas(false);
+                            U.NotificacionError(idVentaCliente + Utils.nfmfm);
+                            BorrarDatosVenta();
+                            BorrarDatosDetalleVenta();
+                            LlenarDatosVenta(ref orderId);
+                            LlenarDatosDetalleVenta(orderId);
+                            btnNuevo.Enabled = true;
+                            return;
+                        }
+                        else
+                        {
+                            U.NotificacionError(idVentaCliente + Utils.nfmmd);
+                            BorrarDatosVenta();
+                            BorrarDatosDetalleVenta();
+                            btnNuevo.Enabled = true;
+                            return;
+                        }
+                    }
                     DataGridViewRow dgvr = dgv.CurrentRow;
                     using (FrmVentasDetalleModificar frmVentasDetalleModificar = new FrmVentasDetalleModificar())
                     {
@@ -1438,7 +1570,8 @@ namespace NorthwindTradersV6EF
                             LlenarDatosVenta(ref orderId); // necesario para actualizar el RowVersion de la venta
                             LlenarDatosDetalleVenta(orderId);
                             CargarValoresOriginales();
-                            DeshabilitarDtpsFechas();
+                            DeshabilitarTodosControles();
+                            controlAgregarProducto.CboCategoria.Enabled = true;
                         }
                         else if (dialogResult == DialogResult.Cancel)
                         {
@@ -1783,6 +1916,7 @@ namespace NorthwindTradersV6EF
                             VentaGenerada = true;
                             btnNota.Enabled = true;
                             controlAgregarProducto.CboCategoria.Enabled = true;
+                            headerOperacion.Focus();
                         }
                         else if (numRegs == -1)
                         {
