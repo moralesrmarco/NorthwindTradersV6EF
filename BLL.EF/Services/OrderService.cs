@@ -92,7 +92,6 @@ namespace BLL.EF.Services
             }
         }
 
-
         public static DataTable ObtenerVentaPorIdDt(int orderId)
         {
             Order venta = ObtenerVentaPorId(orderId);
@@ -128,6 +127,69 @@ namespace BLL.EF.Services
             dr["Flete"] = venta.Freight;
             dt.Rows.Add(dr);
             return dt;
+        }
+
+        public static DataTable ObtenerVentasPorFechaVenta(DateTime? fechaVentaIni, DateTime? fechaVentaFin)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    var query = context.Orders
+                        .Include(o => o.Customer)
+                        .AsQueryable();
+                    // Caso 1: ambas fechas nulas → registros sin fecha
+                    if (!fechaVentaIni.HasValue && !fechaVentaFin.HasValue)
+                    {
+                        query = query.Where(o => o.OrderDate == null);
+                    }
+                    // Caso 2: rango de fechas
+                    else if (fechaVentaIni.HasValue && fechaVentaFin.HasValue)
+                    {
+                        query = query.Where(o => o.OrderDate >= fechaVentaIni.Value &&
+                                                    o.OrderDate < fechaVentaFin.Value);
+                    }
+                    var ventas = query
+                                .OrderByDescending(o => o.OrderDate)
+                                .ThenBy(o => o.Customer.CompanyName)
+                                .Select(o => new
+                                {
+                                    o.OrderDate,
+                                    o.RequiredDate,
+                                    o.ShippedDate,
+                                    CompanyName = o.Customer.CompanyName,
+                                    o.OrderID,
+                                    o.Freight
+                                })
+                                .AsNoTracking()
+                                .ToList();
+                    // Crear DataTable con las columnas del SP
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add("OrderDate", typeof(DateTime));
+                    dt.Columns.Add("RequiredDate", typeof(DateTime));
+                    dt.Columns.Add("ShippedDate", typeof(DateTime));
+                    dt.Columns.Add("CompanyName", typeof(string));
+                    dt.Columns.Add("OrderID", typeof(int));
+                    dt.Columns.Add("Freight", typeof(decimal));
+                    // Poblar filas
+                    foreach (var venta in ventas)
+                    {
+                        DataRow dr = dt.NewRow();
+                        dr["OrderDate"] = venta.OrderDate ?? (object)DBNull.Value;
+                        dr["RequiredDate"] = venta.RequiredDate ?? (object)DBNull.Value;
+                        dr["ShippedDate"] = venta.ShippedDate ?? (object)DBNull.Value;
+                        dr["CompanyName"] = venta.CompanyName;
+                        dr["OrderID"] = venta.OrderID;
+                        dr["Freight"] = venta.Freight ?? (object)DBNull.Value;
+                        dt.Rows.Add(dr);
+                    }
+                    return dt;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las ventas por fecha de venta.", ex);
+            }
         }
     }
 }

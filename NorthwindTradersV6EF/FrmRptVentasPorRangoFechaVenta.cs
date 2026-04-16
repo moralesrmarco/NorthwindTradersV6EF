@@ -1,7 +1,7 @@
 ﻿// https://www.youtube.com/watch?v=2-YkNo1Os3Y&list=PL_1AVI-bgZKQ2MSDejVmaaxNenhETwwx_&index=7
 // https://www.youtube.com/watch?v=7AvCaq7a1fc&list=PL_1AVI-bgZKQ2MSDejVmaaxNenhETwwx_&index=5
-using BLL;
-using Entities;
+using BLL.EF.Services;
+using DAL.EF;
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
@@ -16,14 +16,10 @@ namespace NorthwindTradersV6EF
     {
 
         private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        VentaBLL _ventaBLL;
-        VentaDetalleBLL _ventaDetalleBLL;
 
         public FrmRptVentasPorRangoFechaVenta()
         {
             InitializeComponent();
-            _ventaBLL = new VentaBLL(cnStr);
-            _ventaDetalleBLL = new VentaDetalleBLL(cnStr);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -45,9 +41,9 @@ namespace NorthwindTradersV6EF
             MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
             DataTable dt;
             if (DtpVentaIni.Checked & DtpVentaFin.Checked)
-                dt = _ventaBLL.ObtenerVentasPorFechaVenta(DtpVentaIni.Value.Date, DtpVentaFin.Value.Date.AddDays(1));
+                dt = OrderService.ObtenerVentasPorFechaVenta(DtpVentaIni.Value.Date, DtpVentaFin.Value.Date.AddDays(1));
             else
-                dt = _ventaBLL.ObtenerVentasPorFechaVenta(null, null);
+                dt = OrderService.ObtenerVentasPorFechaVenta(null, null);
             MDIPrincipal.ActualizarBarraDeEstado($"Se encontraron {dt.Rows.Count} venta(s) para el rango de fecha de venta indicado. {subtitulo}");
             if (dt.Rows.Count > 0)
             {
@@ -76,7 +72,7 @@ namespace NorthwindTradersV6EF
         private void OrderDetailsSubReportProcessing(object sender, SubreportProcessingEventArgs e)
         {
             int orderID = int.Parse(e.Parameters["OrderID"].Values[0].ToString());
-            List<VentaDetalle> ventaDetalles = _ventaDetalleBLL.ObtenerVentaDetallePorVentaId(orderID);
+            List<Order_Detail> ventaDetalles = Order_DetailService.ObtenerVentaDetallePorVentaId(orderID);
             ReportDataSource rptDataSource = new ReportDataSource("DataSet1", ventaDetalles);
             e.DataSources.Add(rptDataSource);
         }
@@ -109,11 +105,6 @@ namespace NorthwindTradersV6EF
             if (DtpVentaIni.Checked && DtpVentaFin.Checked)
                 if (DtpVentaFin.Value < DtpVentaIni.Value)
                     DtpVentaIni.Value = DtpVentaFin.Value;
-        }
-
-        private void FrmRptVentasPorRangoFechaVenta_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
