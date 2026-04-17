@@ -1,6 +1,7 @@
 ﻿using DAL.EF;
 using DTOs.EF;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity; // Agregar esta directiva para habilitar Include
 using System.Linq;
@@ -190,6 +191,28 @@ namespace BLL.EF.Services
             {
                 throw new Exception("Error al obtener las ventas por fecha de venta.", ex);
             }
+        }
+
+        public static List<DtoVentaRpt> ObtenerVentasRpt(bool selectorRealizaBusqueda, DtoVentasBuscar criterios)
+        {
+            List<Order> ventas = OrderBLL.ObtenerVentas(criterios, selectorRealizaBusqueda);
+            return ventas.Select(o => new DtoVentaRpt
+            {
+                OrderID = o.OrderID,
+                Cliente = o.Customer.CompanyName,
+                Vendedor = o.Employee.NameByLastName,
+                FechaDePedido = o.OrderDate,
+                FechaRequerido = o.RequiredDate,
+                FechaDeEnvio = o.ShippedDate,
+                CompaniaTransportista = o.Shipper.CompanyName,
+                DirigidoA = o.ShipName,
+                Domicilio = o.ShipAddress,
+                Ciudad = o.ShipCity,
+                Region = o.ShipRegion,
+                CodigoPostal = o.ShipPostalCode,
+                Pais = o.ShipCountry,
+                Flete = o.Freight ?? 0
+            }).ToList();
         }
     }
 }

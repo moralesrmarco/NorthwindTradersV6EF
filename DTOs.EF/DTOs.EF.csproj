@@ -58,6 +58,7 @@
     <Compile Include="DtoProductosPorProveedorConDetProv.cs" />
     <Compile Include="DtoProveedoresBuscar.cs" />
     <Compile Include="DtoVentaDgv.cs" />
+    <Compile Include="DtoVentaRpt.cs" />
     <Compile Include="DtoVentasBuscar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

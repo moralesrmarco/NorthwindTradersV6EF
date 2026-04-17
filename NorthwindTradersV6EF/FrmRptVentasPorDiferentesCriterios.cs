@@ -1,13 +1,11 @@
 ﻿// https://www.youtube.com/watch?v=2-YkNo1Os3Y&list=PL_1AVI-bgZKQ2MSDejVmaaxNenhETwwx_&index=7
 // https://www.youtube.com/watch?v=7AvCaq7a1fc&list=PL_1AVI-bgZKQ2MSDejVmaaxNenhETwwx_&index=5
-using BLL;
-using Entities;
-using Entities.DTOs;
+using BLL.EF.Services;
+using DAL.EF;
+using DTOs.EF;
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -17,18 +15,11 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptVentasPorDiferentesCriterios : Form
     {
-
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private VentaBLL _ventaBLL;
-        private VentaDetalleBLL _ventaDetalleBLL;
-
         public FrmRptVentasPorDiferentesCriterios()
         {
             InitializeComponent();
-            _ventaBLL = new VentaBLL(cnStr);
-            _ventaDetalleBLL = new VentaDetalleBLL(cnStr);
             controlBuscarVenta.grbBuscar.Font = new Font(controlBuscarVenta.grbBuscar.Font.FontFamily, 9.75f, FontStyle.Bold);
-            // Lista de labels a los que quieres redefinir la fuente
+            // Lista de labels a los que quieres redefinir la fuente, porque la fuente se heredo del groupbox y no me gusta que se vean mas grandes los controles, por eso se le redefine el tamaño al tamaño de la fuente que se usa en todos los formularios
             List<Label> labelsPersonalizados = new List<Label>
             {
                 controlBuscarVenta.label5,
@@ -118,7 +109,7 @@ namespace NorthwindTradersV6EF
                     CompañiaT = controlBuscarVenta.TxtBCompañiaT.Text.Trim(),
                     DirigidoA = controlBuscarVenta.TxtBDirigidoa.Text.Trim()
                 };
-                List<DtoVentaRpt> ventas = _ventaBLL.ObtenerVentasRpt(true, criterios);
+                List<DtoVentaRpt> ventas = OrderService.ObtenerVentasRpt(true, criterios);
                 MDIPrincipal.ActualizarBarraDeEstado($"Se encontraron {ventas.Count} registros");
                 if (ventas.Count > 0)
                 {
@@ -133,7 +124,7 @@ namespace NorthwindTradersV6EF
                 else
                 {
                     reportViewer1.LocalReport.DataSources.Clear();
-                    ReportDataSource reportDataSource = new ReportDataSource("DataSet1", new List<Venta>());
+                    ReportDataSource reportDataSource = new ReportDataSource("DataSet1", new List<Order>());
                     reportViewer1.LocalReport.DataSources.Add(reportDataSource);
                     ReportParameter reportParameter = new ReportParameter("subtitulo", subtitulo);
                     reportViewer1.LocalReport.SetParameters(new ReportParameter[] { reportParameter });
@@ -147,7 +138,7 @@ namespace NorthwindTradersV6EF
         private void OrderDetailsSubReportProcessing(object sender, SubreportProcessingEventArgs e)
         {
             int orderID = int.Parse(e.Parameters["OrderID"].Values[0].ToString());
-            List<VentaDetalle> ventaDetalles = _ventaDetalleBLL.ObtenerVentaDetallePorVentaId(orderID);
+            List<Order_Detail> ventaDetalles = Order_DetailService.ObtenerVentaDetallePorVentaId(orderID);
             ReportDataSource reportDataSource = new ReportDataSource("DataSet1", ventaDetalles);
             e.DataSources.Add(reportDataSource);
         }
