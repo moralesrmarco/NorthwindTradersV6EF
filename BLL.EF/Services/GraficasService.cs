@@ -156,5 +156,59 @@ namespace BLL.EF.Services
             }
         }
 
+        public static DataTable ObtenerTop10AñosDeVentas(bool conFilaSeleccione = true)
+        {
+            using (var ctx = new NorthwindContext())
+            {
+                var años = ctx.Orders
+                    .Where(o => o.OrderDate.HasValue)
+                    .Select(o => o.OrderDate.Value.Year.ToString())
+                    .Distinct()
+                    .OrderByDescending(y => y)
+                    .Take(10)
+                    .ToList();
+                DataTable dt = new DataTable();
+                dt.Columns.Add("Texto", typeof(string));
+                dt.Columns.Add("Valor", typeof(int));
+                if (conFilaSeleccione)
+                {
+                    dt.Rows.Add("»--- Seleccione ---«", 0);
+                }
+                dt.Rows.Add("Todos los años", -1);
+                foreach (var año in años)
+                    dt.Rows.Add(año.ToString(), año);
+                return dt;
+            }
+        }
+
+        public static DataTable ObtenerTopProductos(int cantidad, int anio)
+        {
+            using (var ctx = new NorthwindContext())
+            {
+                var query = ctx.Order_Details
+                    .Where (od => anio == -1 || od.Order.OrderDate.HasValue && od.Order.OrderDate.Value.Year == anio)
+                    .GroupBy(od => od.Product.ProductName)
+                    .Select(g => new
+                    {
+                        NombreProducto = g.Key,
+                        CantidadVendida = g.Sum(x => x.Quantity)
+                    })
+                    .OrderByDescending(x => x.CantidadVendida)
+                    .ThenBy(x => x.NombreProducto)
+                    .Take(cantidad)
+                    .ToList();
+                DataTable dt = new DataTable();
+                dt.Columns.Add("NombreProducto", typeof(string));
+                dt.Columns.Add("CantidadVendida", typeof(int));
+                foreach(var item in query)
+                {
+                    DataRow dr = dt.NewRow();
+                    dr["NombreProducto"] = item.NombreProducto;
+                    dr["CantidadVendida"] = item.CantidadVendida;
+                    dt.Rows.Add(dr);
+                }
+                return dt;
+            }
+        }
     }
 }

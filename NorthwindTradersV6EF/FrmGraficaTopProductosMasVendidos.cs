@@ -1,7 +1,6 @@
-﻿using BLL.Services;
+﻿using BLL.EF.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -12,14 +11,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmGraficaTopProductosMasVendidos : Form
     {
-
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly GraficasService _graficasService;
-
         public FrmGraficaTopProductosMasVendidos()
         {
             InitializeComponent();
-            _graficasService = new GraficasService(cnStr);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -51,7 +45,7 @@ namespace NorthwindTradersV6EF
             MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
             try
             {
-                ComboBoxAños.DataSource = _graficasService.ObtenerTop10AñosDeVentas();
+                ComboBoxAños.DataSource = BLL.EF.Services.GraficasService.ObtenerTop10AñosDeVentas();
                 ComboBoxAños.DisplayMember = "Texto";
                 ComboBoxAños.ValueMember = "Valor";
                 ComboBoxAños.SelectedIndex = 0;
@@ -104,7 +98,7 @@ namespace NorthwindTradersV6EF
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
                 // Datos
-                datos = _graficasService.ObtenerTopProductos(cantidad, anio);
+                datos = GraficasService.ObtenerTopProductos(cantidad, anio);
                 foreach (DataRow row in datos.Rows)
                 {
                     totalUnidades += Convert.ToInt32(row["CantidadVendida"]);
