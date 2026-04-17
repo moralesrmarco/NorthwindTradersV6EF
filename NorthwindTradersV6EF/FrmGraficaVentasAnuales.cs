@@ -1,7 +1,6 @@
-﻿using BLL.Services;
+﻿using BLL.EF.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -12,13 +11,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmGraficaVentasAnuales : Form
     {
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly GraficasService _graficasService;
-
         public FrmGraficaVentasAnuales()
         {
             InitializeComponent();
-            _graficasService = new GraficasService(cnStr);
             ChartVentasAnuales.MouseMove += ChartVentasAnuales_MouseMove;
             ChartVentasAnuales.GetToolTipText += ChartVentasAnuales_GetToolTipText;
         }
@@ -41,7 +36,7 @@ namespace NorthwindTradersV6EF
             }
             int years = Convert.ToInt32(ComboBox.SelectedValue);
 
-            int totalAñosDisponibles = _graficasService.ObtenerTotalAñosConVentas();
+            int totalAñosDisponibles = BLL.EF.Services.GraficasService.ObtenerTotalAñosConVentas();
 
             if (years > totalAñosDisponibles)
             {
@@ -53,7 +48,7 @@ namespace NorthwindTradersV6EF
 
         private void LlenarComboBox()
         {
-            int totalAñosDisponibles = _graficasService.ObtenerTotalAñosConVentas();
+            int totalAñosDisponibles = BLL.EF.Services.GraficasService.ObtenerTotalAñosConVentas();
 
             int limite = Math.Min(totalAñosDisponibles, 10);
 
@@ -86,7 +81,7 @@ namespace NorthwindTradersV6EF
 
             ChartVentasAnuales.Legends.Add(legend);
 
-            var datos = _graficasService.ObtenerVentasMensualesPorAños(years);
+            var datos = GraficasService.ObtenerVentasMensualesPorAños(years);
 
             var datosAgrupados = datos
                 .GroupBy(x => x.Year)
@@ -205,18 +200,41 @@ namespace NorthwindTradersV6EF
         {
             var result = ChartVentasAnuales.HitTest(e.X, e.Y);
 
+            // Restaurar estilos por defecto
             foreach (Series s in ChartVentasAnuales.Series)
             {
                 s.BorderWidth = 2;
                 s.MarkerSize = 6;
+
+                foreach (var p in s.Points)
+                {
+                    if (!string.IsNullOrEmpty(p.Label))
+                    {
+                        // Restaurar a fuente original (Regular, tamaño normal)
+                        p.Font = new Font(p.Font.FontFamily, 8f, FontStyle.Regular);
+                        p.LabelForeColor = Color.Black;
+                    }
+                }
             }
 
+            // Resaltar la serie bajo el cursor
             if (result.Series != null)
             {
                 result.Series.BorderWidth = 4;
                 result.Series.MarkerSize = 10;
+
+                foreach (var p in result.Series.Points)
+                {
+                    if (!string.IsNullOrEmpty(p.Label))
+                    {
+                        // Mantener la fuente original pero en negrita y más grande
+                        p.Font = new Font(p.Font.FontFamily, 10f, FontStyle.Bold);
+                        p.LabelForeColor = Color.DarkBlue;
+                    }
+                }
             }
         }
+
 
         private void ChartVentasAnuales_GetToolTipText(object sender, ToolTipEventArgs e)
         {
