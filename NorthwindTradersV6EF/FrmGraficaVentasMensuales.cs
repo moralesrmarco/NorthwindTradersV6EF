@@ -1,8 +1,7 @@
-﻿using BLL.Services;
-using Entities.DTOs;
+﻿using BLL.EF.Services;
+using DTOs.EF;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -14,13 +13,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmGraficaVentasMensuales : Form
     {
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly GraficasService _graficasService;
-
         public FrmGraficaVentasMensuales()
         {
             InitializeComponent();
-            _graficasService = new GraficasService(cnStr);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -46,7 +41,7 @@ namespace NorthwindTradersV6EF
             MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
             try
             {
-                ComboBoxAño.DataSource = _graficasService.ObtenerAñosDeVentas();
+                ComboBoxAño.DataSource = GraficasService.ObtenerAñosDeVentas();
                 ComboBoxAño.DisplayMember = "YearOrderDate";
                 ComboBoxAño.ValueMember = "YearOrderDate";
                 ComboBoxAño.SelectedIndex = 0;
@@ -64,7 +59,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                datos = _graficasService.ObtenerVentasMensuales(year);
+                datos = GraficasService.ObtenerVentasMensuales(year);
             }
             catch (Exception ex)
             {

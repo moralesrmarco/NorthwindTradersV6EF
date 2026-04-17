@@ -60,6 +60,7 @@
     <Compile Include="DtoVentaDgv.cs" />
     <Compile Include="DtoVentaRpt.cs" />
     <Compile Include="DtoVentasBuscar.cs" />
+    <Compile Include="DtoVentasMensuales.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
