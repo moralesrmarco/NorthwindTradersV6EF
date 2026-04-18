@@ -257,6 +257,128 @@ namespace BLL.EF.Services
             }
         }
 
+        public static DataTable ObtenerVentasMensualesPorVendedoresPorAño(int anio)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Vendedor", typeof(string));
+            dt.Columns.Add("Mes", typeof(int));
+            dt.Columns.Add("NombreMes", typeof(string));
+            dt.Columns.Add("TotalVentas", typeof(decimal));
+
+            using (var context = new NorthwindContext())
+            {
+                var meses = Enumerable.Range(1, 12);
+
+                if (anio == -1)
+                {
+                    // Caso: todos los años, sumar por vendedor y mes
+                    var ventas = context.Orders
+                        .Where(o => o.OrderDate.HasValue)
+                        .SelectMany(o => o.Order_Details.Select(od => new
+                        {
+                            Vendedor = o.Employee.FirstName + " " + o.Employee.LastName,
+                            Mes = o.OrderDate.Value.Month,
+                            UnitPrice = od.UnitPrice,
+                            Quantity = od.Quantity,
+                            Discount = od.Discount
+                        }))
+                        .ToList() // cálculo en memoria
+                        .GroupBy(x => new { x.Vendedor, x.Mes })
+                        .Select(g => new
+                        {
+                            Vendedor = g.Key.Vendedor,
+                            Mes = g.Key.Mes,
+                            TotalVentas = g.Sum(x => (decimal)x.UnitPrice * x.Quantity * (1 - (decimal)x.Discount))
+                        })
+                        .ToList();
+
+                    // Cross join vendedores × meses
+                    var vendedores = ventas.Select(v => v.Vendedor).Distinct().ToList();
+
+                    var resultado = (from v in vendedores
+                                     from m in meses
+                                     join ve in ventas
+                                         on new { Vendedor = v, Mes = m }
+                                         equals new { ve.Vendedor, ve.Mes }
+                                         into gj
+                                     from ve in gj.DefaultIfEmpty()
+                                     orderby v, m
+                                     select new
+                                     {
+                                         Vendedor = v,
+                                         Mes = m,
+                                         NombreMes = FormatearMes(m),
+                                         TotalVentas = ve != null ? Math.Round(ve.TotalVentas, 2) : 0m
+                                     }).ToList();
+
+                    foreach (var r in resultado)
+                    {
+                        dt.Rows.Add(r.Vendedor, r.Mes, r.NombreMes, r.TotalVentas);
+                    }
+                }
+                else
+                {
+                    // Caso: un año específico
+                    var vendedores = context.Orders
+                        .Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Year == anio)
+                        .Select(o => o.Employee.FirstName + " " + o.Employee.LastName)
+                        .Distinct()
+                        .ToList();
+
+                    var ventas = context.Orders
+                        .Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Year == anio)
+                        .SelectMany(o => o.Order_Details.Select(od => new
+                        {
+                            Vendedor = o.Employee.FirstName + " " + o.Employee.LastName,
+                            Mes = o.OrderDate.Value.Month,
+                            UnitPrice = od.UnitPrice,
+                            Quantity = od.Quantity,
+                            Discount = od.Discount
+                        }))
+                        .ToList()
+                        .GroupBy(x => new { x.Vendedor, x.Mes })
+                        .Select(g => new
+                        {
+                            Vendedor = g.Key.Vendedor,
+                            Mes = g.Key.Mes,
+                            TotalVentas = g.Sum(x => (decimal)x.UnitPrice * x.Quantity * (1 - (decimal)x.Discount))
+                        })
+                        .ToList();
+
+                    var resultado = (from v in vendedores
+                                     from m in meses
+                                     join ve in ventas
+                                         on new { Vendedor = v, Mes = m }
+                                         equals new { ve.Vendedor, ve.Mes }
+                                         into gj
+                                     from ve in gj.DefaultIfEmpty()
+                                     orderby v, m
+                                     select new
+                                     {
+                                         Vendedor = v,
+                                         Mes = m,
+                                         NombreMes = FormatearMes(m),
+                                         TotalVentas = ve != null ? Math.Round(ve.TotalVentas, 2) : 0m
+                                     }).ToList();
+
+                    foreach (var r in resultado)
+                    {
+                        dt.Rows.Add(r.Vendedor, r.Mes, r.NombreMes, r.TotalVentas);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        // Helper para formatear el nombre del mes
+        private static string FormatearMes(int mes)
+        {
+            var nombreMes = new DateTime(1900, mes, 1)
+                .ToString("MMM", new System.Globalization.CultureInfo("es-ES"));
+            return char.ToUpper(nombreMes[0]) + nombreMes.Substring(1).ToLower() + ".";
+        }
+
         //El nombre del mes se calcula con un año fijo (1900) solo para obtener la abreviatura, usando el helper FormatearMes
         private static string FormatearMes(int mes, int year)
         {
