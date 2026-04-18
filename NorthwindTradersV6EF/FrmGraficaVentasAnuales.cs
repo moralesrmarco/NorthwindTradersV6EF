@@ -27,27 +27,9 @@ namespace NorthwindTradersV6EF
             CargarComparativoVentasMensuales(2);
         }
 
-        private void btnMostrar_Click(object sender, EventArgs e)
-        {
-            if (ComboBox.SelectedIndex == 0)
-            {
-                Utils.MsgExclamation("Seleccione un número de años válido.");
-                return;
-            }
-            int years = Convert.ToInt32(ComboBox.SelectedValue);
-
-            int totalAñosDisponibles = BLL.EF.Services.GraficasService.ObtenerTotalAñosConVentas();
-
-            if (years > totalAñosDisponibles)
-            {
-                Utils.MsgExclamation($"Solo existen datos para {totalAñosDisponibles} años en la base de datos.");
-                return;
-            }
-            CargarComparativoVentasMensuales(Convert.ToInt32(ComboBox.SelectedValue));
-        }
-
         private void LlenarComboBox()
         {
+            ComboBox.SelectedIndexChanged -= ComboBox_SelectedIndexChanged;
             int totalAñosDisponibles = BLL.EF.Services.GraficasService.ObtenerTotalAñosConVentas();
 
             int limite = Math.Min(totalAñosDisponibles, 10);
@@ -64,6 +46,7 @@ namespace NorthwindTradersV6EF
             ComboBox.DataSource = items;
             ComboBox.DisplayMember = "Key";
             ComboBox.ValueMember = "Value";
+            ComboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
         }
 
         private void CargarComparativoVentasMensuales(int years)
@@ -246,6 +229,25 @@ namespace NorthwindTradersV6EF
 
                 ChartVentasAnuales.Cursor = Cursors.Cross;
             }
+        }
+
+        private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboBox.SelectedIndex == 0)
+            {
+                Utils.MsgExclamation("Seleccione un número de años válido.");
+                return;
+            }
+            int years = Convert.ToInt32(ComboBox.SelectedValue);
+
+            int totalAñosDisponibles = BLL.EF.Services.GraficasService.ObtenerTotalAñosConVentas();
+
+            if (years > totalAñosDisponibles)
+            {
+                Utils.MsgExclamation($"Solo existen datos para {totalAñosDisponibles} años en la base de datos.");
+                return;
+            }
+            CargarComparativoVentasMensuales(Convert.ToInt32(ComboBox.SelectedValue));
         }
     }
 }

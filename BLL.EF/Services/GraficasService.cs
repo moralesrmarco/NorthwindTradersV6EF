@@ -44,20 +44,23 @@ namespace BLL.EF.Services
 
                 // Consulta de ventas agrupadas por mes
                 var ventasMensuales = context.Orders
-                    .Where(o => o.OrderDate.HasValue && o.OrderDate.Value.Year == year)
-                    .SelectMany(o => o.Order_Details.Select(od => new
-                    {
-                        Mes = o.OrderDate.Value.Month,
-                        UnitPrice = od.UnitPrice,
-                        Quantity = od.Quantity,
-                        Discount = od.Discount
-                    }))
+                    .Where(o => o.OrderDate.HasValue && (year == -1 || o.OrderDate.Value.Year == year))
+                    .SelectMany(o => o.Order_Details
+                        .Select(od => new
+                        {
+                            Mes = o.OrderDate.Value.Month,
+                            UnitPrice = od.UnitPrice,
+                            Quantity = od.Quantity,
+                            Discount = od.Discount
+                        }))
                     .ToList() // aquí ya estás en memoria
                     .GroupBy(x => x.Mes)
                     .Select(g => new
                     {
                         Mes = g.Key,
-                        Total = g.Sum(x => x.UnitPrice * x.Quantity * (1 - (decimal)x.Discount))
+                        Total = g.Sum(x =>
+                            x.UnitPrice * x.Quantity * (1 - (decimal)x.Discount)
+                        )
                     })
                     .ToList();
 
@@ -70,8 +73,8 @@ namespace BLL.EF.Services
                                  select new DtoVentasMensuales
                                  {
                                      Mes = m,
-                                     NombreMes = new DateTime(year, m, 1)
-                                         .ToString("MMM", new System.Globalization.CultureInfo("es-ES")) + ".",
+                                     // se usa un año ficticio solo para calcular bien el nombre del mes
+                                     NombreMes = FormatearMes(m,year),
                                      Total = v != null ? Math.Round(v.Total, 2) : 0m
                                  }).ToList();
 
@@ -144,8 +147,7 @@ namespace BLL.EF.Services
                                  {
                                      Year = a,
                                      Mes = m,
-                                     NombreMes = new DateTime(a, m, 1)
-                                         .ToString("MMM", new System.Globalization.CultureInfo("es-ES")) + ".",
+                                     NombreMes = FormatearMes(m,a),
                                      Total = v != null ? Math.Round(v.Total, 2) : 0m
                                  })
                                  .OrderByDescending(r => r.Year)
@@ -255,6 +257,15 @@ namespace BLL.EF.Services
             }
         }
 
+        //El nombre del mes se calcula con un año fijo (1900) solo para obtener la abreviatura, usando el helper FormatearMes
+        private static string FormatearMes(int mes, int year)
+        {
+            var nombreMes = new DateTime(year > 0 ? year : 1900, mes, 1)
+                .ToString("MMM", new System.Globalization.CultureInfo("es-ES"));
+
+            // Primera letra mayúscula, resto minúsculas, más el punto
+            return char.ToUpper(nombreMes[0]) + nombreMes.Substring(1).ToLower() + ".";
+        }
 
     }
 }

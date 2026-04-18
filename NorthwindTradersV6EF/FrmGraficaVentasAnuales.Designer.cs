@@ -28,11 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.btnMostrar = new System.Windows.Forms.Button();
             this.ComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.GroupBox = new System.Windows.Forms.GroupBox();
@@ -56,7 +55,6 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.btnMostrar);
             this.splitContainer1.Panel1.Controls.Add(this.ComboBox);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(40, 37, 40, 12);
@@ -70,18 +68,6 @@
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
-            // btnMostrar
-            // 
-            this.btnMostrar.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMostrar.Location = new System.Drawing.Point(613, 38);
-            this.btnMostrar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnMostrar.Name = "btnMostrar";
-            this.btnMostrar.Size = new System.Drawing.Size(113, 28);
-            this.btnMostrar.TabIndex = 3;
-            this.btnMostrar.Text = "Mostrar";
-            this.btnMostrar.UseVisualStyleBackColor = true;
-            this.btnMostrar.Click += new System.EventHandler(this.btnMostrar_Click);
-            // 
             // ComboBox
             // 
             this.ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -92,6 +78,7 @@
             this.ComboBox.Name = "ComboBox";
             this.ComboBox.Size = new System.Drawing.Size(192, 28);
             this.ComboBox.TabIndex = 1;
+            this.ComboBox.SelectedIndexChanged += new System.EventHandler(this.ComboBox_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -121,18 +108,18 @@
             // 
             // ChartVentasAnuales
             // 
-            chartArea3.Name = "ChartArea1";
-            this.ChartVentasAnuales.ChartAreas.Add(chartArea3);
+            chartArea1.Name = "ChartArea1";
+            this.ChartVentasAnuales.ChartAreas.Add(chartArea1);
             this.ChartVentasAnuales.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend3.Name = "Legend1";
-            this.ChartVentasAnuales.Legends.Add(legend3);
+            legend1.Name = "Legend1";
+            this.ChartVentasAnuales.Legends.Add(legend1);
             this.ChartVentasAnuales.Location = new System.Drawing.Point(27, 44);
             this.ChartVentasAnuales.Margin = new System.Windows.Forms.Padding(4);
             this.ChartVentasAnuales.Name = "ChartVentasAnuales";
-            series3.ChartArea = "ChartArea1";
-            series3.Legend = "Legend1";
-            series3.Name = "Series1";
-            this.ChartVentasAnuales.Series.Add(series3);
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.ChartVentasAnuales.Series.Add(series1);
             this.ChartVentasAnuales.Size = new System.Drawing.Size(949, 460);
             this.ChartVentasAnuales.TabIndex = 0;
             this.ChartVentasAnuales.Text = "chart1";
@@ -164,7 +151,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.ComboBox ComboBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnMostrar;
         private System.Windows.Forms.DataVisualization.Charting.Chart ChartVentasAnuales;
         private System.Windows.Forms.GroupBox GroupBox;
     }

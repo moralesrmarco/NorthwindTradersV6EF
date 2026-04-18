@@ -32,7 +32,6 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.btnMostrar = new System.Windows.Forms.Button();
             this.ComboBoxAño = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.GroupBox = new System.Windows.Forms.GroupBox();
@@ -56,7 +55,6 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.btnMostrar);
             this.splitContainer1.Panel1.Controls.Add(this.ComboBoxAño);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(29, 30, 29, 30);
@@ -69,18 +67,6 @@
             this.splitContainer1.SplitterDistance = 71;
             this.splitContainer1.TabIndex = 0;
             // 
-            // btnMostrar
-            // 
-            this.btnMostrar.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnMostrar.Location = new System.Drawing.Point(539, 27);
-            this.btnMostrar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnMostrar.Name = "btnMostrar";
-            this.btnMostrar.Size = new System.Drawing.Size(113, 28);
-            this.btnMostrar.TabIndex = 2;
-            this.btnMostrar.Text = "Mostrar";
-            this.btnMostrar.UseVisualStyleBackColor = true;
-            this.btnMostrar.Click += new System.EventHandler(this.btnMostrar_Click);
-            // 
             // ComboBoxAño
             // 
             this.ComboBoxAño.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -91,6 +77,7 @@
             this.ComboBoxAño.Name = "ComboBoxAño";
             this.ComboBoxAño.Size = new System.Drawing.Size(212, 28);
             this.ComboBoxAño.TabIndex = 1;
+            this.ComboBoxAño.SelectedIndexChanged += new System.EventHandler(this.ComboBoxAño_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -163,7 +150,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox ComboBoxAño;
-        private System.Windows.Forms.Button btnMostrar;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartVentas;
         private System.Windows.Forms.GroupBox GroupBox;
     }

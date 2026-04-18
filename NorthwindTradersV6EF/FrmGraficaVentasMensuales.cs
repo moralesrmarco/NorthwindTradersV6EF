@@ -23,17 +23,7 @@ namespace NorthwindTradersV6EF
         private void FrmGraficaVentasMensuales_Load(object sender, EventArgs e)
         {
             LlenarComboBox();
-            CargarVentasMensuales(DateTime.Now.Year);
-        }
-
-        private void btnMostrar_Click(object sender, EventArgs e)
-        {
-            if (ComboBoxAño.SelectedIndex == 0)
-            {
-                Utils.MsgExclamation("Seleccione un año válido.");
-                return;
-            }
-            CargarVentasMensuales(Convert.ToInt32(ComboBoxAño.SelectedValue));
+            CargarVentasMensuales(DateTime.Today.Year);
         }
 
         private void LlenarComboBox()
@@ -41,10 +31,12 @@ namespace NorthwindTradersV6EF
             MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
             try
             {
-                ComboBoxAño.DataSource = GraficasService.ObtenerAñosDeVentas();
-                ComboBoxAño.DisplayMember = "YearOrderDate";
-                ComboBoxAño.ValueMember = "YearOrderDate";
-                ComboBoxAño.SelectedIndex = 0;
+                ComboBoxAño.SelectedIndexChanged -= ComboBoxAño_SelectedIndexChanged;
+                ComboBoxAño.DataSource = GraficasService.ObtenerTop10AñosDeVentas();
+                ComboBoxAño.DisplayMember = "Texto";
+                ComboBoxAño.ValueMember = "Valor";
+                ComboBoxAño.SelectedValue = DateTime.Today.Year;
+                ComboBoxAño.SelectedIndexChanged += ComboBoxAño_SelectedIndexChanged;
             }
             catch (Exception ex)
             {
@@ -66,7 +58,7 @@ namespace NorthwindTradersV6EF
                 U.MsgCatchOue(ex);
                 return;
             }
-            finally 
+            finally
             {
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
@@ -75,7 +67,7 @@ namespace NorthwindTradersV6EF
             serie.Points.Clear();
             serie.ChartType = SeriesChartType.Line;
             serie.BorderWidth = 3;
-            serie.ToolTip = "Ventas de #VALX: #VALY{C2}";
+            serie.ToolTip = "Ventas: #VALY{C2}";
             serie.IsValueShownAsLabel = true;
             serie.LabelFormat = "C2"; // Formato de moneda con 2 decimales
             serie.MarkerStyle = MarkerStyle.Circle;
@@ -124,15 +116,25 @@ namespace NorthwindTradersV6EF
             chartVentas.AntiAliasing = AntiAliasingStyles.All;
             chartVentas.TextAntiAliasingQuality = TextAntiAliasingQuality.High;
 
+            var tit = string.Empty;
+            if (year > 0)
+                tit = $"» Gráfica de ventas mensuales del año {year} «";
+            else
+                tit = "» Gráfica de ventas mensuales de todos los años «";
             // Crear el título
             Title titulo = new Title();
-            titulo.Text = $"Ventas mensuales del año: {year}";
+            titulo.Text = tit;
             titulo.Font = new Font("Arial", 14, FontStyle.Bold);
             titulo.Alignment = ContentAlignment.TopCenter;
 
             decimal totalVentas = datos.Sum(x => x.Total);
+            var subTit = string.Empty;
+            if (year > 0)
+                subTit = $"Total de ventas ({year}): {totalVentas:C2}";
+            else
+                subTit = $"Total de ventas (todos los años): {totalVentas:C2}";
             Title subTitulo = new Title();
-            subTitulo.Text = $"Total de ventas del año {year}: {totalVentas:C2}";
+            subTitulo.Text = subTit;
             //subTitulo.Docking = Docking.Top;
             subTitulo.Font = new Font("Segoe UI", 8, FontStyle.Bold);
             subTitulo.Alignment = ContentAlignment.TopRight;
@@ -157,7 +159,20 @@ namespace NorthwindTradersV6EF
             chartVentas.Titles.Add(titulo);
             chartVentas.Titles.Add(subTitulo);
 
-            GroupBox.Text = $"» Ventas mensuales del año: {year} «";
+            if (year > 0)
+                GroupBox.Text = $"» Gráfica de ventas mensuales del año {year} «";
+            else
+                GroupBox.Text = "» Gráfica de ventas mensuales de todos los años «";
+        }
+
+        private void ComboBoxAño_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboBoxAño.SelectedIndex == 0)
+            {
+                Utils.MsgExclamation("Seleccione un año válido.");
+                return;
+            }
+            CargarVentasMensuales(Convert.ToInt32(ComboBoxAño.SelectedValue));
         }
     }
 }
