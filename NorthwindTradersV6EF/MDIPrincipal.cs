@@ -539,12 +539,6 @@ namespace NorthwindTradersV6EF
             Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Gráfica de top productos más vendidos «");
         }
 
-        private void ventasPorVendedoresDeTodosLosAñosToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FrmGraficaVentasPorVendedores frm = new FrmGraficaVentasPorVendedores();
-            Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Gráfica de ventas por vendedores de todos los años «");
-        }
-
         private void ventasPorVendedoresPorAñoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FrmGraficaDeVentasDeVendedoresPorAnio frm = new FrmGraficaDeVentasDeVendedoresPorAnio();

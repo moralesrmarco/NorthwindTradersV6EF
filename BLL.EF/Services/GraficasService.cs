@@ -167,6 +167,9 @@ namespace BLL.EF.Services
                     .OrderByDescending(y => y)
                     .Take(10)
                     .ToList();
+
+                int añoActual = DateTime.Today.Year;
+
                 DataTable dt = new DataTable();
                 dt.Columns.Add("Texto", typeof(string));
                 dt.Columns.Add("Valor", typeof(int));
@@ -177,6 +180,20 @@ namespace BLL.EF.Services
                 dt.Rows.Add("Todos los años", -1);
                 foreach (var año in años)
                     dt.Rows.Add(año.ToString(), año);
+
+                // Validamos si el año actual ya existe en el DataTable
+                bool existe = dt.AsEnumerable().Any(r => r.Field<int>("Valor") == añoActual);
+
+                if (!existe)
+                {
+                    // Creamos la fila del año actual
+                    DataRow filaActual = dt.NewRow();
+                    filaActual["Texto"] = añoActual.ToString();
+                    filaActual["Valor"] = añoActual;
+
+                    // Insertamos en la posición 3 (índice 2)
+                    dt.Rows.InsertAt(filaActual, 2);
+                }
                 return dt;
             }
         }
@@ -186,7 +203,7 @@ namespace BLL.EF.Services
             using (var ctx = new NorthwindContext())
             {
                 var query = ctx.Order_Details
-                    .Where (od => anio == -1 || od.Order.OrderDate.HasValue && od.Order.OrderDate.Value.Year == anio)
+                    .Where (od => anio == -1 || (od.Order.OrderDate.HasValue && od.Order.OrderDate.Value.Year == anio))
                     .GroupBy(od => od.Product.ProductName)
                     .Select(g => new
                     {
@@ -210,5 +227,34 @@ namespace BLL.EF.Services
                 return dt;
             }
         }
+
+        public static List<(string Vendedor, decimal TotalVentas)> ObtenerVentasPorVendedores(int anio)
+        {
+            using (var ctx = new NorthwindContext())
+            {
+                var query = ctx.Orders
+                    .Where(o => anio == -1 || (o.OrderDate.HasValue && o.OrderDate.Value.Year == anio))
+                    .SelectMany(o => o.Order_Details, (o, od) => new
+                    {
+                        Vendedor = o.Employee.FirstName + " " + o.Employee.LastName,
+                        Total = (double)od.UnitPrice * od.Quantity * (1 - od.Discount)
+                    })
+                    .GroupBy(x  => x.Vendedor)
+                    .Select(g => new
+                    {
+                        Vendedor = g.Key,
+                        TotalVentas = g.Sum(x => x.Total)
+                    })
+                    .OrderByDescending(x => x.TotalVentas)
+                    .ToList();
+
+                var resultados = query
+                    .Select(x => (x.Vendedor, (decimal)x.TotalVentas))
+                    .ToList();
+                return resultados;
+            }
+        }
+
+
     }
 }

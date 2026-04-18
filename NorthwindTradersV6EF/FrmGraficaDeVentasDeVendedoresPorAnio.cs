@@ -1,6 +1,5 @@
-﻿using BLL.Services;
+﻿using BLL.EF.Services;
 using System;
-using System.Configuration;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -12,13 +11,10 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmGraficaDeVentasDeVendedoresPorAnio : Form
     {
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly GraficasService _graficasService;
 
         public FrmGraficaDeVentasDeVendedoresPorAnio()
         {
             InitializeComponent();
-            _graficasService = new GraficasService(cnStr);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -26,17 +22,7 @@ namespace NorthwindTradersV6EF
         private void FrmGraficaDeVentasDeVendedoresPorAnio_Load(object sender, EventArgs e)
         {
             LlenarComboBox();
-            CargarVentasPorVendedores(DateTime.Now.Year); // Cargar ventas del año actual por defecto
-        }
-
-        private void btnMostrar_Click(object sender, EventArgs e)
-        {
-            if (ComboBoxAño.SelectedIndex == 0)
-            {
-                U.MsgExclamation("Seleccione un año válido.");
-                return;
-            }
-            CargarVentasPorVendedores(Convert.ToInt32(ComboBoxAño.SelectedValue));
+            CargarVentasPorVendedores(DateTime.Today.Year); // Cargar ventas del año actual por defecto
         }
 
         private void LlenarComboBox()
@@ -44,10 +30,12 @@ namespace NorthwindTradersV6EF
             MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
             try
             {
-                ComboBoxAño.DataSource = _graficasService.ObtenerAñosDeVentas();
-                ComboBoxAño.DisplayMember = "YearOrderDate";
-                ComboBoxAño.ValueMember = "YearOrderDate";
-                ComboBoxAño.SelectedIndex = 0;
+                ComboBoxAño.SelectedIndexChanged -= ComboBoxAño_SelectedIndexChanged;
+                ComboBoxAño.DataSource = BLL.EF.Services.GraficasService.ObtenerTop10AñosDeVentas();
+                ComboBoxAño.DisplayMember = "Texto";
+                ComboBoxAño.ValueMember = "Valor";
+                ComboBoxAño.SelectedValue = DateTime.Today.Year;
+                ComboBoxAño.SelectedIndexChanged += ComboBoxAño_SelectedIndexChanged;
             }
             catch (Exception ex)
             {
@@ -70,11 +58,15 @@ namespace NorthwindTradersV6EF
                 LegendStyle = LegendStyle.Table
             };
             chart1.Legends.Add(leyenda);
-
+            string tit = string.Empty;
+            if (anio < 0)
+                tit = "» Gráfica de ventas por vendedores de todos los años «";
+            else
+                tit = $"» Gráfica de ventas por vendedores del año {anio} «";
             // Título del gráfico
             Title titulo = new Title
             {
-                Text = $"» Gráfica de ventas por vendedores del año {anio} «",
+                Text = tit,
                 Font = new Font("Arial", 16, FontStyle.Bold),
             };
             chart1.Titles.Add(titulo);
@@ -107,7 +99,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var ventas = _graficasService.ObtenerVentasPorVendedores(anio);
+                var ventas = GraficasService.ObtenerVentasPorVendedores(anio);
                 int i = 0;
                 foreach (var (vendedor, totalVentas) in ventas)
                 {
@@ -127,9 +119,15 @@ namespace NorthwindTradersV6EF
             {
                 U.MsgCatchOue(ex);
             }
+            string subTit = string.Empty;
+            if (anio < 0)
+                subTit = "Total de ventas (todos los años):";
+            else
+                subTit = $"Total de ventas ({anio}):";
+
             Title subTitulo = new Title
             {
-                Text = $"Total de ventas del año {anio}: {serie.Points.Sum(p => p.YValues[0]):C2}",
+                Text = $"{subTit} {serie.Points.Sum(p => p.YValues[0]):C2}",
                 Docking = Docking.Top,
                 Font = new Font("Segoe UI", 8, FontStyle.Bold),
                 IsDockedInsideChartArea = false,
@@ -139,6 +137,16 @@ namespace NorthwindTradersV6EF
             // Agregar el subtítulo al chart
             chart1.Titles.Add(subTitulo);
             MDIPrincipal.ActualizarBarraDeEstado();
+        }
+
+        private void ComboBoxAño_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboBoxAño.SelectedIndex == 0)
+            {
+                U.MsgExclamation("Seleccione un año válido.");
+                return;
+            }
+            CargarVentasPorVendedores(Convert.ToInt32(ComboBoxAño.SelectedValue));
         }
     }
 }
