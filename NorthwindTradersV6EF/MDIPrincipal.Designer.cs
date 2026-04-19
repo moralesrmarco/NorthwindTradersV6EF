@@ -180,6 +180,7 @@
             this.toolStripStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.TabControlPrincipal = new NorthwindTradersV6EF.ControlCustomTab();
+            this.ejemploDeGráficas2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.toolStrip.SuspendLayout();
             this.statusStrip.SuspendLayout();
@@ -929,7 +930,8 @@
             this.ventasMensualesPorVendedorPorAñoToolStripMenuItem,
             this.ventasMensualesPorVendedorPorAñobarrasToolStripMenuItem,
             this.ventasMensualesPorVendedorPorAñobarras2ToolStripMenuItem,
-            this.ejemploDeGráficasToolStripMenuItem});
+            this.ejemploDeGráficasToolStripMenuItem,
+            this.ejemploDeGráficas2ToolStripMenuItem});
             this.consultasToolStripMenuItem5.Name = "consultasToolStripMenuItem5";
             this.consultasToolStripMenuItem5.Size = new System.Drawing.Size(224, 26);
             this.consultasToolStripMenuItem5.Text = "Consultas";
@@ -1419,6 +1421,13 @@
             this.TabControlPrincipal.TabIndex = 4;
             this.TabControlPrincipal.SelectedIndexChanged += new System.EventHandler(this.TabControlPrincipal_SelectedIndexChanged);
             // 
+            // ejemploDeGráficas2ToolStripMenuItem
+            // 
+            this.ejemploDeGráficas2ToolStripMenuItem.Name = "ejemploDeGráficas2ToolStripMenuItem";
+            this.ejemploDeGráficas2ToolStripMenuItem.Size = new System.Drawing.Size(425, 26);
+            this.ejemploDeGráficas2ToolStripMenuItem.Text = "Ejemplo de gráficas 2";
+            this.ejemploDeGráficas2ToolStripMenuItem.Click += new System.EventHandler(this.ejemploDeGráficas2ToolStripMenuItem_Click);
+            // 
             // MDIPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1600,6 +1609,7 @@
         private System.Windows.Forms.ToolStripMenuItem tablerosControlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tableroDeControlParaLaAltaDirecciónToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tableroDeControlParaLosVendedoresToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ejemploDeGráficas2ToolStripMenuItem;
     }
 }
 

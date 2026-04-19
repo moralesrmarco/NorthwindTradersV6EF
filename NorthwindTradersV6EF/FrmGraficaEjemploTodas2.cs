@@ -9,51 +9,74 @@ using Utilities;
 
 namespace NorthwindTradersV6EF
 {
-    public partial class FrmGraficaVentasMensualesPorVendedorPorAnio : Form
+    public partial class FrmGraficaEjemploTodas2 : Form
     {
-        public FrmGraficaVentasMensualesPorVendedorPorAnio()
+        // Datos fijos: categorías y valores
+        private readonly string[] categorias =
+            { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago" };
+        private readonly double[] valores =
+            { 15,    30,    45,    20,    35,    50,    25,    40   };
+
+        private DataTable dt = new DataTable();
+
+        public FrmGraficaEjemploTodas2()
         {
             InitializeComponent();
-            ChartVentas.MouseMove += ChartVentas_MouseMove;
-        }
-
-        private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
-
-        private void FrmGraficaVentasMensualesPorVendedorPorAnio_Load(object sender, EventArgs e)
-        {
-            ChartVentas.Cursor = Cursors.Cross;
-            LlenarComboBox();
-            CargarVentasMensualesPorVendedorPorAnio(DateTime.Now.Year);
-            ChartVentas.AntiAliasing = AntiAliasingStyles.All;
-            ChartVentas.TextAntiAliasingQuality = TextAntiAliasingQuality.High;
-        }
-
-        private void LlenarComboBox()
-        {
-            MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
+            WindowState = FormWindowState.Maximized;
             try
             {
-                ComboBoxAño.SelectedIndexChanged -= ComboBoxAño_SelectedIndexChanged;
-                ComboBoxAño.DataSource = BLL.EF.Services.GraficasService.ObtenerTop10AñosDeVentas();
-                ComboBoxAño.DisplayMember = "Texto";
-                ComboBoxAño.ValueMember = "Valor";
-                ComboBoxAño.SelectedValue = DateTime.Today.Year;
-                ComboBoxAño.SelectedIndexChanged += ComboBoxAño_SelectedIndexChanged;
+                MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
+                dt = GraficasService.ObtenerVentasMensualesPorVendedoresPorAño(1997);
             }
             catch (Exception ex)
             {
                 U.MsgCatchOue(ex);
+                return;
             }
-            MDIPrincipal.ActualizarBarraDeEstado();
+            finally
+            {
+                MDIPrincipal.ActualizarBarraDeEstado();
+            }
+            CargarTiposDeGrafica();
         }
 
-        private void CargarVentasMensualesPorVendedorPorAnio(int anio)
+        private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
+
+        private void FrmGraficaEjemploTodas_Load(object sender, EventArgs e)
         {
-            ChartVentas.Series.Clear();
-            ChartVentas.Titles.Clear();
+            // Crea datos de ejemplo y dibuja la primera gráfica
+            DibujarGrafica((SeriesChartType)cmbChartTypes.SelectedItem);
+        }
+
+        private void cmbChartTypes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DibujarGrafica((SeriesChartType)cmbChartTypes.SelectedItem);
+        }
+
+        private void CargarTiposDeGrafica()
+        {
+            // Obtiene todos los valores del enum
+            var tipos = Enum.GetValues(typeof(SeriesChartType))
+                            .Cast<SeriesChartType>()
+                            .OrderBy(t => t.ToString());
+
+            // Llena el ComboBox
+            cmbChartTypes.DataSource = tipos.ToList();
+        }
+
+        private void DibujarGrafica(SeriesChartType tipo)
+        {
+            if (tipo == SeriesChartType.Kagi || tipo == SeriesChartType.PointAndFigure || tipo == SeriesChartType.Renko || tipo == SeriesChartType.ThreeLineBreak)
+            {
+                MessageBox.Show("Este tipo de gráfica no se puede graficar");
+                return;
+            }
+            int anio = 1997;
+            chart1.Series.Clear();
+            chart1.Titles.Clear();
             string tit = string.Empty;
             if (anio > 0)
-                tit = $"Ventas mensuales por vendedores del año {anio}";
+                tit = $"Ventas mensuales por vendedores del año {anio}             Tipo de gráfica: {tipo}";
             else
                 tit = "Ventas mensuales por vendedores de todos los años";
             Title titulo = new Title
@@ -61,10 +84,10 @@ namespace NorthwindTradersV6EF
                 Text = tit,
                 Font = new Font("Arial", 16, FontStyle.Bold)
             };
-            ChartVentas.Titles.Add(titulo);
+            chart1.Titles.Add(titulo);
             groupBox1.Text = $"» {titulo.Text} «";
             // ChartArea
-            var area = ChartVentas.ChartAreas[0];
+            var area = chart1.ChartAreas[0];
             area.AxisX.Interval = 1;
             area.AxisX.CustomLabels.Clear();
             area.AxisX.MajorGrid.Enabled = true;
@@ -84,22 +107,6 @@ namespace NorthwindTradersV6EF
             area.AxisY.MinorGrid.LineDashStyle = ChartDashStyle.Dash;
             area.AxisY.LabelStyle.Font = new Font("Segoe UI", 8, FontStyle.Regular);
             area.AxisY.LabelStyle.Angle = -45;
-            // Leer datos
-            var dt = new DataTable();
-            try
-            {
-                MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                dt = GraficasService.ObtenerVentasMensualesPorVendedoresPorAño(anio);
-            }
-            catch (Exception ex)
-            {
-                U.MsgCatchOue(ex);
-                return;
-            }
-            finally
-            {
-                MDIPrincipal.ActualizarBarraDeEstado();
-            }
 
             // Pivot dinámico por vendedor
             var grupos = dt.AsEnumerable()
@@ -112,7 +119,7 @@ namespace NorthwindTradersV6EF
                 // Serie por vendedor
                 var serie = new Series(grupo.Key)
                 {
-                    ChartType = SeriesChartType.Line,
+                    ChartType = tipo,
                     BorderWidth = 2,
                     MarkerStyle = MarkerStyle.Circle,
                     MarkerSize = 6,
@@ -142,7 +149,7 @@ namespace NorthwindTradersV6EF
                 {
                     if (p.YValues[0] > 0)
                     {
-                        p.IsValueShownAsLabel = true;                        
+                        p.IsValueShownAsLabel = true;
                     }
                 }
                 // Sumar todos los valores Y de la serie
@@ -150,7 +157,7 @@ namespace NorthwindTradersV6EF
 
                 serie.LegendText = $"{serie.Name} (Total: {totalVendedor:C2})";
 
-                ChartVentas.Series.Add(serie);
+                chart1.Series.Add(serie);
                 i++;
             }
             Title subTitulo = new Title();
@@ -164,38 +171,9 @@ namespace NorthwindTradersV6EF
             subTitulo.Alignment = ContentAlignment.TopLeft;
             subTitulo.IsDockedInsideChartArea = false;
             subTitulo.DockingOffset = -5;
-            ChartVentas.Titles.Add(subTitulo);
+            chart1.Titles.Add(subTitulo);
             // ————— Aquí forzamos el recálculo de la escala del eje Y —————
-            ChartVentas.ResetAutoValues();
-        }
-
-        private void ChartVentas_MouseMove(object sender, MouseEventArgs e)
-        {
-            var result = ChartVentas.HitTest(e.X, e.Y);
-
-            // Restaurar todas las líneas
-            foreach (Series s in ChartVentas.Series)
-            {
-                s.BorderWidth = 2;
-                s.MarkerSize = 6;
-            }
-
-            // Resaltar la línea donde está el mouse
-            if (result.Series != null)
-            {
-                result.Series.BorderWidth = 4;
-                result.Series.MarkerSize = 10;
-            }
-        }
-
-        private void ComboBoxAño_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (ComboBoxAño.SelectedIndex == 0)
-            {
-                U.MsgExclamation("Seleccione un año válido.");
-                return;
-            }
-            CargarVentasMensualesPorVendedorPorAnio(Convert.ToInt32(ComboBoxAño.SelectedValue));
+            chart1.ResetAutoValues();
         }
     }
 }

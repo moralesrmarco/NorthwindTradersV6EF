@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BLL.EF.Services;
+using DTOs.EF;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -16,10 +19,26 @@ namespace NorthwindTradersV6EF
         private readonly double[] valores =
             { 15,    30,    45,    20,    35,    50,    25,    40   };
 
+        private readonly List<DtoVentasMensuales> datos = new List<DtoVentasMensuales>();
+
         public FrmGraficaEjemploTodas()
         {
             InitializeComponent();
             WindowState = FormWindowState.Maximized;
+            try
+            {
+                MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
+                datos = GraficasService.ObtenerVentasMensuales(1997);
+            }
+            catch (Exception ex)
+            {
+                U.MsgCatchOue(ex);
+                return;
+            }
+            finally
+            {
+                MDIPrincipal.ActualizarBarraDeEstado();
+            }
             CargarTiposDeGrafica();
         }
 
@@ -71,9 +90,13 @@ namespace NorthwindTradersV6EF
             };
 
             // Agrega puntos usando categorías y valores
-            for (int i = 0; i < categorias.Length; i++)
+            //for (int i = 0; i < categorias.Length; i++)
+            //{
+            //    serie.Points.AddXY(categorias[i], valores[i]);
+            //}
+            foreach (var punto in datos)
             {
-                serie.Points.AddXY(categorias[i], valores[i]);
+                serie.Points.AddXY(punto.NombreMes, punto.Total);
             }
 
             chart1.Series.Add(serie);

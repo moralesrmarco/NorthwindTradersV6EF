@@ -1,6 +1,5 @@
-﻿using BLL.Services;
+﻿using BLL.EF.Services;
 using System;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -13,13 +12,9 @@ namespace NorthwindTradersV6EF
     public partial class FrmGraficaVentasMensualesPorVendedorPorAnioBarras2 : Form
     {
 
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly GraficasService _graficasService;
-
         public FrmGraficaVentasMensualesPorVendedorPorAnioBarras2()
         {
             InitializeComponent();
-            _graficasService = new GraficasService(cnStr);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -28,6 +23,7 @@ namespace NorthwindTradersV6EF
         {
             ChartVentas.Cursor = Cursors.Cross;
             LlenarCmbVentasDelAño();
+            CargarGrafica(Convert.ToInt32(CmbVentasDelAño.SelectedValue));
         }
 
         private void LlenarCmbVentasDelAño()
@@ -35,11 +31,13 @@ namespace NorthwindTradersV6EF
             MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
             try
             {
-                DataTable dt = _graficasService.ObtenerAñosDeVentas(false);
-                CmbVentasDelAño.DisplayMember = "YearOrderDate";
-                CmbVentasDelAño.ValueMember = "YearOrderDate";
+                CmbVentasDelAño.SelectedIndexChanged -= CmbVentasDelAño_SelectedIndexChanged;
+                DataTable dt = BLL.EF.Services.GraficasService.ObtenerTop10AñosDeVentas();
+                CmbVentasDelAño.DisplayMember = "Texto";
+                CmbVentasDelAño.ValueMember = "Valor";
                 CmbVentasDelAño.DataSource = dt;
-                CmbVentasDelAño.SelectedIndex = 0;
+                CmbVentasDelAño.SelectedValue = DateTime.Today.Year;
+                CmbVentasDelAño.SelectedIndexChanged += CmbVentasDelAño_SelectedIndexChanged;
             }
             catch (Exception ex)
             {
@@ -50,7 +48,6 @@ namespace NorthwindTradersV6EF
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
         }
-
         private void CmbVentasDelAño_SelectedIndexChanged(object sender, EventArgs e)
         {
             CargarGrafica(Convert.ToInt32(CmbVentasDelAño.SelectedValue));
@@ -61,9 +58,14 @@ namespace NorthwindTradersV6EF
             ChartVentas.Series.Clear();
             ChartVentas.Titles.Clear();
 
-            Title titulo = new Title()
+            string tit = string.Empty;
+            if (anio > 0)
+                tit = $"Ventas mensuales por vendedores del año {anio}";
+            else
+                tit = "Ventas mensuales por vendedores de todos los años";
+            Title titulo = new Title
             {
-                Text = $"Ventas mensuales por vendedores del año {anio}",
+                Text = tit,
                 Font = new Font("Arial", 16, FontStyle.Bold)
             };
             ChartVentas.Titles.Add(titulo);
@@ -97,7 +99,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                dt = _graficasService.ObtenerVentasMensualesPorVendedoresPorAño(anio);
+                dt = GraficasService.ObtenerVentasMensualesPorVendedoresPorAño(anio);
             }
             catch (Exception ex)
             {
@@ -165,9 +167,14 @@ namespace NorthwindTradersV6EF
                 ChartVentas.Series.Add(serie);
                 colorIndex++;
             }
+            string subTit = string.Empty;
+            if (anio > 0)
+                subTit = $"Total de ventas ({anio}):";
+            else
+                subTit = "Total de ventas (todos los años):";
             Title subTitulo = new Title
             {
-                Text = $"Total de ventas del año: {dt.Compute("SUM(TotalVentas)", string.Empty):C2}",
+                Text = subTit + $" {dt.Compute("SUM(TotalVentas)", string.Empty):C2}",
                 Font = new Font("Arial", 8, FontStyle.Bold),
                 Alignment = ContentAlignment.TopLeft,
                 IsDockedInsideChartArea = false,

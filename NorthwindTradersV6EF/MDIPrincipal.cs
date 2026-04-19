@@ -569,6 +569,12 @@ namespace NorthwindTradersV6EF
             Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Ejemplo de gráficas «");
         }
 
+        private void ejemploDeGráficas2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FrmGraficaEjemploTodas2 frm = new FrmGraficaEjemploTodas2();
+            Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Ejemplo de gráficas 2 «");
+        }
+
         private void ventasMensualesToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             FrmRptGraficaVentasMensuales frm = new FrmRptGraficaVentasMensuales();
