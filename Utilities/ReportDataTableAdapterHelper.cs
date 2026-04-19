@@ -1,4 +1,4 @@
-﻿using Entities.DTOs;
+﻿using DTOs.EF;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;

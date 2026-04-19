@@ -1,8 +1,7 @@
-﻿using BLL.Services;
+﻿using BLL.EF.Services;
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Windows.Forms;
 using Utilities;
@@ -11,13 +10,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmRptGraficaVentasAnuales : Form
     {
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly GraficasService _graficasService;
-
         public FrmRptGraficaVentasAnuales()
         {
             InitializeComponent();
-            _graficasService = new GraficasService(cnStr);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -29,7 +24,7 @@ namespace NorthwindTradersV6EF
 
         private void LlenarCmbVentasAnuales()
         {
-            int totalAñosDisponibles = _graficasService.ObtenerTotalAñosConVentas();
+            int totalAñosDisponibles = GraficasService.ObtenerTotalAñosConVentas();
             int limite = Math.Min(totalAñosDisponibles, 10);
             var items = new List<KeyValuePair<string, int>>();
             for (int i = 2; i <= limite; i++)
@@ -57,7 +52,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                dtComparativo = ReportDataTableAdapterHelper.ConvertirVentaAnualComparativa(_graficasService.ObtenerVentasMensualesPorAños(years));
+                dtComparativo = ReportDataTableAdapterHelper.ConvertirVentaAnualComparativa(BLL.EF.Services.GraficasService.ObtenerVentasMensualesPorAños(years));
             }
             catch (Exception ex)
             {
