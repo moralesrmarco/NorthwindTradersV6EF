@@ -1411,6 +1411,10 @@ namespace NorthwindTradersV6EF
                         venta.Customer.CustomerID = cboCliente.SelectedValue.ToString().Trim();
                         venta.Employee.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
 
+                        venta.CustomerID = cboCliente.SelectedValue.ToString();
+                        venta.EmployeeID = Convert.ToInt32(cboEmpleado.SelectedValue);
+                        venta.ShipVia = Convert.ToInt32(cboTransportista.SelectedValue);
+
                         if (dtpVenta != null && dtpHoraVenta != null)
                             venta.OrderDate = Utils.ObtenerFechaHora(dtpVenta, dtpHoraVenta);
                         if (dtpRequerido != null && dtpHoraRequerido != null)
