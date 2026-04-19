@@ -1,8 +1,7 @@
-﻿using BLL.Services;
+﻿using BLL.EF.Services;
 using Microsoft.Reporting.WinForms;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Windows.Forms;
 using Utilities;
@@ -12,13 +11,9 @@ namespace NorthwindTradersV6EF
     public partial class FrmRptTopProductosMasVendidos : Form
     {
 
-        private readonly string cnStr = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly GraficasService _graficasService;
-
         public FrmRptTopProductosMasVendidos()
         {
             InitializeComponent();
-            _graficasService = new GraficasService(cnStr);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -48,10 +43,10 @@ namespace NorthwindTradersV6EF
             MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
             try
             {
-                CmbAños.DataSource = _graficasService.ObtenerTop10AñosDeVentas(false);
+                CmbAños.DataSource = GraficasService.ObtenerTop10AñosDeVentas();
                 CmbAños.DisplayMember = "Texto";
                 CmbAños.ValueMember = "Valor";
-                CmbAños.SelectedIndex = 1;
+                CmbAños.SelectedValue = DateTime.Today.Year;
             }
             catch (Exception ex)
             {
@@ -66,6 +61,11 @@ namespace NorthwindTradersV6EF
 
         private void BtnMostrar_Click(object sender, EventArgs e)
         {
+            if (CmbAños.SelectedIndex == 0)
+            {
+                MessageBox.Show("Seleccione un año válido.");
+                return;
+            }
             CargarTopProductos(Convert.ToInt32(CmbTopProductos.SelectedValue), Convert.ToInt32(CmbAños.SelectedValue));
         }
 
@@ -76,7 +76,7 @@ namespace NorthwindTradersV6EF
             DataTable dt = null;
             try
             {
-                dt = _graficasService.ObtenerTopProductosRpt(topProductos, año);
+                dt = GraficasService.ObtenerTopProductosRpt(topProductos, año);
             }
             catch (Exception ex)
             {

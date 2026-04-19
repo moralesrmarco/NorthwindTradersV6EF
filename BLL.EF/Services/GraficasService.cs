@@ -371,6 +371,44 @@ namespace BLL.EF.Services
             return dt;
         }
 
+        public static DataTable ObtenerTopProductosRpt(int cantidad, int anio)
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Posicion", typeof(int));
+            dt.Columns.Add("NombreProducto", typeof(string));
+            dt.Columns.Add("CantidadVendida", typeof(int));
+
+            using (var ctx = new NorthwindContext())
+            {
+                var query = ctx.Order_Details
+                    .Where(od => anio == -1 ||
+                                 (od.Order.OrderDate.HasValue && od.Order.OrderDate.Value.Year == anio))
+                    .GroupBy(od => od.Product.ProductName)
+                    .Select(g => new
+                    {
+                        ProductName = g.Key,
+                        CantidadVendida = g.Sum(x => x.Quantity)
+                    })
+                    .OrderByDescending(x => x.CantidadVendida)
+                    .ThenBy(x => x.ProductName)
+                    .Take(cantidad)
+                    .ToList();
+
+                int pos = 1;
+                foreach (var item in query)
+                {
+                    DataRow row = dt.NewRow();
+                    row["Posicion"] = pos;
+                    row["NombreProducto"] = $"{pos}.- {item.ProductName}";
+                    row["CantidadVendida"] = item.CantidadVendida;
+                    dt.Rows.Add(row);
+                    pos++;
+                }
+            }
+
+            return dt;
+        }
+
         // Helper para formatear el nombre del mes
         private static string FormatearMes(int mes)
         {
