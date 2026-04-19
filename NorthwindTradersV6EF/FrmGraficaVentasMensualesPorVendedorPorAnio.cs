@@ -159,8 +159,8 @@ namespace NorthwindTradersV6EF
                 subTit = $"Total de ventas ({anio}):";
             else
                 subTit = "Total de ventas (todos los años):";
-                subTitulo.Text = subTit + $" {dt.Compute("SUM(TotalVentas)", string.Empty):C2}";
-                subTitulo.Font = new Font("Arial", 8, FontStyle.Bold);
+            subTitulo.Text = subTit + $" {dt.Compute("SUM(TotalVentas)", string.Empty):C2}";
+            subTitulo.Font = new Font("Arial", 8, FontStyle.Bold);
             subTitulo.Alignment = ContentAlignment.TopLeft;
             subTitulo.IsDockedInsideChartArea = false;
             subTitulo.DockingOffset = -5;
