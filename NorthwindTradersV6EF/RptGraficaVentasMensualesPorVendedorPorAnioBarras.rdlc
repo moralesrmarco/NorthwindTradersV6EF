@@ -408,7 +408,7 @@
                 </Style>
               </ChartTitle>
               <ChartTitle Name="Title1">
-                <Caption>= "Total de ventas del año: " &amp; Format(Sum(Fields!TotalVentas.Value), "C2")</Caption>
+                <Caption>= "Total de ventas (" &amp; IIF(Parameters!Anio.Value = -1, "todos los años", Parameters!Anio.Value) &amp; "): " &amp; Format(Sum(Fields!TotalVentas.Value), "C2")</Caption>
                 <Style>
                   <BackgroundGradientType>None</BackgroundGradientType>
                   <FontFamily>Arial Rounded MT Bold</FontFamily>
@@ -481,6 +481,42 @@
               <BackgroundGradientType>None</BackgroundGradientType>
             </Style>
           </Chart>
+          <Textbox Name="Textbox32">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>=Parameters!Subtitulo.Value</Value>
+                    <Style>
+                      <FontFamily>Arial Rounded MT Bold</FontFamily>
+                      <FontSize>12pt</FontSize>
+                      <FontWeight>Normal</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox32</rd:DefaultName>
+            <Top>17.17253cm</Top>
+            <Left>0.35553cm</Left>
+            <Height>0.6cm</Height>
+            <Width>25.65316cm</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
           <Tablix Name="Tablix1">
             <TablixBody>
               <TablixColumns>
@@ -521,7 +557,7 @@
                   <Width>1.76516cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.76516cm</Width>
+                  <Width>2.23584cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -1010,7 +1046,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 1, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 1, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1047,7 +1083,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 2, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 2, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1084,7 +1120,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 3, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 3, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1121,7 +1157,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 4, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 4, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1158,7 +1194,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 5, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 5, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1195,7 +1231,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 6, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 6, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1232,7 +1268,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 7, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 7, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1269,7 +1305,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 8, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 8, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1306,7 +1342,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 9, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 9, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1343,7 +1379,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 10, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 10, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1380,7 +1416,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 11, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 11, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1417,7 +1453,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 12, Fields!TotalVentas.Value, 0), "Vendedor")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 12, Val(Fields!TotalVentas.Value), 0), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1454,7 +1490,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(Fields!TotalVentas.Value, "Vendedor")</Value>
+                                  <Value>=Sum(Val(Fields!TotalVentas.Value), "Vendedor")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1496,7 +1532,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 1, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 1, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1533,7 +1569,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 2, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 2, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1570,7 +1606,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 3, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 3, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1607,7 +1643,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 4, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 4, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1644,7 +1680,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 5, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 5, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1681,7 +1717,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 6, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 6, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1718,7 +1754,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 7, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 7, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1755,7 +1791,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 8, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 8, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1792,7 +1828,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 9, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 9, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1829,7 +1865,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 10, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 10, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1866,7 +1902,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 11, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 11, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1903,7 +1939,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(IIF(Fields!Mes.Value = 12, Fields!TotalVentas.Value, 0), "DataSet1")</Value>
+                                  <Value>=Sum(IIF(Fields!Mes.Value = 12, Val(Fields!TotalVentas.Value), 0), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1940,7 +1976,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(Fields!TotalVentas.Value, "DataSet1")</Value>
+                                  <Value>=Sum(Val(Fields!TotalVentas.Value), "DataSet1")</Value>
                                   <Style>
                                     <FontSize>7pt</FontSize>
                                     <Format>'$'#,0.00;('$'#,0.00)</Format>
@@ -1993,7 +2029,7 @@
               <TablixMembers>
                 <TablixMember>
                   <TablixHeader>
-                    <Size>3.29417cm</Size>
+                    <Size>2.98224cm</Size>
                     <CellContents>
                       <Textbox Name="Textbox54">
                         <CanGrow>true</CanGrow>
@@ -2046,7 +2082,7 @@
                     </SortExpression>
                   </SortExpressions>
                   <TablixHeader>
-                    <Size>3.29417cm</Size>
+                    <Size>2.98224cm</Size>
                     <CellContents>
                       <Textbox Name="Vendedor1">
                         <CanGrow>true</CanGrow>
@@ -2087,7 +2123,7 @@
                 </TablixMember>
                 <TablixMember>
                   <TablixHeader>
-                    <Size>3.29417cm</Size>
+                    <Size>2.98224cm</Size>
                     <CellContents>
                       <Textbox Name="Textbox56">
                         <CanGrow>true</CanGrow>
@@ -2127,53 +2163,16 @@
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet1</DataSetName>
-            <Top>18.26641cm</Top>
-            <Left>0.07937cm</Left>
+            <Top>18.15932cm</Top>
             <Height>1.8cm</Height>
-            <Width>26.24125cm</Width>
-            <ZIndex>1</ZIndex>
+            <Width>26.4cm</Width>
+            <ZIndex>2</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
             </Style>
           </Tablix>
-          <Textbox Name="Textbox32">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>=Parameters!Subtitulo.Value</Value>
-                    <Style>
-                      <FontFamily>Arial Rounded MT Bold</FontFamily>
-                      <FontSize>12pt</FontSize>
-                      <FontWeight>Normal</FontWeight>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style>
-                  <TextAlign>Center</TextAlign>
-                </Style>
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox32</rd:DefaultName>
-            <Top>17.17253cm</Top>
-            <Left>0.35553cm</Left>
-            <Height>0.6cm</Height>
-            <Width>25.65316cm</Width>
-            <ZIndex>2</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
         </ReportItems>
         <Height>7.90016in</Height>
         <Style />
@@ -2217,21 +2216,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>Northwind Traders - » Reporte gráfico comparativo de ventas mensuales por vendedores del año </Value>
-                      <Style>
-                        <FontSize>12pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value>=Parameters!Anio.Value</Value>
-                      <Style>
-                        <FontSize>12pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value> «</Value>
+                      <Value>= "Northwind Traders - » Reporte gráfico comparativo de ventas mensuales por vendedores (" &amp; IIF(Parameters!Anio.Value = -1, "todos los años", Parameters!Anio.Value) &amp; ") «"</Value>
                       <Style>
                         <FontSize>12pt</FontSize>
                         <FontWeight>Bold</FontWeight>
