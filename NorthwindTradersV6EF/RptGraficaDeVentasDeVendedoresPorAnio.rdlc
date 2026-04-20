@@ -373,7 +373,7 @@
                 </Style>
               </ChartTitle>
               <ChartTitle Name="Title1">
-                <Caption>="Total de ventas del año " &amp; Parameters!Anio.Value &amp; ": " &amp; Format(Sum(Fields!TotalVentas.Value), "C2")</Caption>
+                <Caption>="Total de ventas  (" &amp;IIF(Parameters!Anio.Value = -1, "todos los años", Parameters!Anio.Value) &amp; "): " &amp; Format(Sum(Fields!TotalVentas.Value), "C2")</Caption>
                 <Style>
                   <BackgroundGradientType>None</BackgroundGradientType>
                   <FontFamily>Arial Rounded MT Bold</FontFamily>
@@ -464,21 +464,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>Northwind Traders - » Reporte gráfico de ventas por vendedores del año </Value>
-                      <Style>
-                        <FontSize>12pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value>=Parameters!Anio.Value</Value>
-                      <Style>
-                        <FontSize>12pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                    <TextRun>
-                      <Value> «</Value>
+                      <Value>= "Northwind Traders - » Reporte gráfico de ventas por vendedores (" &amp; IIF(Parameters!Anio.Value = -1, "todos los años", Parameters!Anio.Value) &amp; ") «"</Value>
                       <Style>
                         <FontSize>12pt</FontSize>
                         <FontWeight>Bold</FontWeight>
@@ -496,6 +482,7 @@
               <Height>0.6cm</Height>
               <Width>23.24333cm</Width>
               <ZIndex>2</ZIndex>
+              <ToolTip>= "Northwind Traders - » Reporte gráfico de ventas por vendedores del año [@Anio] «"</ToolTip>
               <Style>
                 <Border>
                   <Style>None</Style>

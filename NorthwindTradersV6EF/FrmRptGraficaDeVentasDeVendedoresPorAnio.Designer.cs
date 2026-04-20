@@ -67,7 +67,7 @@
             this.CmbVentas.FormattingEnabled = true;
             this.CmbVentas.Location = new System.Drawing.Point(365, 0);
             this.CmbVentas.Name = "CmbVentas";
-            this.CmbVentas.Size = new System.Drawing.Size(145, 28);
+            this.CmbVentas.Size = new System.Drawing.Size(185, 28);
             this.CmbVentas.TabIndex = 1;
             this.CmbVentas.SelectedIndexChanged += new System.EventHandler(this.CmbVentas_SelectedIndexChanged);
             // 
