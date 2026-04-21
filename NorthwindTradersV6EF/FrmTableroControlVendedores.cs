@@ -51,7 +51,7 @@ namespace NorthwindTradersV6EF
                 cmbVentasMensualesPorVendedorPorAño.DataSource = BLL.EF.Services.GraficasService.ObtenerTop10AñosDeVentas();
                 cmbVentasMensualesPorVendedorPorAño.DisplayMember = "Texto";
                 cmbVentasMensualesPorVendedorPorAño.ValueMember = "Valor";
-                cmbVentasMensualesPorVendedorPorAño.SelectedValue = DateTime.Today.Year;
+                cmbVentasMensualesPorVendedorPorAño.SelectedValue = 1997;
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
             catch (Exception ex)
@@ -386,7 +386,7 @@ namespace NorthwindTradersV6EF
                 CmbAñoTopProd.DataSource = BLL.EF.Services.GraficasService.ObtenerTop10AñosDeVentas();
                 CmbAñoTopProd.DisplayMember = "Texto";
                 CmbAñoTopProd.ValueMember = "Valor";
-                CmbAñoTopProd.SelectedValue = DateTime.Today.Year;
+                CmbAñoTopProd.SelectedValue = 1997;
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
             catch (Exception ex)
@@ -531,7 +531,7 @@ namespace NorthwindTradersV6EF
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
             CmbVentasDelAño4.SelectedIndexChanged += CmbVentasDelAño4_SelectedIndexChanged;
-            CmbVentasDelAño4.SelectedValue = DateTime.Today.Year;
+            CmbVentasDelAño4.SelectedValue = 1997;
         }
 
         private void CmbVentasDelAño4_SelectedIndexChanged(object sender, EventArgs e)
@@ -548,11 +548,9 @@ namespace NorthwindTradersV6EF
         {
             ChartVentas4.Series.Clear();
             ChartVentas4.Titles.Clear();
-            string tit = string.Empty;
-            if (anio == -1)
-                tit = "Ventas mensuales por vendedores (todos los años)";
-            else
-                tit = $"Ventas mensuales por vendedores ({anio})";
+            string tit = anio == -1
+                        ? $"Ventas mensuales por vendedores (todos los años)"
+                        : $"Ventas mensuales por vendedores ({anio})";
             Title titulo = new Title()
             {
                 Text = tit,
@@ -675,7 +673,7 @@ namespace NorthwindTradersV6EF
                 cmbVentasVendedorAño.DataSource = BLL.EF.Services.GraficasService.ObtenerTop10AñosDeVentas();
                 cmbVentasVendedorAño.DisplayMember = "Texto";
                 cmbVentasVendedorAño.ValueMember = "Valor";
-                cmbVentasVendedorAño.SelectedValue = DateTime.Today.Year;
+                cmbVentasVendedorAño.SelectedValue = 1997;
             }
             catch (Exception ex)
             {
@@ -818,7 +816,7 @@ namespace NorthwindTradersV6EF
                 MDIPrincipal.ActualizarBarraDeEstado();
             }
             CmbVentasDelAño6.SelectedIndexChanged += CmbVentasDelAño6_SelectedIndexChanged;
-            CmbVentasDelAño6.SelectedValue = DateTime.Today.Year;
+            CmbVentasDelAño6.SelectedValue = 1997;
         }
 
         private void CmbVentasDelAño6_SelectedIndexChanged(object sender, EventArgs e)

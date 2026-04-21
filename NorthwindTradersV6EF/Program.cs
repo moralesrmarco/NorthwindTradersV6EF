@@ -38,13 +38,17 @@ namespace NorthwindTradersV6EF
                     return;
                 }
             }
+            
+            // Detectar la pantalla en la que está el cursor
+            Point posicionCursor2 = Cursor.Position;
+            Screen pantallaDestino2 = Screen.FromPoint(posicionCursor2);
 
             // Instanciar el MDIPrincipal en la misma pantalla
             MDIPrincipal mdiPrincipal = new MDIPrincipal
             {
                 Usuario = usuario,
                 StartPosition = FormStartPosition.Manual,
-                Bounds = pantallaDestino.WorkingArea
+                Bounds = pantallaDestino2.WorkingArea
             };
             Application.Run(mdiPrincipal);
 
