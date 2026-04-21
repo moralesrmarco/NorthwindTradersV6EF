@@ -39,11 +39,9 @@ namespace NorthwindTradersV6EF
 
             LlenarCmbVentasVendedorAño();
             LlenarCmbTipoGrafica5();
-            //CmbTipoGrafica5.SelectedItem = SeriesChartType.Doughnut;
 
-            //LlenarCmbVentasMensualesPorVendedorPorAño();
-            //LlenarCmbTipoGrafica6();
-            //CmbTipoGrafica6.SelectedItem = SeriesChartType.Line;
+            LlenarCmbVentasMensualesPorVendedorPorAño();
+            LlenarCmbTipoGrafica6();
         }
 
         /******************************************************************************************************/
@@ -571,7 +569,7 @@ namespace NorthwindTradersV6EF
         //}
         //#endregion
         ///******************************************************************************************************/
-        #region Grafica4
+        #region Grafica5
         private void LlenarCmbVentasVendedorAño()
         {
             cmbVentasVendedorAño.SelectedIndexChanged -= cmbVentasVendedorAño_SelectedIndexChanged;
@@ -708,11 +706,12 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dt = GraficasService.ObtenerTop10AñosDeVentas(false);
-                foreach (DataRow row in dt.Rows)
-                    cmbVentasMensualesPorVendedorPorAño.Items.Add(Convert.ToInt32(row["YearOrderDate"]));
+                var dt = GraficasService.ObtenerTop10AñosDeVentas();
+                cmbVentasMensualesPorVendedorPorAño.DisplayMember = "Texto";
+                cmbVentasMensualesPorVendedorPorAño.ValueMember = "Valor";
+                cmbVentasMensualesPorVendedorPorAño.DataSource = dt;
+                cmbVentasMensualesPorVendedorPorAño.SelectedValue = DateTime.Today.Year;
                 MDIPrincipal.ActualizarBarraDeEstado();
-                cmbVentasMensualesPorVendedorPorAño.SelectedItem = 1997;
             }
             catch (Exception ex)
             {
@@ -730,25 +729,34 @@ namespace NorthwindTradersV6EF
                 .OrderBy(t => t.ToString())
                 .ToList();
             CmbTipoGrafica6.SelectedIndexChanged += CmbTipoGrafica6_SelectedIndexChanged;
+            CmbTipoGrafica6.SelectedItem = SeriesChartType.Line;
         }
 
         private void cmbVentasMensualesPorVendedorPorAño_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedItem), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
+            CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedValue), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
         }
 
         private void CmbTipoGrafica6_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedItem), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
+            CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedValue), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
         }
 
         private void CargarVentasMensualesPorVendedorPorAño(int year, SeriesChartType tipoGrafica)
         {
+            if (cmbVentasMensualesPorVendedorPorAño.SelectedIndex == 0)
+            {
+                Utils.MsgExclamation("Seleccione un año válido.");
+                return;
+            }
             ChartVentas.Series.Clear();
             ChartVentas.Titles.Clear();
+            string tit = year == -1
+                        ? $"Ventas mensuales por vendedores (todos los años)"
+                        : $"Ventas mensuales por vendedores ({year})";
             Title titulo = new Title
             {
-                Text = $"Ventas mensuales por vendedores del año {year}",
+                Text = tit,
                 Font = new Font("Segoe UI", 8, FontStyle.Bold)
             };
             ChartVentas.Titles.Add(titulo);
@@ -784,7 +792,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                dt = _graficasService.ObtenerVentasMensualesPorVendedoresPorAño(year);
+                dt = GraficasService.ObtenerVentasMensualesPorVendedoresPorAño(year);
             }
             catch (Exception ex)
             {

@@ -55,6 +55,11 @@ namespace NorthwindTradersV6EF
 
         private void CargarGrafica(int anio)
         {
+            if (CmbVentasDelAño.SelectedIndex == 0)
+            {
+                Utils.MsgExclamation("Seleccione un año válido.");
+                return;
+            }
             ChartVentas.Series.Clear();
             ChartVentas.Titles.Clear();
 
