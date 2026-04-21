@@ -571,7 +571,7 @@ namespace NorthwindTradersV6EF
         //}
         //#endregion
         ///******************************************************************************************************/
-        #region Grafica5
+        #region Grafica4
         private void LlenarCmbVentasVendedorAño()
         {
             cmbVentasVendedorAño.SelectedIndexChanged -= cmbVentasVendedorAño_SelectedIndexChanged;
@@ -701,148 +701,148 @@ namespace NorthwindTradersV6EF
         }
         #endregion
         ///******************************************************************************************************/
-        //#region Grafica6
-        //private void LlenarCmbVentasMensualesPorVendedorPorAño()
-        //{
-        //    cmbVentasMensualesPorVendedorPorAño.SelectedIndexChanged -= cmbVentasMensualesPorVendedorPorAño_SelectedIndexChanged;
-        //    try
-        //    {
-        //        MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-        //        var dt = _graficasService.ObtenerAñosDeVentas(false);
-        //        foreach (DataRow row in dt.Rows)
-        //            cmbVentasMensualesPorVendedorPorAño.Items.Add(Convert.ToInt32(row["YearOrderDate"]));
-        //        MDIPrincipal.ActualizarBarraDeEstado();
-        //        cmbVentasMensualesPorVendedorPorAño.SelectedItem = 1997; 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        U.MsgCatchOue(ex);
-        //    }
-        //    cmbVentasMensualesPorVendedorPorAño.SelectedIndexChanged += cmbVentasMensualesPorVendedorPorAño_SelectedIndexChanged;
-        //}
+        #region Grafica6
+        private void LlenarCmbVentasMensualesPorVendedorPorAño()
+        {
+            cmbVentasMensualesPorVendedorPorAño.SelectedIndexChanged -= cmbVentasMensualesPorVendedorPorAño_SelectedIndexChanged;
+            try
+            {
+                MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
+                var dt = GraficasService.ObtenerTop10AñosDeVentas(false);
+                foreach (DataRow row in dt.Rows)
+                    cmbVentasMensualesPorVendedorPorAño.Items.Add(Convert.ToInt32(row["YearOrderDate"]));
+                MDIPrincipal.ActualizarBarraDeEstado();
+                cmbVentasMensualesPorVendedorPorAño.SelectedItem = 1997;
+            }
+            catch (Exception ex)
+            {
+                U.MsgCatchOue(ex);
+            }
+            cmbVentasMensualesPorVendedorPorAño.SelectedIndexChanged += cmbVentasMensualesPorVendedorPorAño_SelectedIndexChanged;
+        }
 
-        //private void LlenarCmbTipoGrafica6()
-        //{
-        //    CmbTipoGrafica6.SelectedIndexChanged -= CmbTipoGrafica6_SelectedIndexChanged;
-        //    CmbTipoGrafica6.DataSource = Enum.GetValues(typeof(SeriesChartType))
-        //        .Cast<SeriesChartType>()
-        //        .Where(t => t != SeriesChartType.Doughnut && t != SeriesChartType.ErrorBar && t != SeriesChartType.Funnel && t != SeriesChartType.Kagi && t != SeriesChartType.Pie && t != SeriesChartType.PointAndFigure && t != SeriesChartType.Polar && t != SeriesChartType.Pyramid && t != SeriesChartType.Renko && t != SeriesChartType.ThreeLineBreak) // Excluye tipos no deseados
-        //        .OrderBy(t => t.ToString())
-        //        .ToList();
-        //    CmbTipoGrafica6.SelectedIndexChanged += CmbTipoGrafica6_SelectedIndexChanged;
-        //}
+        private void LlenarCmbTipoGrafica6()
+        {
+            CmbTipoGrafica6.SelectedIndexChanged -= CmbTipoGrafica6_SelectedIndexChanged;
+            CmbTipoGrafica6.DataSource = Enum.GetValues(typeof(SeriesChartType))
+                .Cast<SeriesChartType>()
+                .Where(t => t != SeriesChartType.Doughnut && t != SeriesChartType.ErrorBar && t != SeriesChartType.Funnel && t != SeriesChartType.Kagi && t != SeriesChartType.Pie && t != SeriesChartType.PointAndFigure && t != SeriesChartType.Polar && t != SeriesChartType.Pyramid && t != SeriesChartType.Renko && t != SeriesChartType.ThreeLineBreak) // Excluye tipos no deseados
+                .OrderBy(t => t.ToString())
+                .ToList();
+            CmbTipoGrafica6.SelectedIndexChanged += CmbTipoGrafica6_SelectedIndexChanged;
+        }
 
-        //private void cmbVentasMensualesPorVendedorPorAño_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedItem), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
-        //}
+        private void cmbVentasMensualesPorVendedorPorAño_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedItem), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
+        }
 
-        //private void CmbTipoGrafica6_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedItem), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
-        //}
+        private void CmbTipoGrafica6_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CargarVentasMensualesPorVendedorPorAño(Convert.ToInt32(cmbVentasMensualesPorVendedorPorAño.SelectedItem), (SeriesChartType)CmbTipoGrafica6.SelectedItem);
+        }
 
-        //private void CargarVentasMensualesPorVendedorPorAño(int year, SeriesChartType tipoGrafica)
-        //{
-        //    ChartVentas.Series.Clear();
-        //    ChartVentas.Titles.Clear();
-        //    Title titulo = new Title
-        //    {
-        //        Text = $"Ventas mensuales por vendedores del año {year}",
-        //        Font = new Font("Segoe UI", 8, FontStyle.Bold)
-        //    };
-        //    ChartVentas.Titles.Add(titulo);
-        //    groupBox6.Text = $"» {titulo.Text} Tipo de gráfica: {tipoGrafica} «";
-        //    // Configurar la fuente de la leyenda
-        //    ChartVentas.Legends[0].Font = new Font("Segoe UI", 6, FontStyle.Regular);
-        //    // ChartArea
-        //    var area = ChartVentas.ChartAreas[0];
-        //    area.AxisX.Interval = 1;
-        //    area.AxisX.CustomLabels.Clear();
-        //    area.AxisX.MajorGrid.Enabled = true;
-        //    area.AxisX.MajorGrid.LineColor = Color.LightGray;
-        //    area.AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
-        //    area.AxisX.MinorGrid.Enabled = false;
-        //    area.AxisX.LabelStyle.Angle = -45;
-        //    area.AxisX.TitleFont = new Font("Segoe UI", 7, FontStyle.Regular);
-        //    area.AxisX.LabelStyle.Font = new Font("Segoe UI", 7, FontStyle.Regular);
-        //    area.AxisX.Title = "Meses";
+        private void CargarVentasMensualesPorVendedorPorAño(int year, SeriesChartType tipoGrafica)
+        {
+            ChartVentas.Series.Clear();
+            ChartVentas.Titles.Clear();
+            Title titulo = new Title
+            {
+                Text = $"Ventas mensuales por vendedores del año {year}",
+                Font = new Font("Segoe UI", 8, FontStyle.Bold)
+            };
+            ChartVentas.Titles.Add(titulo);
+            groupBox6.Text = $"» {titulo.Text} Tipo de gráfica: {tipoGrafica} «";
+            // Configurar la fuente de la leyenda
+            ChartVentas.Legends[0].Font = new Font("Segoe UI", 6, FontStyle.Regular);
+            // ChartArea
+            var area = ChartVentas.ChartAreas[0];
+            area.AxisX.Interval = 1;
+            area.AxisX.CustomLabels.Clear();
+            area.AxisX.MajorGrid.Enabled = true;
+            area.AxisX.MajorGrid.LineColor = Color.LightGray;
+            area.AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
+            area.AxisX.MinorGrid.Enabled = false;
+            area.AxisX.LabelStyle.Angle = -45;
+            area.AxisX.TitleFont = new Font("Segoe UI", 7, FontStyle.Regular);
+            area.AxisX.LabelStyle.Font = new Font("Segoe UI", 7, FontStyle.Regular);
+            area.AxisX.Title = "Meses";
 
-        //    area.AxisY.Title = "Ventas totales";
-        //    area.AxisY.LabelStyle.Format = "C0";
-        //    area.AxisY.MajorGrid.Enabled = true;
-        //    area.AxisY.MajorGrid.LineColor = Color.Gray;
-        //    area.AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Solid;
-        //    area.AxisY.MinorGrid.Enabled = false;
-        //    area.AxisY.MinorGrid.LineColor = Color.LightGray;
-        //    area.AxisY.MinorGrid.LineDashStyle = ChartDashStyle.Dash;
-        //    area.AxisY.TitleFont = new Font("Segoe UI", 7, FontStyle.Bold);
-        //    area.AxisY.LabelStyle.Font = new Font("Segoe UI", 7, FontStyle.Regular);
-        //    area.AxisY.LabelStyle.Angle = -45;
-        //    // Leer datos
-        //    var dt = new DataTable();
-        //    try
-        //    {
-        //        MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-        //        dt = _graficasService.ObtenerVentasMensualesPorVendedoresPorAño(year);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        U.MsgCatchOue(ex);
-        //        return;
-        //    }
-        //    finally
-        //    {
-        //        MDIPrincipal.ActualizarBarraDeEstado();
-        //    }
+            area.AxisY.Title = "Ventas totales";
+            area.AxisY.LabelStyle.Format = "C0";
+            area.AxisY.MajorGrid.Enabled = true;
+            area.AxisY.MajorGrid.LineColor = Color.Gray;
+            area.AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Solid;
+            area.AxisY.MinorGrid.Enabled = false;
+            area.AxisY.MinorGrid.LineColor = Color.LightGray;
+            area.AxisY.MinorGrid.LineDashStyle = ChartDashStyle.Dash;
+            area.AxisY.TitleFont = new Font("Segoe UI", 7, FontStyle.Bold);
+            area.AxisY.LabelStyle.Font = new Font("Segoe UI", 7, FontStyle.Regular);
+            area.AxisY.LabelStyle.Angle = -45;
+            // Leer datos
+            var dt = new DataTable();
+            try
+            {
+                MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
+                dt = _graficasService.ObtenerVentasMensualesPorVendedoresPorAño(year);
+            }
+            catch (Exception ex)
+            {
+                U.MsgCatchOue(ex);
+                return;
+            }
+            finally
+            {
+                MDIPrincipal.ActualizarBarraDeEstado();
+            }
 
-        //    // Agrupar y calcular totales y ordena de mayor a menor
-        //    var grupos = dt.AsEnumerable()
-        //                   .GroupBy(r => r.Field<string>("Vendedor"))
-        //                   .Select(g => new
-        //                   {
-        //                       Vendedor = g.Key,
-        //                       Datos = g,
-        //                       Total = g.Sum(r => r.Field<object>("TotalVentas") != DBNull.Value
-        //                                          ? Convert.ToDouble(r["TotalVentas"])
-        //                                          : 0D)
-        //                   })
-        //                   .OrderByDescending(x => x.Total); // ordenar de mayor a menor
-        //    int i = 0;
-        //    foreach (var grupo in grupos)
-        //    {
-        //        // Serie por vendedor
-        //        var serie = new Series(grupo.Vendedor)
-        //        {
-        //            ChartType = tipoGrafica,
-        //            BorderWidth = 2,
-        //            MarkerStyle = MarkerStyle.Circle,
-        //            MarkerSize = 4,
-        //            ToolTip = "#SERIESNAME\nMes: #AXISLABEL\nVentas: #VALY{C2}",
-        //            LabelForeColor = Color.Black,
-        //            Font = new Font("Segoe UI", 6, FontStyle.Regular),
-        //            IsValueShownAsLabel = false,
-        //            LabelFormat = "C2",
-        //            Color = ChartColors.Paleta[i % ChartColors.Paleta.Length]
-        //        };
-        //        foreach (var row in grupo.Datos)
-        //        {
-        //            string nombreMes = row.Field<string>("NombreMes");
+            // Agrupar y calcular totales y ordena de mayor a menor
+            var grupos = dt.AsEnumerable()
+                           .GroupBy(r => r.Field<string>("Vendedor"))
+                           .Select(g => new
+                           {
+                               Vendedor = g.Key,
+                               Datos = g,
+                               Total = g.Sum(r => r.Field<object>("TotalVentas") != DBNull.Value
+                                                  ? Convert.ToDouble(r["TotalVentas"])
+                                                  : 0D)
+                           })
+                           .OrderByDescending(x => x.Total); // ordenar de mayor a menor
+            int i = 0;
+            foreach (var grupo in grupos)
+            {
+                // Serie por vendedor
+                var serie = new Series(grupo.Vendedor)
+                {
+                    ChartType = tipoGrafica,
+                    BorderWidth = 2,
+                    MarkerStyle = MarkerStyle.Circle,
+                    MarkerSize = 4,
+                    ToolTip = "#SERIESNAME\nMes: #AXISLABEL\nVentas: #VALY{C2}",
+                    LabelForeColor = Color.Black,
+                    Font = new Font("Segoe UI", 6, FontStyle.Regular),
+                    IsValueShownAsLabel = false,
+                    LabelFormat = "C2",
+                    Color = ChartColors.Paleta[i % ChartColors.Paleta.Length]
+                };
+                foreach (var row in grupo.Datos)
+                {
+                    string nombreMes = row.Field<string>("NombreMes");
 
-        //            object raw = row["TotalVentas"];
-        //            double ventas = raw != DBNull.Value
-        //                            ? Convert.ToDouble(raw)
-        //                            : 0D;
+                    object raw = row["TotalVentas"];
+                    double ventas = raw != DBNull.Value
+                                    ? Convert.ToDouble(raw)
+                                    : 0D;
 
-        //            serie.Points.AddXY(nombreMes, ventas);
-        //        }
-        //        serie.LegendText = $"{serie.Name}\n(Total: {grupo.Total:C2})";
-        //        ChartVentas.Series.Add(serie);
-        //        i++;
-        //    }
-        //    // ————— Aquí forzamos el recálculo de la escala del eje Y —————
-        //    ChartVentas.ResetAutoValues();
-        //}
-        //#endregion
+                    serie.Points.AddXY(nombreMes, ventas);
+                }
+                serie.LegendText = $"{serie.Name}\n(Total: {grupo.Total:C2})";
+                ChartVentas.Series.Add(serie);
+                i++;
+            }
+            // ————— Aquí forzamos el recálculo de la escala del eje Y —————
+            ChartVentas.ResetAutoValues();
+        }
+        #endregion
     }
 }
