@@ -52,7 +52,6 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dt = GraficasService.ObtenerTop10AñosDeVentas();
                 cmbVentasMensualesAño.DataSource = GraficasService.ObtenerTop10AñosDeVentas();
                 cmbVentasMensualesAño.DisplayMember = "Texto";
                 cmbVentasMensualesAño.ValueMember = "Valor";
@@ -162,7 +161,7 @@ namespace NorthwindTradersV6EF
             area.AxisY.LabelStyle.Angle = -45;
             string tit = string.Empty;
             if (year == -1)
-                tit = "Ventas mensuales (Todos los años).";
+                tit = "Ventas mensuales (todos los años).";
             else
                 tit = $"Ventas mensuales ({year}).";
             // Crear el título
@@ -382,7 +381,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                CmbAñoTopProd.DataSource = GraficasService.ObtenerTop10AñosDeVentas(false);
+                CmbAñoTopProd.DataSource = GraficasService.ObtenerTop10AñosDeVentas();
                 CmbAñoTopProd.DisplayMember = "Texto";
                 CmbAñoTopProd.ValueMember = "Valor";
                 CmbAñoTopProd.SelectedValue = DateTime.Today.Year;
@@ -424,6 +423,11 @@ namespace NorthwindTradersV6EF
 
         private void CargarTopProductos(int cantidad, SeriesChartType tipoGrafica, int año)
         {
+            if (CmbAñoTopProd.SelectedIndex == 0)
+            {
+                Utils.MsgExclamation("Seleccione un año válido.");
+                return;
+            }
             ChartTopProductos.Series.Clear();
             ChartTopProductos.Titles.Clear();
             Title titulo = new Title();
