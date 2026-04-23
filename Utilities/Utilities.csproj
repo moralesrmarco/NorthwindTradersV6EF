@@ -67,6 +67,7 @@
     <Compile Include="DateTimeCascadeHelper.cs" />
     <Compile Include="DateTimePickerHelper.cs" />
     <Compile Include="InventarioHelper.cs" />
+    <Compile Include="Normalizador.cs" />
     <Compile Include="ReportDataTableAdapterHelper.cs" />
     <Compile Include="RowVersionHelper.cs" />
     <Compile Include="ValidarCantidadEInventarioHelper.cs" />

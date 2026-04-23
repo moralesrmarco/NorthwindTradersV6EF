@@ -1,9 +1,5 @@
-﻿using BLL;
-using Entities;
-using Entities.DTOs;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -13,17 +9,12 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmUsuariosCrud : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly UsuarioBLL _usuarioBLL;
-
-        bool EventoCargado = true; // esta variable es necesaria para controlar el manejador de eventos de la celda del dgv ojo no quitar
         bool _imagenMostrada = true;
         internal Dictionary<string, object> valoresOriginales;
 
         public FrmUsuariosCrud()
         {
             InitializeComponent();
-            _usuarioBLL = new UsuarioBLL(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -68,7 +59,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                DtoUsuariosBuscar dtoUsuariosBuscar = new DtoUsuariosBuscar()
+                DTOs.EF.DtoUsuariosBuscar dtoUsuariosBuscar = new DTOs.EF.DtoUsuariosBuscar()
                 {
                     IdIni = Convert.ToInt32(nudBIdIni.Value),
                     IdFin = Convert.ToInt32(nudBIdFin.Value),
@@ -80,7 +71,7 @@ namespace NorthwindTradersV6EF
                 DataTable dt;
                 if (!selectorRealizaBusqueda)
                     dtoUsuariosBuscar = null;
-                dt = _usuarioBLL.ObtenerUsuarios(dtoUsuariosBuscar);
+                dt = BLL.EF.UsuarioBLL.ObtenerUsuarios(dtoUsuariosBuscar);
                 // Agrega una nueva columna "EstatusTexto" de tipo string
                 dt.Columns.Add("EstatusTexto", typeof(string));
 
@@ -151,6 +142,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(false);
+            CargarValoresOriginales();
         }
 
         private void btnBuscar_Click(object sender, EventArgs e)
@@ -160,6 +152,7 @@ namespace NorthwindTradersV6EF
             if (tabcOperacion.SelectedTab != tbpRegistrar)
                 DeshabilitarControles();
             LlenarDgv(true);
+            CargarValoresOriginales();
         }
 
         private void BorrarDatosUsuario()
@@ -203,7 +196,7 @@ namespace NorthwindTradersV6EF
             if (valida)
             {
                 // Validar que el usuario no exista en la base de datos
-                if (_usuarioBLL.ValidarExisteUsuario(txtUsuario.Text.Trim()))
+                if (BLL.EF.UsuarioBLL.ValidarExisteUsuario(txtUsuario.Text.Trim()))
                 {
                     errorProvider1.SetError(txtUsuario, "El usuario ya existe, por favor elige otro");
                     valida = false;
@@ -284,11 +277,8 @@ namespace NorthwindTradersV6EF
             BorrarMensajesError();
             if (tabcOperacion.SelectedTab == tbpRegistrar)
             {
-                if (EventoCargado)
-                {
-                    Dgv.CellClick -= Dgv_CellClick; // Desvincula el evento para evitar que se ejecute al cambiar de pestaña
-                    EventoCargado = false; // Cambia el estado para evitar que se ejecute nuevamente
-                }
+                Dgv.CellClick -= Dgv_CellClick; 
+                Dgv.CellClick -= Dgv_CellClick; 
                 BorrarDatosBusqueda();
                 HabilitarControles();
                 btnOperacion.Text = "Registrar usuario";
@@ -297,11 +287,8 @@ namespace NorthwindTradersV6EF
             }
             else
             {
-                if (!EventoCargado)
-                {
-                    Dgv.CellClick += Dgv_CellClick; // Vuelve a vincular el evento al cambiar de pestaña
-                    EventoCargado = true; // Cambia el estado para permitir que se ejecute nuevamente
-                }
+                Dgv.CellClick -= Dgv_CellClick; 
+                Dgv.CellClick += Dgv_CellClick; 
                 DeshabilitarControles();
                 btnOperacion.Enabled = false;
                 if (tabcOperacion.SelectedTab == tbpConsultar)
@@ -340,18 +327,18 @@ namespace NorthwindTradersV6EF
                     try
                     {
                         string passHasheada = Utils.ComputeSha256Hash(txtPwd.Text.Trim());
-                        var usuario = new Usuario
+                        var usuario = new DAL.EF.Usuario
                         {
                             Paterno = txtPaterno.Text.Trim(),
                             Materno = txtMaterno.Text.Trim(),
                             Nombres = txtNombres.Text.Trim(),
-                            User = txtUsuario.Text.Trim(),
+                            Usuario1 = txtUsuario.Text.Trim(),
                             Password = passHasheada,
                             FechaCaptura = DateTime.Now,
                             FechaModificacion = DateTime.Now,
                             Estatus = chkbEstatus.Checked
                         };
-                        numRegs = (sbyte)_usuarioBLL.Insertar(usuario);
+                        numRegs = (sbyte)BLL.EF.UsuarioBLL.Insertar(usuario);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se insertaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string nombreUsuario = $"El usuario con Id: {txtId.Text} y Nombre: " + $"{txtPaterno.Text.Trim()} {txtMaterno.Text.Trim()} {txtNombres.Text.Trim()}".Trim();
                         if (numRegs > 0)
@@ -392,19 +379,19 @@ namespace NorthwindTradersV6EF
                         string passFinal = (txtPwd.Text.Trim() == pwdTextoOriginal)
                                            ? passHasheadaOld
                                            : Utils.ComputeSha256Hash(txtPwd.Text.Trim());
-                        var usuario = new Usuario
+                        var usuario = new DAL.EF.Usuario
                         {
                             Id = Convert.ToInt32(txtId.Text.Trim()),
-                            RowVersion = RowVersionHelper.RowVersionObjToByteArray(txtId.Tag),
+                            RowVersion = DAL.EF.Usuario.ConvertirRowVersion(txtId.Tag),
                             Paterno = txtPaterno.Text.Trim(),
                             Materno = txtMaterno.Text.Trim(),
                             Nombres = txtNombres.Text.Trim(),
-                            User = txtUsuario.Text.Trim(),
+                            Usuario1 = txtUsuario.Text.Trim(),
                             Password = passFinal,
                             FechaModificacion = DateTime.Now,
                             Estatus = chkbEstatus.Checked
                         };
-                        numRegs = _usuarioBLL.Actualizar(usuario);
+                        numRegs = BLL.EF.UsuarioBLL.Actualizar(usuario);
                         txtId.Tag = usuario.RowVersionStr; // Actualiza el RowVersion en el Tag del TextBox
                         MDIPrincipal.ActualizarBarraDeEstado($"Se actualizaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string nombreUsuario = $"El usuario con Id: {txtId.Text} y Nombre: " + $"{txtPaterno.Text.Trim()} {txtMaterno.Text.Trim()} {txtNombres.Text.Trim()}".Trim();
@@ -435,22 +422,22 @@ namespace NorthwindTradersV6EF
                     btnOperacion.Enabled = false;
                     try
                     {
-                        var usuario = new Usuario
+                        var usuario = new DAL.EF.Usuario
                         {
                             Id = Convert.ToInt32(txtId.Text.Trim()),
-                            RowVersion = RowVersionHelper.RowVersionObjToByteArray(txtId.Tag)
+                            RowVersion = DAL.EF.Usuario.ConvertirRowVersion(txtId.Tag)
                         };
-                        numRegs = _usuarioBLL.Eliminar(usuario);
+                        numRegs = BLL.EF.UsuarioBLL.Eliminar(usuario);
                         MDIPrincipal.ActualizarBarraDeEstado($"Se eliminaron {(numRegs < 0 ? 0 : numRegs)} registro(s)");
                         string nombreUsuario = $"El usuario con Id: {txtId.Text} y Nombre: " + $"{txtPaterno.Text.Trim()} {txtMaterno.Text.Trim()} {txtNombres.Text.Trim()}".Trim();
                         if (numRegs > 0)
                             U.NotificacionInformation(nombreUsuario + Utils.ses);
                         else if (numRegs == -1)
-                            U.NotificacionError(nombreUsuario + Utils.nfmfe);
+                            U.NotificacionError(nombreUsuario + Utils.nfefe);
                         else if (numRegs == -2)
-                            U.NotificacionError(nombreUsuario + Utils.nfmfm);
+                            U.NotificacionError(nombreUsuario + Utils.nfefm);
                         else
-                            U.NotificacionError(nombreUsuario + Utils.nfmmd);
+                            U.NotificacionError(nombreUsuario + Utils.nfemd);
                     }
                     catch (Exception ex)
                     {
