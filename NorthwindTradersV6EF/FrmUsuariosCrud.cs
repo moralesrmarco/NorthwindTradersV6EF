@@ -363,6 +363,11 @@ namespace NorthwindTradersV6EF
             }
             else if (tabcOperacion.SelectedTab == tbpModificar)
             {
+                if (!Utils.HayCambios(this, valoresOriginales))
+                {
+                    U.NotificacionWarning(Utils.ndc);
+                    return;
+                }
                 string usuarioOld = Utils.GetValorOriginal(txtUsuario.Name, valoresOriginales);
                 string pwdTextoOriginal = Utils.GetValorOriginal("txtPwd", valoresOriginales);     // texto plano original (si lo guardaste así)
                 string passHasheadaOld = Utils.GetValorOriginal("txtPwdHash", valoresOriginales); // hash original que ya estaba en BD
