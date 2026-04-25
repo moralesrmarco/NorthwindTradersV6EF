@@ -70,7 +70,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dt = _permisoService.ObtenerPermisosDeCatalogo();
+                var dt = BLL.EF.Services.PermisosService.ObtenerPermisosDeCatalogo();
                 listBoxCatalogo.DataSource = dt;
                 listBoxCatalogo.DisplayMember = "Descripción";
                 listBoxCatalogo.ValueMember = "PermisoId";
@@ -88,7 +88,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                DtoUsuariosBuscar dtoUsuariosBuscar = new DtoUsuariosBuscar()
+                DTOs.EF.DtoUsuariosBuscar dtoUsuariosBuscar = new DTOs.EF.DtoUsuariosBuscar()
                 {
                     IdIni = Convert.ToInt32(nudBIdIni.Value),
                     IdFin = Convert.ToInt32(nudBIdFin.Value),
@@ -100,7 +100,7 @@ namespace NorthwindTradersV6EF
                 DataTable dt;
                 if (!selectorRealizaBusqueda)
                     dtoUsuariosBuscar = null;
-                dt = _usuarioBLL.ObtenerUsuarios(dtoUsuariosBuscar);
+                dt = BLL.EF.UsuarioBLL.ObtenerUsuarios(dtoUsuariosBuscar);
                 // Agrega una nueva columna "EstatusTexto" de tipo string
                 dt.Columns.Add("EstatusTexto", typeof(string));
 
@@ -226,7 +226,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
-                var dt = _permisoService.ObtenerPermisosConcedidos(Convert.ToInt32(txtId.Text));
+                var dt = BLL.EF.Services.PermisosService.ObtenerPermisosConcedidos(Convert.ToInt32(txtId.Text));
                 listBoxConcedidos.DataSource = dt;
                 listBoxConcedidos.DisplayMember = "Descripción";
                 listBoxConcedidos.ValueMember = "PermisoId";
@@ -250,9 +250,8 @@ namespace NorthwindTradersV6EF
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.insertandoRegistro);
                 int permisoId = Convert.ToInt32(listBoxCatalogo.SelectedValue);
-                _permisoBLL.InsertarPermiso(Convert.ToInt32(txtId.Text), permisoId);
+                BLL.EF.PermisosBLL.Insertar(Convert.ToInt32(txtId.Text), permisoId);
                 LlenarListBoxConcedidos();
-
             }
             catch (Exception ex)
             {
