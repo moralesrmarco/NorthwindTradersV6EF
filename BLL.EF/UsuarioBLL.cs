@@ -226,5 +226,41 @@ namespace BLL.EF
                 throw new Exception("Error al validar el usuario: " + ex.Message);
             }
         }
+
+        public static int ActualizarContraseña(string usuario, string nuevaContraseñaHasheada)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    var usuarioEncontrado = context.Usuarios.SingleOrDefault(u => u.Usuario1 == usuario && u.Estatus == true);
+                    if (usuarioEncontrado != null)
+                    {
+                        usuarioEncontrado.Password = nuevaContraseñaHasheada;
+                        return context.SaveChanges();
+                    }
+                    return 0; // Usuario no encontrado
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar la contraseña: " + ex.Message);
+            }
+        }
+
+        public static int ValidarContraseñaActual(string usuario, string contraseñaActualHasheada)
+        {
+            try
+            {
+                using (var context = new NorthwindContext())
+                {
+                    return context.Usuarios.Count(u => u.Usuario1 == usuario && u.Password == contraseñaActualHasheada && u.Estatus);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al validar la contraseña actual: " + ex.Message);
+            }
+        }
     }
 }

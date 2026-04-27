@@ -1,6 +1,4 @@
-﻿using BLL;
-using System;
-using System.Configuration;
+﻿using System;
 using System.Windows.Forms;
 using Utilities;
 
@@ -8,8 +6,6 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmCambiarContrasena : Form
     {
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly UsuarioBLL _usuarioBLL;
         public string UsuarioLogueado;
         bool _imagenMostrada = true;
         short numIntentos = 0;
@@ -17,7 +13,6 @@ namespace NorthwindTradersV6EF
         public FrmCambiarContrasena()
         {
             InitializeComponent();
-            _usuarioBLL = new UsuarioBLL(_connectionString);
         }
 
         private void FrmCambiarContrasena_FormClosed(object sender, FormClosedEventArgs e) => MDIPrincipal.ActualizarBarraDeEstado();
@@ -36,7 +31,6 @@ namespace NorthwindTradersV6EF
             txtNewPwd.UseSystemPasswordChar = !txtNewPwd.UseSystemPasswordChar;
             txtConfirmarPwd.UseSystemPasswordChar = !txtConfirmarPwd.UseSystemPasswordChar;
             btnTogglePwd.Image = _imagenMostrada ? Properties.Resources.mostrarCh : Properties.Resources.ocultarCh;
-
         }
 
         private void FrmCambiarContrasena_Load(object sender, EventArgs e)
@@ -53,8 +47,8 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.modificandoRegistro);
-                string pwdHasheada = Utils.ComputeSha256Hash(txtNewPwd.Text.Trim());
-                byte numRegs = _usuarioBLL.ActualizarContraseña(txtUsuario.Text, pwdHasheada);
+                string pwdNuevaContraseñaHasheada = Utils.ComputeSha256Hash(txtNewPwd.Text.Trim());
+                int numRegs = BLL.EF.UsuarioBLL.ActualizarContraseña(txtUsuario.Text, pwdNuevaContraseñaHasheada);
                 MDIPrincipal.ActualizarBarraDeEstado();
                 if (numRegs > 0)
                 {
@@ -87,7 +81,7 @@ namespace NorthwindTradersV6EF
                 {
                     MDIPrincipal.ActualizarBarraDeEstado(Utils.clbdd);
                     string pwdHasheada = Utils.ComputeSha256Hash(txtPwd.Text.Trim());
-                    byte numRegs = _usuarioBLL.ValidarContraseñaActual(txtUsuario.Text, pwdHasheada);
+                    int numRegs = BLL.EF.UsuarioBLL.ValidarContraseñaActual(txtUsuario.Text, pwdHasheada);
                     MDIPrincipal.ActualizarBarraDeEstado();
                     if (numRegs == 0)
                     {
