@@ -251,12 +251,6 @@ namespace NorthwindTradersV6EF
             Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Mantenimiento de empleados «");
         }
 
-        private void frmEjemploUsoJerarquiaClaseEmpleadoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            FrmEjemploUsoJerarquiaClaseEmpleado frm = new FrmEjemploUsoJerarquiaClaseEmpleado();
-            Utils.AgregarFormularioEnTab(TabControlPrincipal, frm, "» Ejemplo uso jerarquía clase Empleado «");
-        }
-
         private void reporteDeEmpleadosToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FrmRptEmpleados frm = new FrmRptEmpleados();

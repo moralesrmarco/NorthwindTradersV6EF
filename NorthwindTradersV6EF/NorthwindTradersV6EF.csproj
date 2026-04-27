@@ -235,12 +235,6 @@
     <Compile Include="FrmClientesyProveedoresDirectorioxPais.Designer.cs">
       <DependentUpon>FrmClientesyProveedoresDirectorioxPais.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmEjemploUsoJerarquiaClaseEmpleado.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmEjemploUsoJerarquiaClaseEmpleado.Designer.cs">
-      <DependentUpon>FrmEjemploUsoJerarquiaClaseEmpleado.cs</DependentUpon>
-    </Compile>
     <Compile Include="FrmEmpleadosCrud.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -301,12 +295,6 @@
     <Compile Include="FrmGraficaVentasMensualesPorVendedorPorAnioBarras.Designer.cs">
       <DependentUpon>FrmGraficaVentasMensualesPorVendedorPorAnioBarras.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmGraficaVentasPorVendedores.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmGraficaVentasPorVendedores.Designer.cs">
-      <DependentUpon>FrmGraficaVentasPorVendedores.cs</DependentUpon>
-    </Compile>
     <Compile Include="FrmLogin.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -366,12 +354,6 @@
     </Compile>
     <Compile Include="FrmRptGraficaVentasMensualesPorVendedorPorAnioBarras2.Designer.cs">
       <DependentUpon>FrmRptGraficaVentasMensualesPorVendedorPorAnioBarras2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmRptGraficaVentasPorVendedores.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmRptGraficaVentasPorVendedores.Designer.cs">
-      <DependentUpon>FrmRptGraficaVentasPorVendedores.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmRptTopProductosMasVendidos.cs">
       <SubType>Form</SubType>
@@ -621,9 +603,6 @@
     <EmbeddedResource Include="FrmClientesyProveedoresDirectorioxPais.resx">
       <DependentUpon>FrmClientesyProveedoresDirectorioxPais.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmEjemploUsoJerarquiaClaseEmpleado.resx">
-      <DependentUpon>FrmEjemploUsoJerarquiaClaseEmpleado.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FrmEmpleadosCrud.resx">
       <DependentUpon>FrmEmpleadosCrud.cs</DependentUpon>
     </EmbeddedResource>
@@ -654,9 +633,6 @@
     <EmbeddedResource Include="FrmGraficaVentasMensualesPorVendedorPorAnioBarras.resx">
       <DependentUpon>FrmGraficaVentasMensualesPorVendedorPorAnioBarras.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmGraficaVentasPorVendedores.resx">
-      <DependentUpon>FrmGraficaVentasPorVendedores.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FrmLogin.resx">
       <DependentUpon>FrmLogin.cs</DependentUpon>
     </EmbeddedResource>
@@ -686,9 +662,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmRptGraficaVentasMensualesPorVendedorPorAnioBarras2.resx">
       <DependentUpon>FrmRptGraficaVentasMensualesPorVendedorPorAnioBarras2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmRptGraficaVentasPorVendedores.resx">
-      <DependentUpon>FrmRptGraficaVentasPorVendedores.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmRptTopProductosMasVendidos.resx">
       <DependentUpon>FrmRptTopProductosMasVendidos.cs</DependentUpon>
@@ -866,10 +839,6 @@
       <Project>{c2afc79b-faa3-462a-9671-9685b7423ffb}</Project>
       <Name>BLL.EF</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BLL\BLL.csproj">
-      <Project>{650c4e63-6256-481d-934d-0019f3b3f331}</Project>
-      <Name>BLL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DAL.EF\DAL.EF.csproj">
       <Project>{6EA35351-2A27-492C-9EB6-8BCBBA32668C}</Project>
       <Name>DAL.EF</Name>
@@ -877,10 +846,6 @@
     <ProjectReference Include="..\DTOs.EF\DTOs.EF.csproj">
       <Project>{00219bfb-8d7c-447a-a3c4-1487eb201b1a}</Project>
       <Name>DTOs.EF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Entities\Entities.csproj">
-      <Project>{8cda8642-11bf-47cf-a88b-71626b5000bf}</Project>
-      <Name>Entities</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{fa850f4f-0723-4e47-9a32-936437cf3bc9}</Project>

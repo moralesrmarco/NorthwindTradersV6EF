@@ -1,13 +1,11 @@
 ﻿using BLL.EF.Services;
 using DTOs.EF;
-using Entities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using Utilities;
