@@ -1,9 +1,5 @@
-﻿using BLL;
-using BLL.Services;
-using Entities.DTOs;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -14,18 +10,9 @@ namespace NorthwindTradersV6EF
 {
     public partial class FrmPermisosCrud : Form
     {
-
-        string _connectionString = ConfigurationManager.ConnectionStrings["Northwind2ConnectionString"].ConnectionString;
-        private readonly UsuarioBLL _usuarioBLL;
-        private readonly PermisoService _permisoService;
-        private readonly PermisoBLL _permisoBLL;
-
         public FrmPermisosCrud()
         {
             InitializeComponent();
-            _usuarioBLL = new UsuarioBLL(_connectionString);
-            _permisoService = new PermisoService(_connectionString);
-            _permisoBLL = new PermisoBLL(_connectionString);
         }
 
         private void GrbPaint(object sender, PaintEventArgs e) => Utils.GrbPaint(this, sender, e);
@@ -274,7 +261,7 @@ namespace NorthwindTradersV6EF
                 }
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.eliminandoRegistro);
                 int permisoId = Convert.ToInt32(listBoxConcedidos.SelectedValue);
-                _permisoBLL.EliminarPermiso(Convert.ToInt32(txtId.Text), permisoId);
+                BLL.EF.PermisosBLL.Eliminar(Convert.ToInt32(txtId.Text), permisoId);
                 LlenarListBoxConcedidos();
             }
             catch (Exception ex)
@@ -313,7 +300,7 @@ namespace NorthwindTradersV6EF
                     return;
                 }
                 // Insertar en bloque (transacción manejada por el repositorio)
-                _permisoBLL.InsertarPermisos(Convert.ToInt32(txtId.Text), permisosAInsertar);
+                BLL.EF.PermisosBLL.InsertarPermisos(Convert.ToInt32(txtId.Text), permisosAInsertar);
                 LlenarListBoxConcedidos();
                 U.NotificacionInformation($"Se concedieron todos los permisos al usuario {txtUsuario.Text}");
             }
@@ -332,7 +319,7 @@ namespace NorthwindTradersV6EF
             try
             {
                 MDIPrincipal.ActualizarBarraDeEstado(Utils.eliminandoRegistro);
-                int filasAfectadas = _permisoBLL.EliminarPermisos(Convert.ToInt32(txtId.Text));
+                int filasAfectadas = BLL.EF.PermisosBLL.EliminarPermisos(Convert.ToInt32(txtId.Text));
                 LlenarListBoxConcedidos();
                 if (filasAfectadas > 0)
                     U.NotificacionInformation($"Se eliminaron {filasAfectadas} permisos concedidos al usuario {txtUsuario.Text}");
